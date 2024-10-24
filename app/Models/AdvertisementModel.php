@@ -26,82 +26,33 @@ class AdvertisementModel extends Model
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
 
-    // Khóa chính của bảng
-    protected $primaryKey = 'ma_quang_cao';
-
-    // Khóa chính không tự động tăng
-    public $incrementing = false;
-
-    // Khóa chính là kiểu chuỗi (varchar)
-    protected $keyType = 'string';
-
-    public function getMaQuangCao()
+    public function createAdvertisement($data)
     {
-        return $this->ma_quang_cao;
+        return self::create([
+            'ma_quang_cao' => $data['ma_quang_cao'],
+            'ten_quang_cao' => $data['ten_quang_cao'],
+            'ngay_tao' => $data['ngay_tao'],
+            'ngay_huy' => $data['ngay_huy'],
+            'luot_phat' => $data['luot_phat'],
+            'link_quang_cao' => $data['link_quang_cao'],
+            'trang_thai' => $data['trang_thai']
+        ]);
     }
 
-    public function getTenQuangCao()
+    public function updateAdvertisement($data)
     {
-        return $this->ten_quang_cao;
+        return $this->update([
+            'ten_quang_cao' => $data['ten_quang_cao'],
+            'ngay_tao' => $data['ngay_tao'],
+            'ngay_huy' => $data['ngay_huy'],
+            'luot_phat' => $data['luot_phat'],
+            'link_quang_cao' => $data['link_quang_cao'],
+            'trang_thai' => $data['trang_thai']
+        ]);
     }
 
-    public function getNgayTao()
+    public function deleteAdvertisement()
     {
-        return $this->ngay_tao;
-    }
-
-    public function getNgayHuy()
-    {
-        return $this->ngay_huy;
-    }
-
-    public function getLuotPhat()
-    {
-        return $this->luot_phat;
-    }
-
-    public function getLinkQuangCao()
-    {
-        return $this->link_quang_cao;
-    }
-
-    public function getTrangThai()
-    {
-        return $this->trang_thai;
-    }
-
-    public function setMaQuangCao($ma_quang_cao)
-    {
-        $this->ma_quang_cao = $ma_quang_cao;
-    }
-
-    public function setTenQuangCao($ten_quang_cao)
-    {
-        $this->ten_quang_cao = $ten_quang_cao;
-    }
-
-    public function setNgayTao($ngay_tao)
-    {
-        $this->ngay_tao = $ngay_tao;
-    }
-
-    public function setNgayHuy($ngay_huy)
-    {
-        $this->ngay_huy = $ngay_huy;
-    }
-
-    public function setLuotPhat($luot_phat)
-    {
-        $this->luot_phat = $luot_phat;
-    }
-
-    public function setLinkQuangCao($link_quang_cao)
-    {
-        $this->link_quang_cao = $link_quang_cao;
-    }
-
-    public function setTrangThai($trang_thai)
-    {
-        $this->trang_thai = $trang_thai;
+        return $this->delete();
     }
 }

@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class AdvertiserModel extends Model
-{
-    
+{   
     use HasFactory;
 
     protected $table = 'nhadangkyquangcao';
@@ -18,38 +17,33 @@ class AdvertiserModel extends Model
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
 
-    // Khóa chính của bảng
-    protected $primaryKey = 'ma_nqc';
-
-    // Khóa chính không tự động tăng
-    public $incrementing = false;
-
-    // Khóa chính là kiểu chuỗi (varchar)
-    protected $keyType = 'string';
-
-     // Thiết lập quan hệ 1 nhà quảng cáo có nhiều quảng cáo
+    // Thiết lập quan hệ 1 nhà quảng cáo có nhiều quảng cáo
     public function advertising_contract()
     {
          return $this->hasMany(AdvertisingContractModel::class, 'ma_nqc', 'ma_nqc');
     }
 
-    public function getMaNqc()
+    // Phương thức thêm nhà quảng cáo
+    public function createAdvertiser($data)
     {
-        return $this->ma_nqc;
+        return self::create([
+            'ma_nqc' => $data['ma_nqc'],
+            'ten_nqc' => $data['ten_nqc']
+        ]);
     }
 
-    public function getTenNqc()
+    // Phương thức cập nhật nhà quảng cáo
+    public function updateAdvertiser($data)
     {
-        return $this->ten_nqc;
+        return $this->update([
+            'ma_nqc' => $data['ma_nqc'],
+            'ten_nqc' => $data['ten_nqc']
+        ]);
     }
 
-    public function setTenNqc($ten_nqc)
+    // Phương thức xóa nhà quảng cáo
+    public function deleteAdvertiser()
     {
-        $this->ten_nqc = $ten_nqc;
-    }
-
-    public function setMaNqc($ma_nqc)
-    {
-        $this->ma_nqc = $ma_nqc;
+        return $this->delete();
     }
 }
