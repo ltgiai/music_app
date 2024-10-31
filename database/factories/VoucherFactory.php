@@ -11,13 +11,13 @@ class VoucherFactory extends Factory
     public function definition()
     {
         return [
-            'ma_goi' => $this->faker->unique()->regexify('[A-Za-z0-9]{50}'), 
-            'ten_goi' => $this->faker->text(50),
-            'thoi_han' => $this->fake->numberBetween(1, 9),  // Số nguyên từ 1 đến 9
-            'gia_goi' => $this->faker->randomFloat(3, 0, 9999999.999),  // Số thập phân có 3 chữ số sau dấu phẩy, giá trị từ 0 đến 9.999.999,999
-            'doanh_thu' => $this->faker->randomFloat(3, 0, 9999999.999),  // Số thập phân có 3 chữ số sau dấu phẩy, giá trị từ 0 đến 9.999.999,999
-            'mo_ta' => $this->faker->text(),
-            'trang_thai' => $this->fake->numberBetween(1, 9)
+            'ma_goi' => 'ma_quang_cao' => 'PREMI' . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
+            'ten_goi' => $this->faker->word(),
+            'thoi_han' => $this->fake->numberBetween(1, 9),
+            'gia_goi' => $this->faker->randomFloat(3, 0, 9999999.999),
+            'doanh_thu' => $this->faker->randomFloat(3, 0, 9999999.999),
+            'mo_ta' => $this->faker->wrord(),
+            'trang_thai' => $this->faker->boolean()
         ];
     }
 }

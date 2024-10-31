@@ -26,7 +26,8 @@ class AdvertisingContractModel extends Model
      public function relationship()
      {
          return [
-                'advertiser' => $this->advertiser()
+                'advertiser' => $this->advertiser(),
+                'advertisement' => $this->advertisement()
          ];
      }
 
@@ -34,6 +35,11 @@ class AdvertisingContractModel extends Model
      public function advertiser()
      {
          return $this->belongsTo(AdvertiserModel::class, 'ma_nqc', 'ma_nqc');
+     }
+
+     public function advertisement()
+     {
+         return $this->belongsTo(AdvertisementModel::class, 'ma_quang_cao', 'ma_quang_cao');
      }
 
      // Phương thức thêm hợp đồng quảng cáo

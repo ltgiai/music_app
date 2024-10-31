@@ -9,15 +9,14 @@ class AdvertiserModel extends Model
 {   
     use HasFactory;
 
+    public $incrementing = false;
     protected $table = 'nhadangkyquangcao';
-
-    // Cho phép các cột có thể được gán giá trị hàng loạt
+    protected $primaryKey = 'ma_nqc';
+    protected $keyType = 'string';
     protected $fillable = ['ma_nqc', 'ten_nqc'];
-
-    // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
 
-    // Thiết lập quan hệ 1 nhà quảng cáo có nhiều quảng cáo
+    // Thiết lập quan hệ 1 nhà quảng cáo có nhiều hợp đồng quảng cáo
     public function advertising_contract()
     {
          return $this->hasMany(AdvertisingContractModel::class, 'ma_nqc', 'ma_nqc');

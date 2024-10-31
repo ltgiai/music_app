@@ -10,8 +10,11 @@ class VoucherModel extends Model
     
     use HasFactory;
 
+    public $incrementing = false;
     protected $table = 'goipremium';
-
+    protected $primaryKey = 'ma_goi';
+    protected $keyType = 'string';
+    
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = [
         'ma_goi', 

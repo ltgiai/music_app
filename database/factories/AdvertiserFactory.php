@@ -11,8 +11,8 @@ class AdvertiserFactory extends Factory
     public function definition()
     {
         return [
-            'ma_nqc' => $this->faker->unique()->regexify('[A-Za-z0-9]{50}'),  // Mã quảng cáo không trùng lặp với 50 kí tự
-            'ten_nqc' => $this->faker->text(50)
+            'ma_nqc' => 'NQC' . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
+            'ten_nqc' => $this->faker->word(),
         ];
     }
 }

@@ -10,8 +10,10 @@ class AdvertisementModel extends Model
     
     use HasFactory;
 
+    public $incrementing = false;
     protected $table = 'quangcao';
-
+    protected $primaryKey = 'ma_quang_cao';
+    protected $keyType = 'string';
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = [
         'ma_quang_cao', 
@@ -22,9 +24,13 @@ class AdvertisementModel extends Model
         'link_quang_cao', 
         'trang_thai'
     ];
-
-    // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
+    
+    // Thiết lập quan hệ 1 quảng cáo có nhiều hợp đồng quảng cáo
+    public function advertising_contract()
+    {
+         return $this->hasMany(AdvertisingContractModel::class, 'ma_quang_cao', 'ma_quang_cao');
+    }
 
     public function createAdvertisement($data)
     {
