@@ -15,8 +15,9 @@ class AdvertisementController extends Controller
 
     public function show($id)
     {
-        $advertisement = AdvertisementModel::find($id);
-
+        $advertisement = AdvertisementModel::where('ma_quang_cao', $ma_quang_cao)
+        ->first();
+        
         if (!$advertisement) {
             return response()->json(['message' => 'Advertisement not found'], 404);
         }
@@ -37,7 +38,7 @@ class AdvertisementController extends Controller
             'ngay_huy' => 'required|date',
             'luot_phat' => 'nullable|numeric|min:0',
             'link_quang_cao' => 'nullable|string',
-            'trang_thai' => 'nullable|boolean'
+            'trang_thai' => 'nullable|numeric|between:0,9'
         ]);
 
         $advertisement = AdvertisementModel::create($validated);
@@ -46,7 +47,8 @@ class AdvertisementController extends Controller
 
     public function update(Request $request, $id)
     {
-        $advertisement = AdvertisementModel::find($id);
+        $advertisement = AdvertisementModel::where('ma_quang_cao', $ma_quang_cao)
+        ->first();
 
         if (!$advertisement) {
             return response()->json(['message' => 'Advertisement not found'], 404);
@@ -59,7 +61,7 @@ class AdvertisementController extends Controller
             'ngay_huy' => 'required|date',
             'luot_phat' => 'nullable|numeric|min:0',
             'link_quang_cao' => 'nullable|string',
-            'trang_thai' => 'nullable|boolean'
+            'trang_thai' => 'nullable|numeric'
         ]);
 
         $advertisement->update($validated);
@@ -68,7 +70,8 @@ class AdvertisementController extends Controller
 
     public function destroy($id)
     {
-        $advertisement = AdvertisementModel::find($id);
+        $advertisement = AdvertisementModel::where('ma_quang_cao', $ma_quang_cao)
+        ->first();
 
         if (!$advertisement) {
             return response()->json(['message' => 'Advertisement not found'], 404);

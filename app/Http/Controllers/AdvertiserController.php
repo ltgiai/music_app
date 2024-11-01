@@ -15,7 +15,8 @@ class AdvertiserController extends Controller
 
     public function show($id)
     {
-        $advertiser = AdvertiserModel::find($id);
+        $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
+        ->first();
 
         if (!$advertiser) {
             return response()->json(['message' => 'Advertiser not found'], 404);
@@ -41,7 +42,8 @@ class AdvertiserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $advertiser = AdvertiserModel::find($id);
+        $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
+        ->first();
 
         if (!$advertiser) {
             return response()->json(['message' => 'Advertiser not found'], 404);
@@ -58,7 +60,8 @@ class AdvertiserController extends Controller
 
     public function destroy($id)
     {
-        $advertiser = AdvertiserModel::find($id);
+        $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
+        ->first();
 
         if (!$advertiser) {
             return response()->json(['message' => 'Advertiser not found'], 404);

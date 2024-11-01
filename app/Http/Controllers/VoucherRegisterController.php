@@ -40,7 +40,7 @@ class VoucherRegisterController extends Controller
             'ngay_dang_ky' => 'required|date',
             'ngay_het_han' => 'required|date',
             'gia_goi' => 'required|numeric|min:0',
-            'trang_thai' => 'required|boolean'
+            'trang_thai' => 'required|numeric'
         ]);
 
         $voucher_register = VoucherRegisterModel::create($validated);
@@ -63,7 +63,7 @@ class VoucherRegisterController extends Controller
             'ngay_dang_ky' => 'required|date',
             'ngay_het_han' => 'required|date',
             'gia_goi' => 'required|numeric|min:0',
-            'trang_thai' => 'required|boolean'
+            'trang_thai' => 'required|numeric|between:0,9'
         ]);
 
         $voucher_register->update($validated);

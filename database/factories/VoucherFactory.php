@@ -13,11 +13,11 @@ class VoucherFactory extends Factory
         return [
             'ma_goi' => 'ma_quang_cao' => 'PREMI' . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
             'ten_goi' => $this->faker->word(),
-            'thoi_han' => $this->fake->numberBetween(1, 9),
+            'thoi_han' => 0,
             'gia_goi' => $this->faker->randomFloat(3, 0, 9999999.999),
             'doanh_thu' => $this->faker->randomFloat(3, 0, 9999999.999),
             'mo_ta' => $this->faker->wrord(),
-            'trang_thai' => $this->faker->boolean()
+            'trang_thai' => $this->faker->numberBetween(1, 9)
         ];
     }
 }

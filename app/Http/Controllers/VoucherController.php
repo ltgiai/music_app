@@ -15,7 +15,8 @@ class VoucherController extends Controller
 
     public function show($id)
     {
-        $voucher = VoucherModel::find($id);
+        $voucher = VoucherModel::where('ma_goi', $ma_goi)
+        ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
@@ -37,7 +38,7 @@ class VoucherController extends Controller
             'gia_goi' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
             'mo_ta' => 'required|string',
-            'trang_thai' => 'required|boolean'
+            'trang_thai' => 'required|numeric'
         ]);
 
         $voucher = VoucherModel::create($validated);
@@ -46,7 +47,8 @@ class VoucherController extends Controller
 
     public function update(Request $request, $id)
     {
-        $voucher = VoucherModel::find($id);
+        $voucher = VoucherModel::where('ma_goi', $ma_goi)
+        ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
@@ -59,7 +61,7 @@ class VoucherController extends Controller
             'gia_goi' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
             'mo_ta' => 'required|string',
-            'trang_thai' => 'required|boolean'
+            'trang_thai' => 'required|numeric|between:0,9'
         ]);
 
         $voucher->update($validated);
@@ -68,7 +70,8 @@ class VoucherController extends Controller
 
     public function destroy($id)
     {
-        $voucher = VoucherModel::find($id);
+        $voucher = VoucherModel::where('ma_goi', $ma_goi)
+        ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);

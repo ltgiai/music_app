@@ -18,7 +18,7 @@ class AdvertisementFactory extends Factory
             'ngay_huy' => $this->faker->dateTime(),  // Ngày hủy định dạng dd-MM-yyyy
             'luot_phat' => 0,  // Lượt phát mặc định là số nguyên, ví dụ ban đầu là 0
             'link_quang_cao' => $this->faker->url(),  // Link quảng cáo
-            'trang_thai' =>  $this->faker->boolean()  // Trạng thái quảng cáo (true hoặc false)
+            'trang_thai' => $this->faker->numberBetween(1, 9) 
         ];
     }
 }
