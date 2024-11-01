@@ -9,10 +9,10 @@ class Account extends Model
 {
     
     use HasFactory;
-
+    public $timestamps = false;
     protected $table = 'taikhoan';
     protected $primaryKey = 'ma_tk'; // Khóa chính
-    protected $fillable = ['gmail','mat_khau', 'ngay_tao','trang_thai','ma_phan_quyen'];
+    protected $fillable = ['ma_tk','gmail','mat_khau', 'ngay_tao','trang_thai','ma_phan_quyen'];
 
     public function user()
     {

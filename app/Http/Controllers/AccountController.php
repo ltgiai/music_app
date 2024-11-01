@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\Account;
 class AccountController extends Controller
 {
     public function index() {
         $accounts = Account::with('phan_quyen')->get();
+        // $accounts = Account::all();
+        // dd($accounts);
         return response()->json($accounts);
     }
 
@@ -23,12 +25,13 @@ class AccountController extends Controller
 
     public function store(Request $request){
         $account = Account::create([
-            'ma_tk' => $request->name,  // sau này thì auto tạo tự động mã tk
+            'ma_tk' => $request->ma_tk,  // sau này thì auto tạo tự động mã tk
             'gmail' => $request->gmail,
             'mat_khau' => $request->mat_khau,
             'ngay_tao' => $request->ngay_tao,
             'trang_thai' => $request->trang_thai, // mật định là 1
             'ma_phan_quyen' => $request->ma_phan_quyen,
+            'ma_tk' => $request->ma_tk,
         ]);
 
         $account->user()->create([
