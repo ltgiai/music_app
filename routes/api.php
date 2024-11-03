@@ -32,4 +32,10 @@ Route::prefix('/albums') -> group(function() {
     Route::get('/detail-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'show']); 
     Route::put('/update-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
     Route::delete('/delete-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
+    Route::get('/all-artist-albums/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
+    Route::get('/detail-artist-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
+    Route::post('/like-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
+    Route::post('/like-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
+    Route::get('/admin-search',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
+    Route::get('/artist-search/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
 });
