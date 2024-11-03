@@ -7,7 +7,7 @@ use App\Http\Controllers\DecentralizationController;
 use App\Http\Controllers\FunctionnController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
-
+use App\Http\Controllers\ArtistController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,10 +18,15 @@ use App\Http\Controllers\NotificationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('/artists', [ArtistController::class, 'index']);         // Lấy danh sách nghệ sĩ
+Route::get('/artists/{id}', [ArtistController::class, 'show']);     // Lấy chi tiết nghệ sĩ
+Route::post('/artists', [ArtistController::class, 'store']);        // Thêm nghệ sĩ mới
+Route::put('/artists/{id}', [ArtistController::class, 'update']);   // Cập nhật nghệ sĩ
+Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);// Xóa nghệ sĩ
 
 // Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);
@@ -49,3 +54,4 @@ Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destro
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
+

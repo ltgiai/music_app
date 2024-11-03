@@ -22,17 +22,48 @@ class DecentralizationController extends Controller
         }
     }
 
-    public function store(Request $request)
-    {
-        $decentralization = Decentralization::create([
-            'ma_phan_quyen' => $request->ma_phan_quyen,
-            'ten_quyen_han' => $request->ten_quyen_han,
-            'ngay_tao' => $request->ngay_tao,
-            'tinh_trang' => $request->tinh_trang,
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $decentralization = Decentralization::create([
+    //         'ma_phan_quyen' => $request->ma_phan_quyen,
+    //         'ten_quyen_han' => $request->ten_quyen_han,
+    //         'ngay_tao' => $request->ngay_tao,
+    //         'tinh_trang' => $request->tinh_trang,
+    //     ]);
 
-        return response()->json($decentralization, 201);
+    //     return response()->json($decentralization, 201);
+    // }
+
+    public function store(Request $request)
+{
+    // Retrieve the last created `ma_chuc_nang` with the prefix 'FUNC'
+    $lastDecentralization = Functionn::where('ma_phan_quyen', 'like', 'AUTH%')
+                              ->orderBy('ma_phan_quyen', 'desc')
+                              ->first();
+
+    // Extract the increment part or start at 1 if no previous records exist
+    if ($lastDecentralization) {
+        // Get the last 4 digits, convert to integer, and increment by 1
+        $lastIncrement = (int) substr($lastDecentralization->ma_phan_quyen, -4);
+        $newIncrement = str_pad($lastIncrement + 1, 4, '0', STR_PAD_LEFT);
+    } else {
+        // Start from '0001' if there is no matching record
+        $newIncrement = '0001';
     }
+
+    // Generate the full `ma_chuc_nang` with the new increment
+    $maChucNang = 'AUTH' . $newIncrement;
+
+    // Create the function with the generated `ma_chuc_nang`
+    $decentralization = Decentralization::create([
+        'ma_phan_quyen' => $maChucNang,
+        'ten_quyen_han' => $request->ten_quyen_han,
+        'ngay_tao' => $request->ngay_tao,
+        'tinh_trang' => 1,
+    ]);
+
+    return response()->json($decentralization, 201);
+}
 
     public function update(Request $request, $ma_phan_quyen){
         $decentralization = Decentralization::find($ma_phan_quyen);
