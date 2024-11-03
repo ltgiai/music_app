@@ -49,8 +49,10 @@ class SongModel extends Model
     public function relationships()
     {
         return [
-            'tai_khoan' => $this->belongsTo(AccountModel::class, 'ma_tk', 'ma_tk'),
-            'phieu_rut_tien_artist' => $this->hasMany(ArtistWithdrawalSlipModel::class, 'ma_tk', 'ma_t`k_artist'),
+            'tai_khoan' => $this->belongsTo(Account::class, 'ma_tk', 'ma_tk'),
+            'album' => $this->belongsTo(AlbumModel::class, 'ma_album', 'ma_album'),
+            'phi_luot_nghe' => $this->belongsTo(PayPerStreamModel::class, 'ma_phi_luot_nghe', 'ma_phi'),
+            'phieu_rut_tien_artist' => $this->hasMany(ArtistWithdrawalSlipModel::class, 'ma_tk', 'ma_tk_artist'),
             'bai_hat_subartist' => $this->hasMany(SongSubArtistModel::class, 'ma_tk', 'ma_subartist'),
         ];
     }

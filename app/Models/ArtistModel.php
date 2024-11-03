@@ -13,7 +13,7 @@ class ArtistModel extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['id', 'ma_tk', 'ten_artist', 'anh_dai_dien', 'tong_tien'];
+    protected $fillable = ['ma_tk', 'ten_artist', 'anh_dai_dien', 'tong_tien'];
     public $timestamps = false;
 
     private $ma_tk;
@@ -24,43 +24,24 @@ class ArtistModel extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->id = $attributes['id'] ?? $this->generateCustomId();
         $this->ma_tk = $attributes['ma_tk'] ?? null;
         $this->ten_artist = $attributes['ten_artist'] ?? null;
         $this->anh_dai_dien = $attributes['anh_dai_dien'] ?? null;
         $this->tong_tien = $attributes['tong_tien'] ?? 0;
     }
 
-    private function generateCustomId()
-    {
-        return 'ART' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    }
-
-    public function getId() { return $this->id; }
-    public function getMaTk() { return $this->ma_tk; }
-    public function getTenArtist() { return $this->ten_artist; }
-    public function getAnhDaiDien() { return $this->anh_dai_dien; }
-    public function getTongTien() { return $this->tong_tien; }
-
-    public function setId($id) { $this->id = $id; }
-    public function setMaTk($ma_tk) { $this->ma_tk = $ma_tk; }
-    public function setTenArtist($ten_artist) { $this->ten_artist = $ten_artist; }
-    public function setAnhDaiDien($anh_dai_dien) { $this->anh_dai_dien = $anh_dai_dien; }
-    public function setTongTien($tong_tien) { $this->tong_tien = $tong_tien; }
-
     // Gom các relationships vào một phương thức
     public function relationships()
     {
         return [
-            'tai_khoan' => $this->belongsTo(AccountModel::class, 'ma_tk', 'ma_tk'),
-            'phieu_rut_tien_artist' => $this->hasMany(ArtistWithdrawalSlipModel::class, 'ma_tk', 'ma_t`k_artist'),
+            'tai_khoan' => $this->belongsTo(Account::class, 'ma_tk', 'ma_tk'),
+            'phieu_rut_tien_artist' => $this->hasMany(ArtistWithdrawalSlipModel::class, 'ma_tk', 'ma_tk_artist'),
             'bai_hat_subartist' => $this->hasMany(SongSubArtistModel::class, 'ma_tk', 'ma_subartist'),
         ];
     }
 
     public function addArtist($data)
     {
-        $data['id'] = $data['id'] ?? $this->generateCustomId();
         return self::create($data);
     }
 
