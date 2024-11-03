@@ -13,7 +13,7 @@ class AdvertiserModel extends Model
     protected $table = 'nhadangkyquangcao';
     protected $primaryKey = 'ma_nqc';
     protected $keyType = 'string';
-    protected $fillable = ['ma_nqc', 'ten_nqc'];
+    protected $fillable = ['ma_nqc', 'ten_nqc', 'sdt'];
     public $timestamps = false;
 
     // Thiết lập quan hệ 1 nhà quảng cáo có nhiều hợp đồng quảng cáo
@@ -27,7 +27,8 @@ class AdvertiserModel extends Model
     {
         return self::create([
             'ma_nqc' => $data['ma_nqc'],
-            'ten_nqc' => $data['ten_nqc']
+            'ten_nqc' => $data['ten_nqc'], 
+            'sdt' => $data['sdt']
         ]);
     }
 
@@ -36,7 +37,8 @@ class AdvertiserModel extends Model
     {
         return $this->update([
             'ma_nqc' => $data['ma_nqc'],
-            'ten_nqc' => $data['ten_nqc']
+            'ten_nqc' => $data['ten_nqc'], 
+            'sdt' => $data['sdt']
         ]);
     }
 

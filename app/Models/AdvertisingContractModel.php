@@ -10,9 +10,11 @@ class AdvertisingContractModel extends Model
     use HasFactory;
 
     protected $table = 'hopdongquangcao';
-
+    protected $primaryKey = 'ma_hop_dong';
+    protected $keyType = 'string';
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = [
+    'ma_hop_dong',
      'ma_quang_cao', 
      'ma_npc', 
      'luot_phat', 
@@ -46,6 +48,7 @@ class AdvertisingContractModel extends Model
      public function createAdvertisingContract($data)
      {
          return self::create([
+             'ma_hop_dong' => $data['ma_hop_dong'],
              'ma_quang_cao' => $data['ma_quang_cao'],
              'ma_npc' => $data['ma_npc'],
              'luot_phat' => $data['luot_phat'],
@@ -59,6 +62,7 @@ class AdvertisingContractModel extends Model
      public function updateAdvertisingContract($data)
      {
          return $this->update([
+            'ma_hop_dong' => $data['ma_hop_dong'],
              'ma_quang_cao' => $data['ma_quang_cao'],
              'ma_npc' => $data['ma_npc'],
              'luot_phat' => $data['luot_phat'],

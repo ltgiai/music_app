@@ -15,8 +15,7 @@ class AdvertisingContractController extends Controller
 
     public function show($ma_quang_cao, $ma_nqc)
     {
-        $advertising_contract = AdvertisingContractModel::where('ma_quang_cao', $ma_quang_cao)
-        ->where('ma_nqc', $ma_nqc)
+        $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();
 
         if (!$advertising_contract) {
@@ -35,6 +34,7 @@ class AdvertisingContractController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'ma_hop_dong' => 'required|exists:advertising_contracts,ma_hop_dong',
             'ma_quang_cao' => 'required|exists:advertising_contracts,ma_quang_cao',
             'ma_nqc' => 'required|exists:advertising_contracts,ma_nqc',
             'luot_phat' => 'required|numeric|min:0',
@@ -49,8 +49,7 @@ class AdvertisingContractController extends Controller
 
     public function update(Request $request, $ma_quang_cao, $ma_nqc)
     {
-        $advertising_contract = AdvertisingContractModel::where('ma_quang_cao', $ma_quang_cao)
-        ->where('ma_nqc', $ma_nqc)
+        $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();
 
         if (!$advertising_contract) {
@@ -58,6 +57,7 @@ class AdvertisingContractController extends Controller
         }
 
         $validated = $request->validate([
+            'ma_hop_dong' => 'required|exists:advertising_contracts,ma_hop_dong',
             'ma_quang_cao' => 'required|exists:advertising_contracts,ma_quang_cao',
             'ma_nqc' => 'required|exists:advertising_contracts,ma_nqc',
             'luot_phat' => 'required|numeric|min:0',
@@ -72,8 +72,7 @@ class AdvertisingContractController extends Controller
 
     public function destroy($ma_quang_cao, $ma_nqc)
     {
-        $advertising_contract = AdvertisingContractModel::where('ma_quang_cao', $ma_quang_cao)
-        ->where('ma_nqc', $ma_nqc)
+        $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();
 
         if (!$advertising_contract) {

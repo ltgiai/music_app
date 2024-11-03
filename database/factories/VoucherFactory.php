@@ -11,7 +11,7 @@ class VoucherFactory extends Factory
     public function definition()
     {
         return [
-            'ma_goi' => 'ma_quang_cao' => 'PREMI' . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
+            'ma_goi' => 'ma_quang_cao' => 'PACK' . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
             'ten_goi' => $this->faker->word(),
             'thoi_han' => 0,
             'gia_goi' => $this->faker->randomFloat(3, 0, 9999999.999),

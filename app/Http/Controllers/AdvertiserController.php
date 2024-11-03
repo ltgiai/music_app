@@ -34,6 +34,7 @@ class AdvertiserController extends Controller
         $validated = $request->validate([
             'ma_nqc' => 'required|exists:advertisers,ma_nqc',
             'ten_nqc' => 'required|string|max:50',
+            'sdt' => 'required|string|max:10'
         ]);
 
         $advertiser = AdvertiserModel::create($validated);
@@ -52,6 +53,7 @@ class AdvertiserController extends Controller
         $validated = $request->validate([
             'ma_nqc' => 'required|exists:advertisers,ma_nqc',
             'ten_nqc' => 'required|string|max:50',
+            'sdt' => 'required|string|max:10'
         ]);
 
         $advertiser->update($validated);

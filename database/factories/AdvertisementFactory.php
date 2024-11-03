@@ -12,7 +12,7 @@ class AdvertisementFactory extends Factory
     {
         $date = now()->format('dmY');
         return [
-            'ma_quang_cao' => 'QC' . $date . str_pad($this->faker->unique()->numberBetween(0, 99), 2, '0', STR_PAD_LEFT),
+            'ma_quang_cao' => 'PR' . $date . str_pad($this->faker->unique()->numberBetween(0, 999), 3, '0', STR_PAD_LEFT),
             'ten_quang_cao' => $this->faker->word(),  // Tên quảng cáo (tối đa 50 ký tự)
             'ngay_tao' => $this->faker->dateTime(),  // Ngày tạo định dạng dd-MM-yyyy
             'ngay_huy' => $this->faker->dateTime(),  // Ngày hủy định dạng dd-MM-yyyy

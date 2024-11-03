@@ -14,6 +14,7 @@ class AdvertisingContractFactory extends Factory
     {
         $date = now()->format('dmY');
         return [
+            'ma_hop_dong' => 'CONTRACT'  . $date . str_pad($this->faker->unique()->numberBetween(0, 99), 2, '0', STR_PAD_LEFT),
             'ma_quang_cao' => AdvertisementModel::factory(),
             'ma_nqc' => AdvertisementModel::factory(), 
             'luot_phat' => 0, 
