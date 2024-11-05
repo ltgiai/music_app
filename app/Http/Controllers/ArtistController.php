@@ -2,88 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Artist;
 use App\Models\ArtistModel;
 use Illuminate\Http\Request;
 
 class ArtistController extends Controller
 {
-    // Hiển thị danh sách các nghệ sĩ
-    public function index()
-    {
-        $artists = ArtistModel::with(['relationships.tai_khoan', 
-                                    'relationships.phieu_rut_tien_artist', 
-                                    'relationships.bai_hat_subartist'])->get();
-        return response()->json($artists);
-    }
-
-    // Tạo mới một nghệ sĩ
+    // Chức năng thêm nghệ sĩ
     public function store(Request $request)
     {
-        // Validate dữ liệu
-        $validatedData = $request->validate([
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'ma_tk' => 'required|unique:artist,ma_tk',
             'ten_artist' => 'required|string|max:255',
             'anh_dai_dien' => 'nullable|string',
-            'tong_tien' => 'nullable|numeric',
+            'tong_tien' => 'nullable|numeric'
         ]);
 
-        // Tạo ID mới cho artist trong controller
-        $validatedData['ma_tk'] = $this->generateCustomId();
+        // Tạo nghệ sĩ mới
+        $artist = ArtistModel::create($request->all());
 
-        // Thêm nghệ sĩ mới
-        $artist = (new ArtistModel())->addArtist($validatedData);
-
-        return response()->json($artist, 201); // Trả về HTTP status code 201 (Created)
+        return response()->json(['message' => 'Tạo artist mới thành công', 'artist' => $artist], 201);
     }
 
-    // Hiển thị chi tiết một nghệ sĩ
-    public function show($id)
-    {
-        $artist = ArtistModel::with(['relationships.tai_khoan', 'relationships.phieu_rut_tien_artist', 'relationships.bai_hat_subartist'])
-                             ->find($id);
-        
-        if ($artist) {
-            return response()->json($artist);
-        }
-        
-        return response()->json(['message' => 'Artist not found'], 404);
-    }
-
-    // Cập nhật thông tin một nghệ sĩ
+    // Chức năng sửa thông tin nghệ sĩ
     public function update(Request $request, $id)
     {
+        // Tìm nghệ sĩ theo ID
+        $artist = ArtistModel::findOrFail($id);
+
         // Validate dữ liệu
-        $validatedData = $request->validate([
-            'ma_tk' => 'nullable|string',
-            'ten_artist' => 'nullable|string|max:255',
+        $request->validate([
+            'ten_artist' => 'required|string|max:255',
             'anh_dai_dien' => 'nullable|string',
-            'tong_tien' => 'nullable|numeric',
+            'tong_tien' => 'nullable|numeric'
         ]);
 
-        // Cập nhật nghệ sĩ
-        $artist = (new ArtistModel())->updateArtist($id, $validatedData);
+        // Cập nhật thông tin nghệ sĩ
+        $artist->update($request->all());
 
-        if ($artist) {
-            return response()->json($artist);
-        }
-
-        return response()->json(['message' => 'Artist not found'], 404);
+        return response()->json(['message' => 'Artist updated successfully', 'artist' => $artist]);
     }
 
-    // Xóa một nghệ sĩ
+    // Chức năng xóa nghệ sĩ
     public function destroy($id)
     {
-        $deleted = (new ArtistModel())->deleteArtist($id);
+        // Tìm và xóa nghệ sĩ
+        $artist = ArtistModel::findOrFail($id);
+        $artist->delete();
 
-        if ($deleted) {
-            return response()->json(['message' => 'Artist deleted']);
-        }
-
-        return response()->json(['message' => 'Artist not found'], 404);
-    }
-
-    // Hàm tạo custom ID cho artist
-    private function generateCustomId()
-    {
-        return 'ART' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        return response()->json(['message' => 'Artist deleted successfully']);
     }
 }

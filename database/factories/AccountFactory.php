@@ -1,31 +1,25 @@
 <?php
 
 namespace Database\Factories;
-use App\Models\Account;
-use App\Models\Decentralization;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AccountModel>
- */
+use App\Models\Account;
+use App\Models\AccountModel;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
 class AccountFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    protected $model = Account::class;
+    protected $model = AccountModel::class;
+
     public function definition()
     {
         return [
-            // 'ma_tk' => $this->faker->unique()->regexify('[A-Za-z0-9]{15}'), // Tạo ma_tk ngẫu nhiên
-            'ma_tk' => $this->faker->unique()->bothify('MA###'), // Tạo mã tài khoản duy nhất
-            'gmail' => $this->faker->unique()->safeEmail(), // Tạo email ngẫu nhiên
-            'mat_khau' => $this->faker->text(50), // Mật khẩu mặc định
-            'ngay_tao' => $this->faker->dateTimeBetween('-1 year', 'now'), // Ngày tạo ngẫu nhiên
-            'trang_thai' => $this->faker->boolean(), // Trạng thái ngẫu nhiên
-            'ma_phan_quyen' => $this->faker->randomElement(['PQ1', 'PQ2', 'PQ3']),  // ma_phan_quyen ngẫu nhiên, có thể null
+            'ma_tk' => $this->faker->unique()->numberBetween(1, 1000),  // Tạo mã tài khoản duy nhất
+            'gmail' => $this->faker->unique()->safeEmail(),  // Email giả
+            'mat_khau' => bcrypt('password'),  // Mật khẩu giả đã được mã hóa
+            'ngay_tao' => now(),  // Ngày tạo là thời gian hiện tại
+            'trang_thai' => $this->faker->randomElement([0, 1]),  // Trạng thái ngẫu nhiên (0 hoặc 1)
+            'ma_phanquyen' => $this->faker->numberBetween(1, 5),  // Tạo mã phân quyền từ 1 đến 5
         ];
     }
 }

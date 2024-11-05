@@ -12,7 +12,7 @@ class Account extends Model
 
     protected $table = 'taikhoan';
     protected $primaryKey = 'ma_tk'; // Khóa chính
-    protected $fillable = ['ma_tk','gmail','mat_khau', 'ngay_tao','trang_thai','ma_phan_quyen'];
+    protected $fillable = ['gmail','mat_khau', 'ngay_tao','trang_thai','ma_phan_quyen'];
 
     public function user()
     {
@@ -22,6 +22,7 @@ class Account extends Model
     {
         return $this->hasOne(ArtistModel::class, 'ma_tk');
     }
+
     public function thong_bao()
     {
         return $this->hasMany(Notification::class, 'ma_tk');
