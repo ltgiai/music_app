@@ -9,7 +9,7 @@ class ArtistModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'artist';
+    protected $table = 'artist'; // Bảng nghệ sĩ
 
     public $incrementing = false;
     protected $keyType = 'string';

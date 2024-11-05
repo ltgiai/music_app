@@ -97,3 +97,7 @@ class AlbumModel extends Model
         $this->so_luong_bai_hat = $so_luong_bai_hat;
     }
 }
+    // public function album_tai_khoan() {
+    //     return $this->belongsToMany(AlbumAccountModel::class, 'album_account', 'album_id', 'user_id');
+    // }
+

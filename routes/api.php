@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LikeSongController;
+use App\Http\Controllers\SongCategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
@@ -8,6 +10,10 @@ use App\Http\Controllers\FunctionnController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\GenreController;
+use App\Http\Controllers\GenreSongController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -81,3 +87,9 @@ Route::prefix('/albums') -> group(function() {
     Route::get('/admin-search',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
     Route::get('/artist-search/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
 });
+
+Route::apiResource('comments', CommentController::class);
+Route::apiResource('song-likes', LikeSongController::class);
+Route::apiResource('categories', SongCategoryController::class);
+Route::apiResource('genres', GenreController::class);
+Route::apiResource('genre-songs', GenreSongController::class);

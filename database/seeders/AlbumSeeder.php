@@ -1,14 +1,18 @@
 <?php
 
-namespace Database\Seeders;
+namespace database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\AlbumModel;
+use app\Models\AlbumModel;
 
 class AlbumSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        AlbumModel::factory(5)->create();
+        AlbumModel::factory()->count(50)->create();
     }
 }
