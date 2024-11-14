@@ -18,6 +18,7 @@ use App\Http\Controllers\AdvertisingContractController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\VoucherRegisterController;
+use App\Http\Controllers\AuthController;
 
 // Route SongController
 Route::prefix('songs')->group(function () {
@@ -71,13 +72,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
-
-// Route::prefix('albums')->group(function () {
-//     Route::get('/', [App\Http\Controllers\AlbumController::class, 'index']);  chua sua lai nha
-// });
-
+// Rote Album
 Route::prefix('/albums') -> group(function() {
     Route::get('/',[App\Http\Controllers\AlbumController::class, 'index']); 
     Route::post('/',[App\Http\Controllers\AlbumController::class, 'store']);
@@ -91,12 +86,6 @@ Route::prefix('/albums') -> group(function() {
     Route::get('/search/admin',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
     Route::get('/search/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
 }); 
-
-Route::apiResource('comments', CommentController::class);
-Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('categories', SongCategoryController::class);
-Route::apiResource('genres', GenreController::class);
-Route::apiResource('genre-songs', GenreSongController::class);
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
@@ -139,20 +128,6 @@ Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{id}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{id}', [FunctionnController::class, 'destroy']);
 
-use App\Http\Controllers\AuthController;
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -167,6 +142,7 @@ Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{ma_tk}', [UserController::class, 'show']);
 Route::put('/users/{ma_tk}', [UserController::class, 'update']);
+
 // Route DecentralizationController
 Route::get('/decentralizations', [DecentralizationController::class, 'index']);
 Route::get('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'show']);
@@ -174,14 +150,36 @@ Route::post('/decentralizations', [DecentralizationController::class, 'store']);
 Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
 Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
 Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
+
 // Route FunctionController
 Route::get('/functionns', [FunctionnController::class, 'index']);
 Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
 Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
+
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
 
+
+Route::apiResource('comments', CommentController::class);
+Route::apiResource('song-likes', LikeSongController::class);
+Route::apiResource('categories', SongCategoryController::class);
+Route::apiResource('genres', GenreController::class);
+Route::apiResource('genre-songs', GenreSongController::class);
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

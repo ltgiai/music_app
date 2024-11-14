@@ -22,14 +22,33 @@ class FunctionnController extends Controller
         }
     }
     public function store(Request $request)
-    {
-        $functionn = Functionn::create([
-            'ma_chuc_nang' => $request->ma_chuc_nang,
-            'ten_chuc_nang' => $request->ten_chuc_nang,
-        ]);
+{
+    // Retrieve the last created `ma_chuc_nang` with the prefix 'FUNC'
+    $lastFunctionn = Functionn::where('ma_chuc_nang', 'like', 'FUNC%')
+                              ->orderBy('ma_chuc_nang', 'desc')
+                              ->first();
 
-        return response()->json($functionn, 201);
+    // Extract the increment part or start at 1 if no previous records exist
+    if ($lastFunctionn) {
+        // Get the last 4 digits, convert to integer, and increment by 1
+        $lastIncrement = (int) substr($lastFunctionn->ma_chuc_nang, -4);
+        $newIncrement = str_pad($lastIncrement + 1, 4, '0', STR_PAD_LEFT);
+    } else {
+        // Start from '0001' if there is no matching record
+        $newIncrement = '0001';
     }
+
+    // Generate the full `ma_chuc_nang` with the new increment
+    $maChucNang = 'FUNC' . $newIncrement;
+
+    // Create the function with the generated `ma_chuc_nang`
+    $functionn = Functionn::create([
+        'ma_chuc_nang' => $maChucNang,
+        'ten_chuc_nang' => $request->ten_chuc_nang,
+    ]);
+
+    return response()->json($functionn, 201);
+}
 
     public function update(Request $request, $ma_chuc_nang){
         $functionn = Functionn::find($ma_chuc_nang);
