@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AlbumModel;
-// use App\Models\SongModel;
+use App\Models\SongModel;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,11 +24,11 @@ class AlbumController extends Controller
     //admin muon xem toan bo danh sach album
     public function index()
     {
-        $albums = DB::table('albums')
-            ->join('album_tai_khoan', 'albums.ma_album', '=', 'album_tai_khoan.ma_album')
-            ->join('tai_khoan', 'album_tai_khoan.ma_tk', '=', 'tai_khoan.ma_tk')
-            ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
-            ->select('albums.*', 'artists.ten_artist')
+        $albums = DB::table('album') // clm du chu s
+            // ->join('album_tai_khoan', 'albums.ma_album', '=', 'album_tai_khoan.ma_album')
+            // ->join('tai_khoan', 'album_tai_khoan.ma_tk', '=', 'tai_khoan.ma_tk')
+            // ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
+            // ->select('albums.*', 'artists.ten_artist')
             ->get();
 
         if ($albums->isEmpty()) {
@@ -47,7 +47,7 @@ class AlbumController extends Controller
                         'luot_yeu_thich' => $album->luot_yeu_thich,
                         'trang_thai' => $album->trang_thai,
                         'so_luong_bai_hat' => $album->so_luong_bai_hat,
-                        'nguoi_so_huu' => $album->ten_artist,
+                        // 'nguoi_so_huu' => $album->ten_artist,
                     ];
                 }),
                 'message' => 'Get all albums successfully',
@@ -56,14 +56,19 @@ class AlbumController extends Controller
         }
     }
 
-    // Lưu trữ dữ liệu
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'ten_album' => 'required',
-            'hinh_anh' => 'required',
+            'ten_album' => 'required|string|max:255',
+            'hinh_anh' => 'required|url',
+            'songs' => 'required|array',
+            'songs.*.ten_bai_hat' => 'required|string|max:255',
+            'songs.*.thoi_luong' => 'required|integer|min:1',
+            'songs.*.link_bai_hat' => 'required|url',
+            'songs.*.ma_artist' => 'required|integer|exists:artists,id',
+            'songs.*.ma_phi_luot_nghe' => 'required|integer|exists:phi_luot_nghe,id',
         ]);
-        // ?? ngafy tao nho lam nha , trang thai mac dinh, so bai hat thi cu truy van di 
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -74,14 +79,13 @@ class AlbumController extends Controller
         }
 
         try {
-            // Tạo mã không trùng lắp với csdl
             do {
                 $date = now()->format('dmY');
                 $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
                 $ma_album = 'ALBUM' . $date . $uniqueNumber;
             } while (AlbumModel::where('ma_album', $ma_album)->exists());
 
-            AlbumModel::create([
+            $album = AlbumModel::create([
                 'ma_album' => $ma_album,
                 'ten_album' => $request->ten_album,
                 'ngay_tao' => now(),
@@ -90,6 +94,27 @@ class AlbumController extends Controller
                 'trang_thai' => 2,
                 'so_luong_bai_hat' => 0,
             ]);
+
+            if ($request->has('songs')) {
+                foreach ($request->songs as $song) {
+                    SongModel::create([
+                        'ma_bai_hat' => 'SONG' . $date . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT),
+                        'ten_bai_hat' => $song['ten_bai_hat'],
+                        'thoi_luong' => $song['thoi_luong'],
+                        'trang_thai' => 2,
+                        'luot_nghe' => 0,
+                        'hinh_anh' => null,
+                        'album' => $ma_album,
+                        'link_bai_hat' => $song['link_bai_hat'],
+                        'ngay_phat_hanh' => now(),
+                        'ma_artist' => $song['ma_artist'],
+                        'ma_phi_luot_nghe' => $song['ma_phi_luot_nghe'],
+                        'doanh_thu' => 0,
+                    ]);
+                }
+                $album->so_luong_bai_hat = count($request->songs);
+                $album->save();
+            }
 
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -104,76 +129,8 @@ class AlbumController extends Controller
         }
     }
 
-    // chưa có clone về lại nên cmt tạm
-    // public function store(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'ten_album' => 'required',
-    //         'hinh_anh' => 'required',
-    //         'songs' => 'array', // Kiểm tra xem có danh sách bài hát không
-    //         'songs.*.ten_bai_hat' => 'required|string',
-    //         'songs.*.thoi_luong' => 'required|integer',
-    //         'songs.*.link_bai_hat' => 'required|string',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'status' => Response::HTTP_BAD_REQUEST,
-    //             'success' => false,
-    //             'message' => 'Validation error',
-    //             'errors' => $validator->errors()
-    //         ], Response::HTTP_BAD_REQUEST);
-    //     }
-
-    //     try {
-    //         do {
-    //             $date = now()->format('dmY');
-    //             $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-    //             $ma_album = 'ALBUM' . $date . $uniqueNumber;
-    //         } while (AlbumModel::where('ma_album', $ma_album)->exists());
-
-    //         $album = AlbumModel::create([
-    //             'ma_album' => $ma_album,
-    //             'ten_album' => $request->ten_album,
-    //             'ngay_tao' => now(),
-    //             'hinh_anh' => $request->hinh_anh,
-    //             'luot_yeu_thich' => 0,
-    //             'trang_thai' => 2,
-    //             'so_luong_bai_hat' => 0,
-    //         ]);
-
-    //         if ($request->has('songs')) {
-    //             foreach ($request->songs as $song) {
-    //                 SongModel::create([
-    //                     'ma_bai_hat' => 'SONG' . $date . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT),
-    //                     'ten_bai_hat' => $song['ten_bai_hat'],
-    //                     'thoi_luong' => $song['thoi_luong'],
-    //                     'link_bai_hat' => $song['link_bai_hat'],
-    //                     'ma_album' => $ma_album,
-    //                     'ngay_phat_hanh' => now(),
-    //                     'trang_thai' => 1,
-    //                     // Thêm các trường khác của bài hát nếu cần
-    //                 ]);
-    //             }
-    //             $album->so_luong_bai_hat = count($request->songs);
-    //             $album->save();
-    //         }
-
-    //         return response()->json([
-    //             'status' => Response::HTTP_OK,
-    //             'message' => 'Album created successfully',
-    //         ], Response::HTTP_OK);
-    //     } catch (\Exception $e) {
-    //         Log::error('Album created failed: ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-    //             'message' => 'Album created failed'
-    //         ], Response::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
     public function show($ma_album)
-    { // ???
+    { 
         $account = AlbumModel::where('ma_album', $ma_album)->first();
         if ($account) {
             return response()->json([
@@ -244,7 +201,7 @@ class AlbumController extends Controller
         }
     }
 
-    public function destroy($ma_album) // co nen la vay ko 
+    public function destroy($ma_album) // set trang thai ve 0
     {
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -468,7 +425,7 @@ class AlbumController extends Controller
         }
     }
 
-    // chưa có clone về lại nên cmt tạm
+    // cmt tạm để xem xét nghiệp vụ
     // public function addSongsToAlbum(Request $request, $ma_album)
     // {
     //     $validator = Validator::make($request->all(), [
