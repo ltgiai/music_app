@@ -20,12 +20,10 @@ class CommentModel extends Model
         'ma_bai_hat',
         'noi_dung',
         'ngay_tao',
-        'ngay_huy',
-        'ngay_chinh_sua',
     ];
 
     const CREATED_AT = 'ngay_tao';
-    const UPDATED_AT = 'ngay_chinh_sua';
+
 
     public function user()
     {

@@ -16,7 +16,6 @@ class GenreController extends Controller
     {
         $validatedData = $request->validate([
             'ten_the_loai' => 'required|string|max:255',
-            'ma_chung_loai' => 'required|integer|exists:chung_loai,ma_chung_loai', 
         ]);
 
         $genre = GenreModel::create($validatedData);
@@ -36,7 +35,6 @@ class GenreController extends Controller
 
         $validatedData = $request->validate([
             'ten_the_loai' => 'string|max:255',
-            'ma_chung_loai' => 'integer|exists:song_categories,ma_chung_loai',
         ]);
 
         $genre->update($validatedData);
