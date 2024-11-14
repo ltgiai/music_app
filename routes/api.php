@@ -8,6 +8,7 @@ use App\Http\Controllers\FunctionnController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,21 +22,19 @@ use App\Http\Controllers\ArtistController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/artists', [ArtistController::class, 'index']);         // Lấy danh sách nghệ sĩ
-Route::get('/artists/{id}', [ArtistController::class, 'show']);     // Lấy chi tiết nghệ sĩ
-Route::post('/artists', [ArtistController::class, 'store']);        // Thêm nghệ sĩ mới
-Route::put('/artists/{id}', [ArtistController::class, 'update']);   // Cập nhật nghệ sĩ
-Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);// Xóa nghệ sĩ
-
-// Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
 Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
 Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
+
 // Route UserController
 Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{ma_tk}', [UserController::class, 'show']);
 Route::put('/users/{ma_tk}', [UserController::class, 'update']);
 // Route DecentralizationController
 Route::get('/decentralizations', [DecentralizationController::class, 'index']);

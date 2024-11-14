@@ -11,6 +11,15 @@ class UserController extends Controller
     public function index() {
         return response()->json(User::all());
     }
+    public function show($ma_tk) {
+        $user = User::with('tai_khoan')->find($ma_tk);
+        if ($user) {
+            return response()->json($user);
+        } else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
     public function update(Request $request, $ma_tk){
         $user = User::find($ma_tk);
         if ($user) {

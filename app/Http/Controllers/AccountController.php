@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Account;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 class AccountController extends Controller
 {
     public function index() {
@@ -15,7 +17,7 @@ class AccountController extends Controller
     }
 
     public function show($ma_tk) {
-        $account = Account::with('phan_quyen')->find($ma_tk);
+        $account = Account::with(['phan_quyen','user'])->find($ma_tk);
         if ($account) {
             return response()->json($account);
         } else {
@@ -23,58 +25,34 @@ class AccountController extends Controller
         }
     }
 
-    // public function store(Request $request){
-    //     $account = Account::create([
-    //         'ma_tk' => $request->ma_tk,  // sau này thì auto tạo tự động mã tk
-    //         'gmail' => $request->gmail,
-    //         'mat_khau' => $request->mat_khau,
-    //         'ngay_tao' => $request->ngay_tao,
-    //         'trang_thai' => $request->trang_thai, // mật định là 1
-    //         'ma_phan_quyen' => $request->ma_phan_quyen,
-    //         'ma_tk' => $request->ma_tk,
-    //     ]);
-
-    //     $account->user()->create([
-    //         'ten_user' => $request->ten_user,
-    //         'anh_dai_dien' => null,
-    //     ]);
-
-    //     return response()->json($account, 201);
-    // }
     public function store(Request $request){
-        // Get the date part in ddmmyy format
-        $datePart = now()->format('dmy');
-    
-        // Retrieve the last created `ma_tk` with a matching date prefix, if any
-        $lastAccount = Account::where('ma_tk', 'like', 'ACC' . $datePart . '%')
-                              ->orderBy('ma_tk', 'desc')
-                              ->first();
-    
-        // Extract the increment part or start at 1 if none exists
-        if ($lastAccount) {
-            // Get the last 4 digits and increment by 1
-            $lastIncrement = (int) substr($lastAccount->ma_tk, -4);
-            $newIncrement = str_pad($lastIncrement + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            // Start from 0001 if no matching date prefix exists
-            $newIncrement = '0001';
-        }
-    
-        // Generate the full `ma_tk` without dashes
-        $maTk = 'ACC' . $datePart . $newIncrement;
+        $lastMaTk = DB::table('tai_khoan')->orderBy('ma_tk', 'desc')->first();
+
+        // Tách phần ngày tháng ra khỏi ma_tk
+        $datePart = date('dmY');  // ddmmyyyy
+        
+        // Tạo số tự động (xxxx) dựa trên ma_tk cuối cùng
+        $lastNumber = $lastMaTk ? (int)substr($lastMaTk->ma_tk, -4) : 0;
+        $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+        // Tạo ma_tk mới
+        // return $prefix . $datePart . $newNumber;
+        $maTk = 'ACC' . $datePart . $newNumber;
     
         // Create the account
         $account = Account::create([
             'ma_tk' => $maTk,
-            'gmail' => $request->gmail,
-            'mat_khau' => $request->mat_khau,
-            'ngay_tao' => $request->ngay_tao,
-            'trang_thai' => $request->trang_thai ?? 1, // default to 1 if not provided
-            'ma_phan_quyen' => $request->ma_phan_quyen,
+            'token' => null,
+            'email' => $request->email,
+            'mat_khau' => $request->password,
+            'ngay_tao' => now(),
+            'trang_thai' =>  1, // default to 1 if not provided
+            'ma_phan_quyen' => 'AUTH0003',
         ]);
     
         // Create the associated user
-        $account->user()->create([
+        $user = User::create([
+            'ma_tk' => $maTk,
             'ten_user' => $request->ten_user,
             'anh_dai_dien' => null,
         ]);

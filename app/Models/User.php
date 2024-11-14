@@ -11,8 +11,8 @@ class User extends Model
     public $timestamps = false;
     protected $table = 'user';
     protected $primaryKey = 'ma_tk';
-    protected $fillable = ['ten_user','anh_dai_dien'];
-    public function taikhoan()
+    protected $fillable = ['ma_tk','ten_user','anh_dai_dien'];
+    public function tai_khoan()
     {
         return $this->belongsTo(Account::class, 'ma_tk');
     }
