@@ -12,6 +12,7 @@ class UserController extends Authenticate
     public function index() {
         return response()->json(User::all());
     }
+    
     public function update(Request $request, $ma_tk){
         $user = User::find($ma_tk);
         if ($user) {

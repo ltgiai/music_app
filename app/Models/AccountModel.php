@@ -10,7 +10,7 @@ class AccountModel extends Model
     
     use HasFactory;
 
-    protected $table = 'taikhoan';
+    protected $table = 'tai_khoan';
 
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = ['ma_tk', 'gmail', 'mat_khau', 'ngay_tao', 'trang_thai', 'ma_phanquyen'];
