@@ -12,7 +12,7 @@ class VoucherRegisterModel extends Model
     protected $table = 'dang_ky_premium';
 
     // Cho phép các cột có thể được gán giá trị hàng loạt
-    protected $fillable = ['ma_tk', 'ma_goi', 'ngay_dang_ky', 'ngay_het_han', 'gia_goi', 'trang_thai'];
+    protected $fillable = ['ma_tk', 'ma_goi', 'ngay_dang_ky', 'ngay_het_han', 'tong_tien_thanh_toan', 'trang_thai'];
 
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
@@ -45,7 +45,7 @@ class VoucherRegisterModel extends Model
             'ma_goi' => $data['ma_goi'],
             'ngay_dang_ky' => $data['ngay_dang_ky'],
             'ngay_het_han' => $data['ngay_het_han'],
-            'gia_goi' => $data['gia_goi'],
+            'tong_tien_thanh_toan' => $data['tong_tien_thanh_toan'],
             'trang_thai' => $data['trang_thai']
         ]);
     }
@@ -58,7 +58,7 @@ class VoucherRegisterModel extends Model
             'ma_goi' => $data['ma_goi'],
             'ngay_dang_ky' => $data['ngay_dang_ky'],
             'ngay_het_han' => $data['ngay_het_han'],
-            'gia_goi' => $data['gia_goi'],
+            'tong_tien_thanh_toan' => $data['tong_tien_thanh_toan'],
             'trang_thai' => $data['trang_thai']
         ]);
     }

@@ -17,7 +17,7 @@ class VoucherRegisterFactory extends Factory
             'ma_goi' => VoucherModel::factory(),
             'ngay_dang_ky' => $this->faker->dateTime(),
             'ngay_het_han' => $this->faker->dateTime(),
-            'gia_goi' => $this->faker->randomFloat(3, 0, 9999999.999),
+            'tong_tien_thanh_toan' => $this->faker->randomFloat(3, 0, 9999999.999),
             'trang_thai' => $this->faker->numberBetween(1, 9)
         ];
     }

@@ -19,10 +19,10 @@ class AdvertisementModel extends Model
         'ma_quang_cao', 
         'ten_quang_cao', 
         'ngay_tao', 
-        'ngay_huy', 
-        'luot_phat', 
-        'link_quang_cao', 
-        'trang_thai'
+        'luot_phat_tich_luy', 
+        'hinh_anh', 
+        'trang_thai', 
+        'ma_nqc'
     ];
     public $timestamps = false;
     
@@ -38,22 +38,23 @@ class AdvertisementModel extends Model
             'ma_quang_cao' => $data['ma_quang_cao'],
             'ten_quang_cao' => $data['ten_quang_cao'],
             'ngay_tao' => $data['ngay_tao'],
-            'ngay_huy' => $data['ngay_huy'],
-            'luot_phat' => $data['luot_phat'],
-            'link_quang_cao' => $data['link_quang_cao'],
-            'trang_thai' => $data['trang_thai']
+            'luot_phat_tich_luy' => $data['luot_phat_tich_luy'],
+            'hinh_anh' => $data['hinh_anh'],
+            'trang_thai' => $data['trang_thai'],
+            'ma_nqc' => $data['ma_nqc']
         ]);
     }
 
     public function updateAdvertisement($data)
     {
         return $this->update([
+            'ma_quang_cao' => $data['ma_quang_cao'],
             'ten_quang_cao' => $data['ten_quang_cao'],
             'ngay_tao' => $data['ngay_tao'],
-            'ngay_huy' => $data['ngay_huy'],
-            'luot_phat' => $data['luot_phat'],
-            'link_quang_cao' => $data['link_quang_cao'],
-            'trang_thai' => $data['trang_thai']
+            'luot_phat_tich_luy' => $data['luot_phat_tich_luy'],
+            'hinh_anh' => $data['hinh_anh'],
+            'trang_thai' => $data['trang_thai'],
+            'ma_nqc' => $data['ma_nqc']
         ]);
     }
 

@@ -62,7 +62,7 @@ class VoucherRegisterController extends Controller
             'ma_goi' => 'required|exists:vouchers,ma_goi',
             'ngay_dang_ky' => 'required|date',
             'ngay_het_han' => 'required|date',
-            'gia_goi' => 'required|numeric|min:0',
+            'tong_tien_thanh_toan' => 'required|numeric|min:0',
             'trang_thai' => 'required|numeric|between:0,9'
         ]);
 
