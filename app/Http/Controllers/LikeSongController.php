@@ -15,8 +15,8 @@ class LikeSongController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required|integer',
-            'song_id' => 'required|integer',
+            'ma_tk' => 'required|integer',
+            'ma_bai_hat' => 'required|integer',
         ]);
 
         $songLike = LikeSongModel::create($validatedData);
@@ -35,8 +35,8 @@ class LikeSongController extends Controller
         if (!$songLike) return response()->json(['message' => 'Not found'], 404);
 
         $validatedData = $request->validate([
-            'user_id' => 'integer',
-            'song_id' => 'integer',
+            'ma_tk' => 'integer',
+            'ma_bai_hat' => 'integer',
         ]);
 
         $songLike->update($validatedData);

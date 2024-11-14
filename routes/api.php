@@ -26,6 +26,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('comments', CommentController::class);
 Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('categories', SongCategoryController::class);
 Route::apiResource('genres', GenreController::class);
 Route::apiResource('genre-songs', GenreSongController::class);

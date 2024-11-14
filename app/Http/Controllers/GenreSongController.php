@@ -15,8 +15,8 @@ class GenreSongController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'genre_id' => 'required|integer',
-            'song_id' => 'required|integer',
+            'ma_the_loai' => 'required|integer',
+            'ma_bai_hat' => 'required|integer',
         ]);
 
         $genreSong = GenreSongModel::create($validatedData);
@@ -35,8 +35,8 @@ class GenreSongController extends Controller
         if (!$genreSong) return response()->json(['message' => 'Not found'], 404);
 
         $validatedData = $request->validate([
-            'genre_id' => 'integer',
-            'song_id' => 'integer',
+            'ma_the_loai' => 'integer',
+            'ma_bai_hat' => 'integer',
         ]);
 
         $genreSong->update($validatedData);

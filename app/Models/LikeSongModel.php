@@ -10,12 +10,13 @@ class LikeSongModel extends Model
     use HasFactory;
 
     protected $table = 'luot_thich_bai_hat';
+    public $timestamps = false;
+
 
     protected $fillable = [
         'ma_tk',
         'ma_bai_hat',
-        'ngay_tao',
-        'ngay_huy',
+        'ngay_thich',
     ];
 
     public function user()
