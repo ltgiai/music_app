@@ -163,12 +163,25 @@ Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
 
+// Route CommentController
+Route::get('/comments', [CommentController::class, 'index']);
+Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
+Route::post('/comment', [CommentController::class, 'store']);
 
-Route::apiResource('comments', CommentController::class);
+// Route GenreController
+Route::get('/genres', [GenreController::class, 'index']);
+Route::get('/genre/{ma_tb}', [GenreController::class, 'show']);
+Route::post('/genre', [GenreController::class, 'store']);
+
+// Route LikeSongController
+// Route GenreSongController
+
 Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('categories', SongCategoryController::class);
-Route::apiResource('genres', GenreController::class);
 Route::apiResource('genre-songs', GenreSongController::class);
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -180,13 +193,3 @@ Route::apiResource('genre-songs', GenreSongController::class);
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-
-Route::apiResource('comments', CommentController::class);
-Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('genres', GenreController::class);
-Route::apiResource('genre-songs', GenreSongController::class);
