@@ -5,29 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommentModel extends Model
+class GenreSongModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'binh_luan'; 
-
-    protected $primaryKey = 'ma_comment'; 
-
-    public $timestamps = false; 
+    protected $table = 'theloai_baihat';
+    public $timestamps = false;
 
     protected $fillable = [
-        'ma_tk',
         'ma_bai_hat',
-        'noi_dung',
-        'ngay_tao',
+        'ma_the_loai',
     ];
 
-    const CREATED_AT = 'ngay_tao';
-
-
-    public function user()
+    public function genre()
     {
-        return $this->belongsTo(User::class, 'ma_tk');
+        return $this->belongsTo(GenreModel::class, 'ma_the_loai');
     }
 
     public function song()

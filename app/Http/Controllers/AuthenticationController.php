@@ -19,6 +19,6 @@ class AuthenticationModel extends Model
     // Thiết lập quan hệ 1 phân quyền có 1 tài khoản
     public function account()
     {
-        return $this->hasOne(AccountModel::class, 'ma_phanquyen', 'ma_phanquyen');
+        return $this->hasOne(Account::class, 'ma_phanquyen', 'ma_phanquyen');
     }
 }

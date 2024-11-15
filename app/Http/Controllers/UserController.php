@@ -1,45 +1,36 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
 
-class User extends Authenticatable
+class UserController extends Controller
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    public function index() {
+        return response()->json(User::all());
+    }
+    public function show($ma_tk) {
+        $user = User::with('tai_khoan')->find($ma_tk);
+        if ($user) {
+            return response()->json($user);
+        } else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    public function update(Request $request, $ma_tk){
+        $user = User::find($ma_tk);
+        if ($user) {
+            $user->update([
+            'ten_user' => $request->ten_user,
+            'anh_dai_dien' => $request->anh_dai_dien,
+            ]);
+            return response()->json($user);
+        } else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
 }
