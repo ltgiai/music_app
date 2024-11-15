@@ -54,7 +54,7 @@ class AccountController extends Controller
         $user = User::create([
             'ma_tk' => $maTk,
             'ten_user' => $request->ten_user,
-            'anh_dai_dien' => null,
+            'anh_dai_dien' => $request->avatar,
         ]);
     
         return response()->json($account, 201);
