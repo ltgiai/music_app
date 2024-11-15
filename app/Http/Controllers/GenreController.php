@@ -17,6 +17,16 @@ class GenreController extends Controller
         $validatedData = $request->validate([
             'ten_the_loai' => 'required|string|max:255',
         ]);
+        $latestComment = GenreModel::orderBy('ma_the_loai', 'desc')->first();
+        if ($latestComment) {
+            $lastIdNumber = (int) substr($latestComment->ma_the_loai, 2);
+            $newIdNumber = $lastIdNumber + 1;
+            $newId = 'TL' . str_pad($newIdNumber, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newId = 'TL0001';
+        }
+
+        $validatedData['ma_the_loai'] = $newId;
 
         $genre = GenreModel::create($validatedData);
         return response()->json($genre, 201);

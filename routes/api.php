@@ -24,7 +24,33 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::apiResource('comments', CommentController::class);
-Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('genres', GenreController::class);
-Route::apiResource('genre-songs', GenreSongController::class);
+// Route::apiResource('comments', CommentController::class);
+// Route::apiResource('song-likes', LikeSongController::class);
+// Route::apiResource('genres', GenreController::class);
+// Route::apiResource('genre-songs', GenreSongController::class);
+
+// Route CommentController
+Route::get('/comments', [CommentController::class, 'index']);
+Route::get('/comments/{ma_bl}', [CommentController::class, 'show']);
+Route::post('/comments', [CommentController::class, 'store']);
+Route::put('/comments/{ma_bl}', [CommentController::class, 'update']);
+Route::delete('/comments/{ma_bl}', [CommentController::class, 'destroy']);
+
+// Route GenreController
+Route::get('/genres', [GenreController::class, 'index']);
+Route::get('/genres/{ma_tl}', [GenreController::class, 'show']);
+Route::post('/genres', [GenreController::class, 'store']);
+
+// Route LikeSongController
+Route::get('/song-likes', [LikeSongController::class, 'index']);
+Route::get('/song-likes/{id}', [LikeSongController::class, 'show']);
+Route::post('/song-likes', [LikeSongController::class, 'store']);
+Route::put('/song-likes/{id}', [LikeSongController::class, 'update']);
+Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
+
+// Route GenreSongController
+Route::get('/genre-songs', [GenreSongController::class, 'index']);
+Route::get('/genre-songs/{id}', [GenreSongController::class, 'show']);
+Route::post('/genre-songs', [GenreSongController::class, 'store']);
+Route::put('/genre-songs/{id}', [GenreSongController::class, 'update']);
+Route::delete('/genre-songs/{id}', [GenreSongController::class, 'destroy']);
