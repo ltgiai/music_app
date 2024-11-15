@@ -9,7 +9,7 @@ class AdvertisingContractModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'hopdongquangcao';
+    protected $table = 'hop_dong_quang_cao';
     protected $primaryKey = 'ma_hop_dong';
     protected $keyType = 'string';
     // Cho phép các cột có thể được gán giá trị hàng loạt

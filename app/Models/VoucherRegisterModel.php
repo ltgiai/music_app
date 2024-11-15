@@ -22,7 +22,7 @@ class VoucherRegisterModel extends Model
         return [
             'voucher' => $this->voucher(),
             'account' => $this->account(),
-        ]
+        ];
     }
 
     // Thiết lập quan hệ 1 voucher_register thuộc về 1 voucher
@@ -34,7 +34,7 @@ class VoucherRegisterModel extends Model
     // Thiết lập quan hệ 1 voucher_register thuộc về 1 account
     public function account()
     {
-        return $this->belongsTo(AccountModel::class, 'ma_tk', 'ma_tk');
+        return $this->belongsTo(Account::class, 'ma_tk', 'ma_tk');
     }
 
     // Phương thức thêm voucher_register
