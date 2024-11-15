@@ -18,7 +18,8 @@ return new class extends Migration
             $table->dateTime('ngay_tao')->nullable(); // `ngay_tao` - datetime, nullable
             $table->tinyInteger('trang_thai')->nullable(); // `trang_thai` - tinyint(1), nullable
             $table->string('ma_phan_quyen', 7)->nullable(); // `ma_phanquyen` - varchar(7), nullable
-            $table->foreign('ma_phan_quyen')->references('ma_phan_quyen')->on('phan_quyen')->onDelete('cascade'); // Optional: Adds created_at and updated_at
+            $table->foreign('ma_phan_quyen')->references('ma_phan_quyen')->on('phan_quyen')->onDelete('cascade');
+            $table->timestamps(); // Optional: Adds created_at and updated_at
         });
     }
 

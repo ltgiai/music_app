@@ -24,31 +24,23 @@ class PlaylistModel extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->id = $attributes['id'] ?? $this->generateCustomId();
+        $this->ma_playlist = $attributes['ma_playlist'] ?? null;
+        $this->ten_playlist = $attributes['ten_playlist'] ?? null;
         $this->ma_tk = $attributes['ma_tk'] ?? null;
-        $this->ten_artist = $attributes['ten_artist'] ?? null;
-        $this->anh_dai_dien = $attributes['anh_dai_dien'] ?? null;
-        $this->tong_tien = $attributes['tong_tien'] ?? 0;
-    }
-
-    private function generateCustomId()
-    {
-        return 'PL' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $this->so_luong_bai_hat = $attributes['so_luong_bai_hat'] ?? 0;
     }
 
     // Gom các relationships vào một phương thức
     public function relationships()
     {
         return [
-            'tai_khoan' => $this->belongsTo(AccountModel::class, 'ma_tk', 'ma_tk'),
-            'phieu_rut_tien_artist' => $this->hasMany(ArtistWithdrawalSlipModel::class, 'ma_tk', 'ma_t`k_artist'),
-            'bai_hat_subartist' => $this->hasMany(SongSubArtistModel::class, 'ma_tk', 'ma_subartist'),
+            'tai_khoan' => $this->belongsTo(Account::class, 'ma_tk', 'ma_tk'),
+            // 'playlist_baihat' => $this->hasMany(Song)
         ];
     }
 
     public function addPlaylist($data)
     {
-        $data['id'] = $data['id'] ?? $this->generateCustomId();
         return self::create($data);
     }
 

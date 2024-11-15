@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AlbumAccountModel extends Model
 {
+    use HasFactory;
 
     protected $table = 'album_tai_khoan';
     public $timestamps = false;

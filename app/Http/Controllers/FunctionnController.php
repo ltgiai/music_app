@@ -16,7 +16,7 @@ class FunctionnController extends Controller
         $functionn = Functionn::find($ma_chuc_nang);
 
         if ($functionn) {
-            return response()->json($decentfunctionnralization);
+            return response()->json();
         } else {
             return response()->json(['message' => 'Functionn not found'], 404);
         }
