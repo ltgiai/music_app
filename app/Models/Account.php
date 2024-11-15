@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
-    
+
     use HasFactory;
 
-    protected $table = 'taikhoan';
+    protected $table = 'tai_khoan';
     protected $primaryKey = 'ma_tk'; // Khóa chính
-    protected $fillable = ['gmail','mat_khau', 'ngay_tao','trang_thai','ma_phan_quyen'];
+    protected $fillable = ['gmail', 'mat_khau', 'ngay_tao', 'trang_thai', 'ma_phan_quyen'];
 
     public function user()
     {
