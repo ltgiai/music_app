@@ -11,7 +11,7 @@ class VoucherModel extends Model
     use HasFactory;
 
     public $incrementing = false;
-    protected $table = 'goipremium';
+    protected $table = 'goi_premium';
     protected $primaryKey = 'ma_goi';
     protected $keyType = 'string';
     

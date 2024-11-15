@@ -22,19 +22,10 @@ use App\Http\Controllers\AuthController;
 
 // Route SongController
 Route::prefix('songs')->group(function () {
-    // Route để lấy tất cả bài hát
     Route::get('/', [SongController::class, 'index']);
-
-    // Route để lấy chi tiết một bài hát theo mã bài hát
     Route::get('/{ma_bai_hat}', [SongController::class, 'show']);
-
-    // Route để tạo mới một bài hát
     Route::post('/', [SongController::class, 'store']);
-
-    // Route để cập nhật thông tin bài hát
     Route::put('/{ma_bai_hat}', [SongController::class, 'update']);
-
-    // Route để xóa bài hát (cập nhật trạng thái thành đã xóa)
     Route::delete('/{ma_bai_hat}', [SongController::class, 'destroy']);
 });
 
