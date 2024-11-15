@@ -14,13 +14,12 @@ class AdvertisingContractFactory extends Factory
     {
         $date = now()->format('dmY');
         return [
-            'ma_hop_dong' => 'CONTRACT'  . $date . str_pad($this->faker->unique()->numberBetween(0, 99), 2, '0', STR_PAD_LEFT),
-            'ma_quang_cao' => AdvertisementModel::factory(),
-            'ma_nqc' => AdvertisementModel::factory(), 
+            'ma_hop_dong' => 'HD' . str_pad($this->faker->unique()->numberBetween(0, 9999), 4, '0', STR_PAD_LEFT),
+            'ma_quang_cao' => AdvertisementModel::factory(), 
             'luot_phat' => 0, 
             'doanh_thu' => $this->faker->randomFloat(3, 0, 9999999.999),  // Số thập phân có 3 chữ số sau dấu phẩy, giá trị từ 0 đến 9.999.999,999
-            'ngay_tao' => $this->faker->dateTime(),
-            'ngay_thanh_toan' => $this->faker->dateTime()
+            'ngay_hieu_luc' => $this->faker->dateTime(),
+            'ngay_hoan_thanh' => $this->faker->dateTime()
         ];
     }
 }
