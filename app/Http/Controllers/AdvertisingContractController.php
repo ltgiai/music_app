@@ -13,7 +13,7 @@ class AdvertisingContractController extends Controller
         return response()->json($advertising_contracts);
     }
 
-    public function show($ma_quang_cao, $ma_nqc)
+    public function show($ma_hop_dong)
     {
         $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();
@@ -46,7 +46,7 @@ class AdvertisingContractController extends Controller
         return response()->json($advertising_contract, 201);
     }
 
-    public function update(Request $request, $ma_quang_cao, $ma_nqc)
+    public function update(Request $request, $ma_hop_dong)
     {
         $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();
@@ -68,7 +68,7 @@ class AdvertisingContractController extends Controller
         return response()->json($advertising_contract);
     }
 
-    public function destroy($ma_quang_cao, $ma_nqc)
+    public function destroy($ma_hop_dong)
     {
         $advertising_contract = AdvertisingContractModel::where('ma_hop_dong', $ma_hop_dong)
         ->first();

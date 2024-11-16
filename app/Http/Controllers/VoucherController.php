@@ -13,7 +13,7 @@ class VoucherController extends Controller
         return response()->json($vouchers);
     }
 
-    public function show($id)
+    public function show($ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
         ->first();
@@ -45,7 +45,7 @@ class VoucherController extends Controller
         return response()->json($voucher, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
         ->first();
@@ -68,7 +68,7 @@ class VoucherController extends Controller
         return response()->json($voucher);
     }
 
-    public function destroy($id)
+    public function destroy($ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
         ->first();
