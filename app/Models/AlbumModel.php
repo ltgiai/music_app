@@ -12,21 +12,13 @@ class AlbumModel extends Model
     protected $table = 'album';
     protected $primaryKey = 'ma_album';
     public $timestamps = false;
-    protected $fillable = ['ma_album', 'ten_album', 'ngay_tao', 'hinh_anh', 'luot_yeu_thich', 'trang_thai', 'so_luong_bai_hat'];
+    protected $fillable = ['ma_tk', 'ma_album', 'ten_album', 'ngay_tao', 'hinh_anh', 'luot_yeu_thich', 'trang_thai', 'so_luong_bai_hat'];
 
     protected static function newFactory()
     {
         return \Database\Factories\AlbumFactory::new();
     }
     
-    // public function album_tai_khoan() {
-    //     return $this->belongsToMany(AlbumAccountModel::class, 'album_account', 'album_id', 'user_id');
-    // }
-
-    // public function luot_thich_album() {
-    //     return $this->hasMany(LikeAlbumModel::class, 'album_id');
-    // }
-
     public function getMaAlbum()
     {
         return $this->ma_album;
