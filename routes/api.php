@@ -43,10 +43,10 @@ Route::post('/genres', [GenreController::class, 'store']);
 
 // Route LikeSongController
 Route::get('/song-likes', [LikeSongController::class, 'index']);
-Route::get('/song-likes/{id}', [LikeSongController::class, 'show']);
 Route::post('/song-likes', [LikeSongController::class, 'store']);
-Route::put('/song-likes/{id}', [LikeSongController::class, 'update']);
 Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
+Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
+
 
 // Route GenreSongController
 Route::get('/genre-songs', [GenreSongController::class, 'index']);

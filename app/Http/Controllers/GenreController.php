@@ -19,11 +19,11 @@ class GenreController extends Controller
         ]);
         $latestComment = GenreModel::orderBy('ma_the_loai', 'desc')->first();
         if ($latestComment) {
-            $lastIdNumber = (int) substr($latestComment->ma_the_loai, 2);
+            $lastIdNumber = (int) substr($latestComment->ma_the_loai, 4);
             $newIdNumber = $lastIdNumber + 1;
-            $newId = 'TL' . str_pad($newIdNumber, 4, '0', STR_PAD_LEFT);
+            $newId = 'CATE' . str_pad($newIdNumber, 4, '0', STR_PAD_LEFT);
         } else {
-            $newId = 'TL0001';
+            $newId = 'CATE0001';
         }
 
         $validatedData['ma_the_loai'] = $newId;
