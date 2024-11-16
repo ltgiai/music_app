@@ -69,7 +69,6 @@ class SongModel extends Model
         return [
             'artist' => $this->belongsTo(Account::class, 'ma_tk_artist', 'ma_tk'),
             'album' => $this->belongsTo(AlbumModel::class, 'ma_album', 'ma_album'),
-            'phi_luot_nghe' => $this->belongsTo(PayPerStreamModel::class, 'ma_phi_luot_nghe', 'ma_phi'),
             'bai_hat_subartist' => $this->hasMany(SongSubArtistModel::class, 'ma_tk', 'ma_subartist'),
             'theloai_baihat' => $this->hasMany(GenreSongModel::class, 'ma_bai_hat', 'ma_bai_hat'),
         ];

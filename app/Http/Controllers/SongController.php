@@ -74,24 +74,25 @@ class SongController extends Controller
     {
         $songs = DB::table('bai_hat')
             ->join(
-                'album_taikhoan', 'bai_hat.ma_album', '=', 'album.ma_album')
-            // ->join(
-                // 'tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
-            // ->join(
-            //     'user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
-            // ->join(
-            //     'theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
-            // ->join(
-            //     'the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
-            // ->join(
-            //     'chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
+                'album', 'bai_hat.ma_album', '=', 'album.ma_album')
+            ->join(
+                'tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+            ->join(
+                'user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+            ->join(
+                'theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
+            ->join(
+                'the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
+            ->join(
+                'chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
             ->select(
                 'bai_hat.*', 
-                // 'user.*',
+                'user.*',
                 'tai_khoan.*', 
                 'album.*', 
-                // 'the_loai.*',
-                // 'chat_luong_bai_hat.*')
+                'theloai_baihat.*',
+                'the_loai.*',
+                'chat_luong_bai_hat.*',
             )
                 ->get();
 
@@ -108,15 +109,14 @@ class SongController extends Controller
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'ten_bai_hat' => $song->ten_bai_hat,
                     'album' => $song->ten_album,
-                    'artist' => $song->ma_tk_artist,
-                    // 'artist' => $song->ten_user,
+                    'artist' => $song->ten_user,
                     // 'thoi_luong' => $song->thoi_luong,
                     // 'luot_nghe' => $song->luot_nghe,
                     // 'hinh_anh' => $song->hinh_anh,
                     // 'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                    // 'chat_luong' => $song->chat_luong,
-                    // 'link_bai_hat' => $song->link_bai_hat, 
-                    // 'the_loai' => $song->ten_the_loai,
+                    'chat_luong' => $song->chat_luong,
+                    'link_bai_hat' => $song->link_bai_hat, 
+                    'the_loai' => $song->ten_the_loai,
                     // 'trang_thai' => $song->trang_thai
                 ];
             }),
@@ -129,7 +129,7 @@ class SongController extends Controller
     public function show($ma_bai_hat)
     {
         // Lấy thông tin bài hát cùng với quan hệ artist, album, phi_luot_nghe
-        $song = SongModel::with(['tai_khoan', 'album', 'phi_luot_nghe'])
+        $song = SongModel::with(['tai_khoan', 'album'])
             ->where('ma_bai_hat', $ma_bai_hat)
             ->first();
 

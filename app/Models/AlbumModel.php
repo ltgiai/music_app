@@ -18,14 +18,18 @@ class AlbumModel extends Model
     {
         return \Database\Factories\AlbumFactory::new();
     }
-    
-    // public function album_tai_khoan() {
-    //     return $this->belongsToMany(AlbumAccountModel::class, 'album_account', 'album_id', 'user_id');
-    // }
 
-    // public function luot_thich_album() {
-    //     return $this->hasMany(LikeAlbumModel::class, 'album_id');
-    // }
+    public function luot_thich_album() {
+        return $this->hasMany(LikeAlbumModel::class, 'ma_album');
+    }
+
+    public function tai_khoan() {
+        return $this->belongsTo(Account::class, 'ma_tk');
+    }
+
+    public function bai_hat() {
+        return $this->hasMany(SongModel::class, 'ma_album');
+    }
 
     public function getMaAlbum()
     {
