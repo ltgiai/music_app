@@ -3,23 +3,19 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Faker\Generator as Faker;
+
 use App\Models\AlbumModel;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AlbulModel>
- */
 class AlbumFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+
+    protected $model = AlbumModel::class;
+
     public function definition(): array
     {
+        $date = now()->format('dmY');   
         return [
-            'ma_album' => $this->faker->unique()->randomNumber(8),
+            'ma_album' => 'ALBUM' . $date . str_pad($this->faker->unique()->numberBetween(0, 9999), 4, '0', STR_PAD_LEFT),
             'ten_album' => $this->faker->word(),
             'ngay_tao' => $this->faker->dateTime(),
             'hinh_anh' => $this->faker->imageUrl(),

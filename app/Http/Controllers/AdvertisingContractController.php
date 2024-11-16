@@ -36,11 +36,10 @@ class AdvertisingContractController extends Controller
         $validated = $request->validate([
             'ma_hop_dong' => 'required|exists:advertising_contracts,ma_hop_dong',
             'ma_quang_cao' => 'required|exists:advertising_contracts,ma_quang_cao',
-            'ma_nqc' => 'required|exists:advertising_contracts,ma_nqc',
             'luot_phat' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
-            'ngay_tao' => 'required|date',
-            'ngay_thanh_toan' => 'required|date'
+            'ngay_hieu_luc' => 'required|date',
+            'ngay_hoan_thanh' => 'required|date'
         ]);
 
         $advertising_contract = AdvertisingContractModel::create($validated);
@@ -59,11 +58,10 @@ class AdvertisingContractController extends Controller
         $validated = $request->validate([
             'ma_hop_dong' => 'required|exists:advertising_contracts,ma_hop_dong',
             'ma_quang_cao' => 'required|exists:advertising_contracts,ma_quang_cao',
-            'ma_nqc' => 'required|exists:advertising_contracts,ma_nqc',
             'luot_phat' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
-            'ngay_tao' => 'required|date',
-            'ngay_thanh_toan' => 'required|date'
+            'ngay_hieu_luc' => 'required|date',
+            'ngay_hoan_thanh' => 'required|date'
         ]);
 
         $advertising_contract->update($validated);

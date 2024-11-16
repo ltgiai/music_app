@@ -15,16 +15,6 @@ class GenreModel extends Model
     protected $fillable = [
         'ma_the_loai',
         'ten_the_loai',
-        'ma_chung_loai',
     ];
 
-    public function category()
-    {
-        return $this->belongsTo(SongCategoryModel::class, 'ma_chung_loai');
-    }
-
-    public function songs()
-    {
-        return $this->belongsToMany(SongModel::class, 'theloai_baihat', 'ma_the_loai', 'ma_bai_hat');
-    }
 }

@@ -9,18 +9,17 @@ class AdvertisingContractModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'hopdongquangcao';
+    protected $table = 'hop_dong_quang_cao';
     protected $primaryKey = 'ma_hop_dong';
     protected $keyType = 'string';
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = [
     'ma_hop_dong',
-     'ma_quang_cao', 
-     'ma_npc', 
+     'ma_quang_cao',
      'luot_phat', 
      'doanh_thu', 
-     'ngay_tao', 
-     'ngay_thanh_toan'];
+     'ngay_hieu_luc', 
+     'ngay_hoan_thanh'];
 
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     public $timestamps = false;
@@ -50,11 +49,10 @@ class AdvertisingContractModel extends Model
          return self::create([
              'ma_hop_dong' => $data['ma_hop_dong'],
              'ma_quang_cao' => $data['ma_quang_cao'],
-             'ma_npc' => $data['ma_npc'],
              'luot_phat' => $data['luot_phat'],
              'doanh_thu' => $data['doanh_thu'],
-             'ngay_tao' => $data['ngay_tao'],
-             'ngay_thanh_toan' => $data['ngay_thanh_toan']
+             'ngay_hieu_luc' => $data['ngay_hieu_luc'],
+             'ngay_hoan_thanh' => $data['ngay_hoan_thanh']
          ]);
      }
 
@@ -64,11 +62,10 @@ class AdvertisingContractModel extends Model
          return $this->update([
             'ma_hop_dong' => $data['ma_hop_dong'],
              'ma_quang_cao' => $data['ma_quang_cao'],
-             'ma_npc' => $data['ma_npc'],
              'luot_phat' => $data['luot_phat'],
              'doanh_thu' => $data['doanh_thu'],
-             'ngay_tao' => $data['ngay_tao'],
-             'ngay_thanh_toan' => $data['ngay_thanh_toan']
+             'ngay_hieu_luc' => $data['ngay_hieu_luc'],
+             'ngay_hoan_thanh' => $data['ngay_hoan_thanh']
          ]);
      }
 

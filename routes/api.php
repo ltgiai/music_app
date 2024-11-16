@@ -1,18 +1,4 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 use App\Http\Controllers\LikeSongController;
 use App\Http\Controllers\SongCategoryController;
 use Illuminate\Http\Request;
@@ -29,15 +15,28 @@ use App\Http\Controllers\GenreSongController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\AdvertisingContractController;
+use App\Http\Controllers\SongController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\VoucherRegisterController;
+use App\Http\Controllers\AuthController;
 
-// Route ArtistController
-Route::get('/artists', [ArtistController::class, 'index']);         // Lấy danh sách nghệ sĩ
-Route::get('/artists/{id}', [ArtistController::class, 'show']);     // Lấy chi tiết nghệ sĩ
-Route::post('/artists', [ArtistController::class, 'store']);        // Thêm nghệ sĩ mới
-Route::put('/artists/{id}', [ArtistController::class, 'update']);   // Cập nhật nghệ sĩ
-Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);// Xóa nghệ sĩ
+// Route SongController
+Route::prefix('songs')->group(function () {
+    // Route để lấy tất cả bài hát
+    Route::get('/', [SongController::class, 'index']);
+
+    // Route để lấy chi tiết một bài hát theo mã bài hát
+    Route::get('/{ma_bai_hat}', [SongController::class, 'show']);
+
+    // Route để tạo mới một bài hát
+    Route::post('/', [SongController::class, 'store']);
+
+    // Route để cập nhật thông tin bài hát
+    Route::put('/{ma_bai_hat}', [SongController::class, 'update']);
+
+    // Route để xóa bài hát (cập nhật trạng thái thành đã xóa)
+    Route::delete('/{ma_bai_hat}', [SongController::class, 'destroy']);
+});
 
 // Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);
@@ -73,29 +72,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::prefix('albums')->group(function () {
-//     Route::get('/', [App\Http\Controllers\AlbumController::class, 'index']);  chua sua lai nha
-// });
-
+// Rote Album
 Route::prefix('/albums') -> group(function() {
-    Route::get('/list-albums',[App\Http\Controllers\AlbumController::class, 'index']); // http://127.0.0.1:8000/api/albums
-    Route::post('/create',[App\Http\Controllers\AlbumController::class, 'store']); // đ biết route ở đâu @@
-    Route::get('/detail-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'show']); 
-    Route::put('/update-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
-    Route::delete('/delete-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
-    Route::get('/all-artist-albums/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
-    Route::get('/detail-artist-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
-    Route::post('/like-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
-    Route::post('/like-album/{ma_album}',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
-    Route::get('/admin-search',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
-    Route::get('/artist-search/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
-});
-
-Route::apiResource('comments', CommentController::class);
-Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('categories', SongCategoryController::class);
-Route::apiResource('genres', GenreController::class);
-Route::apiResource('genre-songs', GenreSongController::class);
+    Route::get('/',[App\Http\Controllers\AlbumController::class, 'index']); 
+    Route::post('/',[App\Http\Controllers\AlbumController::class, 'store']);
+    Route::get('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'show']); 
+    Route::put('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
+    Route::delete('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
+    Route::get('/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
+    Route::get('/{ma_album}/songs',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
+    Route::post('/{ma_album}/like',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
+    Route::post('/{ma_album}/unlike',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
+    Route::get('/search/admin',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
+    Route::get('/search/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
+}); 
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
@@ -138,3 +128,68 @@ Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{id}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{id}', [FunctionnController::class, 'destroy']);
 
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/accounts', [AccountController::class, 'index']);
+Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
+Route::post('/accounts', [AccountController::class, 'store']);
+Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
+Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
+
+// Route UserController
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{ma_tk}', [UserController::class, 'show']);
+Route::put('/users/{ma_tk}', [UserController::class, 'update']);
+
+// Route DecentralizationController
+Route::get('/decentralizations', [DecentralizationController::class, 'index']);
+Route::get('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'show']);
+Route::post('/decentralizations', [DecentralizationController::class, 'store']);
+Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
+Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
+Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
+
+// Route FunctionController
+Route::get('/functionns', [FunctionnController::class, 'index']);
+Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
+Route::post('/functionns', [FunctionnController::class, 'store']);
+Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update']);
+Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
+
+// Route NotificationController
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
+Route::post('/notifications', [NotificationController::class, 'store']);
+
+// Route CommentController
+Route::get('/comments', [CommentController::class, 'index']);
+Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
+Route::post('/comment', [CommentController::class, 'store']);
+
+// Route GenreController
+Route::get('/genres', [GenreController::class, 'index']);
+Route::get('/genre/{ma_tb}', [GenreController::class, 'show']);
+Route::post('/genre', [GenreController::class, 'store']);
+
+// Route LikeSongController
+// Route GenreSongController
+
+Route::apiResource('song-likes', LikeSongController::class);
+Route::apiResource('genre-songs', GenreSongController::class);
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
