@@ -13,6 +13,7 @@ class SongModel extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $primaryKey = 'ma_bai_hat';
     protected $fillable = [
         'ma_bai_hat',
         'ten_bai_hat',
@@ -76,13 +77,13 @@ class SongModel extends Model
 
     public function addSong($data)
     {
-        $data['id'] = $data['id'] ?? $this->generateCustomId();
+        $data['ma_bai_hat'] = $data['ma_bai_hat'] ?? $this->generateCustomId();
         return self::create($data);
     }
 
-    public function updateSong($id, $data)
+    public function updateSong($ma_bai_hat, $data)
     {
-        $song = self::find($id);
+        $song = self::where('ma_bai_hat', $ma_bai_hat)->first();
         if ($song) {
             $song->update($data);
             return $song;
@@ -90,9 +91,9 @@ class SongModel extends Model
         return null;
     }
 
-    public function deleteSong($id)
+    public function deleteSong($ma_bai_hat)
     {
-        $song = self::find($id);
+        $song = self::where('ma_bai_hat', $ma_bai_hat)->first();
         if ($song) {
             return $song->delete();
         }
