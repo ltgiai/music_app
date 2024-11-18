@@ -57,7 +57,7 @@ class SongController extends Controller
             ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
             ->select('tai_khoan.*', 'user.*')
-            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') 
+            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002')
             ->get();
 
         if ($artists->isEmpty()) {
@@ -84,31 +84,41 @@ class SongController extends Controller
         $artists = DB::table('tai_khoan')
             ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
-            ->join('bai_hat', 'bai_hat.ma_tk_artist', 'tai_khoan.ma_tk')
-            ->select('tai_khoan.*', 'user.*', 'bai_hat.*')
-            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') 
-            ->get();
+            ->join('bai_hat', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+            ->select('tai_khoan.ma_tk', 'user.ten_user', 'bai_hat.ma_bai_hat', 'bai_hat.ten_bai_hat', 'bai_hat.thoi_luong')
+            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') // Chỉ lấy tài khoản có quyền nghệ sĩ
+            ->get()
+            ->groupBy('ma_tk'); // Nhóm dữ liệu theo mã tài khoản (nghệ sĩ)
 
         if ($artists->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
+                'message' => 'ERROR 404',
             ], Response::HTTP_NOT_FOUND);
         }
 
+        $data = $artists->map(function ($songs, $ma_artist) {
+            $artistInfo = $songs->first(); // Lấy thông tin cơ bản của nghệ sĩ
+            return [
+                'ma_artist' => $ma_artist,
+                'ten_artist' => $artistInfo->ten_user,
+                'bai_hat' => $songs->map(function ($song) {
+                    return [
+                        'ma_bai_hat' => $song->ma_bai_hat,
+                        'ten_bai_hat' => $song->ten_bai_hat,
+                        'thoi_luong' => $song->thoi_luong,
+                    ];
+                })->values(),
+            ];
+        })->values();
+
         return response()->json([
-            'data' => $artists->map(function ($item) {
-                return [
-                    'ma_artist' => $item->ma_tk,
-                    'ten_artist' => $item->ten_user,
-                    'ma_bai_hat' => $item->ma_bai_hat,
-                    'bai_hat' => $item->ten_bai_hat
-                ];
-            }),
-            'message' => 'Get all artists successfully',
+            'data' => $data,
+            'message' => 'Get all artists and their songs successfully',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
+
 
     public function renderListOfSongsWithCollabArtist()
     {

@@ -34,7 +34,7 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 
 // Route Playlist
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
-Route::get('/playlists/account', [PlaylistController::class, 'renderAccountWithPlaylists']); // Liệt kê danh sách playlist theo từng tài khoản
+Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
 
 // Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);

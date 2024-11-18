@@ -39,48 +39,46 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function renderAccountWithPlaylists()
+    public function renderPlaylistsWithSongsByAccount($ma_tk)
     {
-        $accounts = DB::table('tai_khoan')
+        // Lấy dữ liệu tài khoản cùng playlist và bài hát liên quan
+        $data = DB::table('tai_khoan')
             ->join('playlist', 'tai_khoan.ma_tk', '=', 'playlist.ma_tk')
-            ->join('playlist_baihat', 'playlist_baihat.ma_playlist', '=', 'playlist.ma_playlist')
-            ->join('bai_hat', 'playlist_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
-            ->select('tai_khoan.ma_tk', 'playlist.ma_playlist', 'playlist.ten_playlist', 'bai_hat.ma_bai_hat', 'bai_hat.ten_bai_hat')
-            ->get()
-            ->groupBy('ma_tk');
+            ->leftJoin('playlist_baihat', 'playlist_baihat.ma_playlist', '=', 'playlist.ma_playlist')
+            ->leftJoin('bai_hat', 'playlist_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
+            ->select(
+                'tai_khoan.ma_tk',
+                'playlist.ma_playlist',
+                'playlist.ten_playlist',
+                'bai_hat.ma_bai_hat',
+                'bai_hat.ten_bai_hat'
+            )
+            ->where('tai_khoan.ma_tk', '=', $ma_tk) // Lọc theo tài khoản được truyền qua URL
+            ->get();
 
-        if ($accounts->isEmpty()) {
+        if ($data->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404',
+                'message' => 'No playlists or songs found for this account',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $data = $accounts->map(function ($playlists, $ma_tk) {
-            return [
-                'ma_tk' => $ma_tk,
-                'playlists' => $playlists->groupBy('ma_playlist')->map(function ($songs, $ma_playlist) {
-                    $firstPlaylist = $songs->first(); // Lấy thông tin cơ bản của playlist
-                    return [
-                        'ma_playlist' => $firstPlaylist->ma_playlist,
-                        'ten_playlist' => $firstPlaylist->ten_playlist,
-                        'bai_hat' => $songs->map(function ($song) {
-                            return [
-                                'ma_bai_hat' => $song->ma_bai_hat,
-                                'ten_bai_hat' => $song->ten_bai_hat,
-                            ];
-                        }),
-                    ];
-                })->values(),
-            ];
-        })->values();
-
         return response()->json([
-            'data' => $data,
-            'message' => 'Get accounts with playlists successfully',
+            'data' => $data->map(function ($item) {
+                return [
+                    'ma_tk' => $item->ma_tk,
+                    'ma_playlist' => $item->ma_playlist,
+                    'ten_playlist' => $item->ten_playlist,
+                    'ma_bai_hat' => $item->ma_bai_hat,
+                    'ten_bai_hat' => $item->ten_bai_hat,
+                ];
+            }),
+            'message' => 'Get playlists with songs successfully',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
+
+
 
 
     // Tạo mới một playlist
