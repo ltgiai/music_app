@@ -65,17 +65,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Rote Album
 Route::prefix('/albums') -> group(function() {
-    Route::get('/',[App\Http\Controllers\AlbumController::class, 'index']); 
-    Route::post('/',[App\Http\Controllers\AlbumController::class, 'store']);
-    Route::get('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'show']); 
+    Route::get('list-albums',[App\Http\Controllers\AlbumController::class, 'index']); 
+    Route::post('/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'store'])->where('ma_album', 'ACC\d{4}'); 
+    Route::put('/{ma_album}/add',[App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
+    Route::get('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}'); 
     Route::put('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
     Route::delete('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
     Route::get('/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
     Route::get('/{ma_album}/songs',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
     Route::post('/{ma_album}/like',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
     Route::post('/{ma_album}/unlike',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
-    Route::get('/search/admin',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
-    Route::get('/search/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
 }); 
 
 // Route AdvertisementController
