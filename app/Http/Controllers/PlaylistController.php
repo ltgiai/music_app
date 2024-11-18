@@ -41,42 +41,63 @@ class PlaylistController extends Controller
 
     public function renderPlaylistsWithSongsByAccount($ma_tk)
     {
-        // Lấy dữ liệu tài khoản cùng playlist và bài hát liên quan
-        $data = DB::table('tai_khoan')
+        // Lấy dữ liệu tài khoản cùng playlist, bài hát và album liên quan
+        $playlists = DB::table('tai_khoan')
             ->join('playlist', 'tai_khoan.ma_tk', '=', 'playlist.ma_tk')
             ->leftJoin('playlist_baihat', 'playlist_baihat.ma_playlist', '=', 'playlist.ma_playlist')
             ->leftJoin('bai_hat', 'playlist_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
+            ->leftJoin('album', 'bai_hat.ma_album', '=', 'album.ma_album') // Thêm thông tin album
             ->select(
-                'tai_khoan.ma_tk',
                 'playlist.ma_playlist',
                 'playlist.ten_playlist',
                 'bai_hat.ma_bai_hat',
-                'bai_hat.ten_bai_hat'
+                'bai_hat.ten_bai_hat',
+                'bai_hat.thoi_luong',
+                'album.ma_album',
+                'album.ten_album'
             )
             ->where('tai_khoan.ma_tk', '=', $ma_tk) // Lọc theo tài khoản được truyền qua URL
-            ->get();
+            ->get()
+            ->groupBy('ma_playlist'); // Nhóm theo playlist
 
-        if ($data->isEmpty()) {
+        if ($playlists->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'No playlists or songs found for this account',
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // Tạo cấu trúc JSON lồng ghép
+        $data = $playlists->map(function ($songs, $ma_playlist) {
+            $playlistInfo = $songs->first(); // Lấy thông tin playlist từ bài hát đầu tiên
+
+            return [
+                'ma_playlist' => $ma_playlist,
+                'ten_playlist' => $playlistInfo->ten_playlist,
+                'bai_hat' => $songs->filter(function ($song) {
+                    return $song->ma_bai_hat !== null; // Loại bỏ playlist không có bài hát
+                })->map(function ($song) {
+                    return [
+                        'ma_bai_hat' => $song->ma_bai_hat,
+                        'ten_bai_hat' => $song->ten_bai_hat,
+                        'thoi_luong' => $song->thoi_luong,
+                        'album' => $song->ma_album ? [ // Chỉ thêm album nếu có
+                            'ma_album' => $song->ma_album,
+                            'ten_album' => $song->ten_album,
+                        ] : null,
+                    ];
+                })->values(),
+            ];
+        })->values();
+
         return response()->json([
-            'data' => $data->map(function ($item) {
-                return [
-                    'ma_tk' => $item->ma_tk,
-                    'ma_playlist' => $item->ma_playlist,
-                    'ten_playlist' => $item->ten_playlist,
-                    'ma_bai_hat' => $item->ma_bai_hat,
-                    'ten_bai_hat' => $item->ten_bai_hat,
-                ];
-            }),
+            'data' => $data,
             'message' => 'Get playlists with songs successfully',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
+
+
 
 
 
