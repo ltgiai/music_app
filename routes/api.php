@@ -22,9 +22,9 @@ use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
 
 // Route SongController
-Route::get('/songs', [SongController::class, 'getAllSongs']); // Liệt kê danh sách bài hát trên trang chủ
-Route::get('/songs/collab', [SongController::class, 'getSongWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
-Route::get('/songs/category', [SongController::class, 'getSongInCategory']); //Liệt kê danh sách bài hát theo thể loại
+Route::get('/songs', [SongController::class, 'getListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
+Route::get('/songs/collab', [SongController::class, 'getListOfSongWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
+Route::get('/songs/category', [SongController::class, 'getListOfSongInCategory']); //Liệt kê danh sách bài hát theo thể loại
 Route::get('/songs/{ma_bai_hat}', [SongController::class, 'show']); // Tìm kiếm bài hát theo mã bài hát
 Route::post('/songs', [SongController::class, 'store']); // Thêm một bài hát
 Route::put('/songs/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
@@ -65,19 +65,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Rote Album
-Route::prefix('/albums')->group(function () {
-    Route::get('/', [App\Http\Controllers\AlbumController::class, 'index']);
-    Route::post('/', [App\Http\Controllers\AlbumController::class, 'store']);
-    Route::get('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show']);
-    Route::put('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']);
-    Route::delete('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
-    Route::get('/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
-    Route::get('/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
-    Route::post('/{ma_album}/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
-    Route::post('/{ma_album}/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
-    Route::get('/search/admin', [App\Http\Controllers\AlbumController::class, 'searchForAdmin']);
-    Route::get('/search/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'searchForArtist']);
-});
+Route::prefix('/albums') -> group(function() {
+    Route::get('list-albums',[App\Http\Controllers\AlbumController::class, 'index']); 
+    Route::post('/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'store'])->where('ma_album', 'ACC\d{4}'); 
+    Route::put('/{ma_album}/add',[App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
+    Route::get('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}'); 
+    Route::put('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
+    Route::delete('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
+    Route::get('/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
+    Route::get('/{ma_album}/songs',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
+    Route::post('/{ma_album}/like',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
+    Route::post('/{ma_album}/unlike',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
+}); 
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
@@ -161,7 +160,7 @@ Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
 Route::post('/comment', [CommentController::class, 'store']);
 
 // Route GenreController
-Route::get('/genres', [GenreController::class, 'index']);
+Route::get('/genres', [GenreController::class, 'getListOfGenres']);
 Route::get('/genre/{ma_tb}', [GenreController::class, 'show']);
 Route::post('/genre', [GenreController::class, 'store']);
 

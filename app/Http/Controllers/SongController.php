@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SongController extends Controller
 {
-    public function getAllSongs()
+    public function getListOfSongs()
     {
         $songs = DB::table('bai_hat')
             ->join('album', 'bai_hat.ma_album', '=', 'album.ma_album')
@@ -51,7 +51,7 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getSongWithCollabArtist()
+    public function getListOfSongWithCollabArtist()
     {
         $songs = DB::table('bai_hat_subartist')
             ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'bai_hat_subartist.ma_bai_hat')
@@ -92,7 +92,7 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getSongInCategory()
+    public function getListOfSongInCategory()
     {
         $songs = DB::table('theloai_baihat')
             ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
@@ -191,7 +191,7 @@ class SongController extends Controller
                 'chat_luong_bai_hat.chat_luong',
                 'chat_luong_bai_hat.link_bai_hat'
             )
-            ->where('bai_hat.ma_bai_hat', $ma_bai_hat)
+            // ->where('bai_hat.ma_bai_hat', $ma_bai_hat)
             ->first();
 
         // Kiểm tra kết quả trả về

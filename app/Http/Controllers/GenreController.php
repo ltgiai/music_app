@@ -3,13 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\GenreModel;
+use App\Models\SongModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class GenreController extends Controller
 {
-    public function index()
+    public function getListOfGenres()
     {
-        return response()->json(GenreModel::all());
+        $genre = DB::table('the_loai')
+            ->select('the_loai.*')
+            ->get();
+
+        if ($genre->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'ERROR 404'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => $genre->map(function ($item) {
+                return [
+                    'ma_bai_hat' => $item->ma_the_loai,
+                    'ten_bai_hat' => $item->ten_the_loai
+                ];
+            }),
+            'message' => 'Get all genre successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
     }
 
     public function store(Request $request)
