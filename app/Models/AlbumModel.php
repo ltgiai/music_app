@@ -18,7 +18,19 @@ class AlbumModel extends Model
     {
         return \Database\Factories\AlbumFactory::new();
     }
-    
+
+    public function luot_thich_album() {
+        return $this->hasMany(LikeAlbumModel::class, 'ma_album');
+    }
+
+    public function tai_khoan() {
+        return $this->belongsTo(Account::class, 'ma_tk');
+    }
+
+    public function bai_hat() {
+        return $this->hasMany(SongModel::class, 'ma_album');
+    }
+
     public function getMaAlbum()
     {
         return $this->ma_album;

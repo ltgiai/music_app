@@ -22,11 +22,11 @@ use App\Http\Controllers\AuthController;
 
 // Route SongController
 Route::prefix('songs')->group(function () {
-    Route::get('/', [SongController::class, 'index']);
-    Route::get('/{ma_bai_hat}', [SongController::class, 'show']);
-    Route::post('/', [SongController::class, 'store']);
-    Route::put('/{ma_bai_hat}', [SongController::class, 'update']);
-    Route::delete('/{ma_bai_hat}', [SongController::class, 'destroy']);
+    Route::get('/', [SongController::class, 'getAllSongs']); // Liệt kê danh sách bài hát trên trang chủ
+    Route::get('/{ma_bai_hat}', [SongController::class, 'show']); // Tìm kiếm bài hát theo mã bài hát
+    Route::post('/', [SongController::class, 'store']); // Thêm một bài hát
+    Route::put('/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
+    Route::delete('/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
 });
 
 // Route AccountController

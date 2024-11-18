@@ -12,20 +12,94 @@ use Symfony\Component\HttpFoundation\Response;
 class SongController extends Controller
 {
     // Admin muốn xem danh sách tất cả các bài hát
-    public function index()
+    // public function index()
+    // {
+    //     $songs = DB::table('bai_hat')
+    //         // ->join(
+    //         //     'album', 'bai_hat.ma_album', '=', 'album.ma_album')
+    //         // ->join(
+    //         //     'tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+    //         // ->join(
+    //         //     'phi_luot_nghe', 'bai_hat.ma_phi_luot_nghe', '=', 'phi_luot_nghe.ma_phi')
+    //         // ->join(
+    //         //     'user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+    //         // ->join(
+    //         //     'chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
+    //         // ->join(
+    //         //     'theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
+    //         // ->join(
+    //         //     'the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai'
+    //         // )
+    //         ->select(
+    //             'bai_hat.*', 
+    //             // 'user.*', 
+    //             // 'album.*', 
+    //             // 'chat_luong_bai_hat.*',
+    //             // 'the_loai.*'
+    //         )
+    //         ->get();
+
+    //     if ($songs->isEmpty()) {
+    //         return response()->json([
+    //             'status' => Response::HTTP_NOT_FOUND,
+    //             'message' => 'ERROR 404'
+    //         ], Response::HTTP_NOT_FOUND);
+    //     }
+
+    //     return response()->json([
+    //         'data' => $songs->map(function ($song) {
+    //             return [
+    //                 'ma_bai_hat' => $song->ma_bai_hat,
+    //                 'ten_bai_hat' => $song->ten_bai_hat,
+    //                 // 'album' => $song->ten_album,
+    //                 // 'artist' => $song->ten_user,
+    //                 // 'ma_phi_luot_nghe' => $song->ma_phi_luot_nghe,
+    //                 // 'thoi_luong' => $song->thoi_luong,
+    //                 // 'trang_thai' => $song->trang_thai,
+    //                 // 'luot_nghe' => $song->luot_nghe,
+    //                 // 'hinh_anh' => $song->hinh_anh,
+    //                 // 'ngay_phat_hanh' => $song->ngay_phat_hanh,
+    //                 // 'chat_luong_bai_hat' => $song->chat_luong,
+    //                 // 'link_chat_luong' => $song->link_bai_hat,
+    //                 // 'doanh_thu' => $song->doanh_thu,
+    //                 // 'the_loai' => $song->ten_the_loai
+    //             ];
+    //         }),
+    //         'message' => 'Get all songs successfully',
+    //         'status' => Response::HTTP_OK,
+    //     ], Response::HTTP_OK);
+    // }
+
+    public function getAllSongs()
     {
         $songs = DB::table('bai_hat')
-            ->join('album', 'bai_hat.ma_album', '=', 'album.ma_album')
-            ->join('tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
-            ->join('phi_luot_nghe', 'bai_hat.ma_phi_luot_nghe', '=', 'phi_luot_nghe.ma_phi')
-            ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
-            ->select('bai_hat.*')
-            ->get();
+            ->join(
+                'album', 'bai_hat.ma_album', '=', 'album.ma_album')
+            ->join(
+                'tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+            ->join(
+                'user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+            ->join(
+                'theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
+            ->join(
+                'the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
+            ->join(
+                'chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
+            ->select(
+                'bai_hat.*', 
+                'user.*',
+                'tai_khoan.*', 
+                'album.*', 
+                'theloai_baihat.*',
+                'the_loai.*',
+                'chat_luong_bai_hat.*',
+            )
+                ->get();
 
         if ($songs->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'KHÔNG TỒN TẠI BÀI HÁT'
+                'message' => 'ERROR 404'
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -34,16 +108,16 @@ class SongController extends Controller
                 return [
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'ten_bai_hat' => $song->ten_bai_hat,
-                    'album' => $song->ma_album,
-                    'artist' => $song->ma_tk_artist,
-                    // 'ten_artist' => $song->user,
-                    'ma_phi_luot_nghe' => $song->ma_phi_luot_nghe,
-                    'thoi_luong' => $song->thoi_luong,
-                    'trang_thai' => $song->trang_thai,
-                    'luot_nghe' => $song->luot_nghe,
-                    'hinh_anh' => $song->hinh_anh,
-                    'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                    'doanh_thu' => $song->doanh_thu,
+                    'album' => $song->ten_album,
+                    'artist' => $song->ten_user,
+                    // 'thoi_luong' => $song->thoi_luong,
+                    // 'luot_nghe' => $song->luot_nghe,
+                    // 'hinh_anh' => $song->hinh_anh,
+                    // 'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                    'chat_luong' => $song->chat_luong,
+                    'link_bai_hat' => $song->link_bai_hat, 
+                    'the_loai' => $song->ten_the_loai,
+                    // 'trang_thai' => $song->trang_thai
                 ];
             }),
             'message' => 'Get all songs successfully',
@@ -55,7 +129,7 @@ class SongController extends Controller
     public function show($ma_bai_hat)
     {
         // Lấy thông tin bài hát cùng với quan hệ artist, album, phi_luot_nghe
-        $song = SongModel::with(['ar', 'album', 'phi_luot_nghe'])
+        $song = SongModel::with(['tai_khoan', 'album'])
             ->where('ma_bai_hat', $ma_bai_hat)
             ->first();
 
