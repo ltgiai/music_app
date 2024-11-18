@@ -79,6 +79,37 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function renderListOfSongsInEveryArtist()
+    {
+        $artists = DB::table('tai_khoan')
+            ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
+            ->join('bai_hat', 'bai_hat.ma_tk_artist', 'tai_khoan.ma_tk')
+            ->select('tai_khoan.*', 'user.*', 'bai_hat.*')
+            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') 
+            ->get();
+
+        if ($artists->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'ERROR 404'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => $artists->map(function ($item) {
+                return [
+                    'ma_artist' => $item->ma_tk,
+                    'ten_artist' => $item->ten_user,
+                    'ma_bai_hat' => $item->ma_bai_hat,
+                    'bai_hat' => $item->ten_bai_hat
+                ];
+            }),
+            'message' => 'Get all artists successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
+    }
+
     public function renderListOfSongsWithCollabArtist()
     {
         $songs = DB::table('bai_hat_subartist')

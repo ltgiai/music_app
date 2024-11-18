@@ -4,14 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Models\PlaylistModel;
 use Illuminate\Http\Request;
+use App\Models\SongModel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
-class ArtistController extends Controller
+
+class PlaylistController extends Controller
 {
-    // Hiển thị danh sách các nghệ sĩ
-    public function index()
+    // Hiển thị danh sách playlist
+    public function renderListOfPlaylists()
     {
-        $playlists = PlaylistModel::with(['relationships.tai_khoan'])->get();
-        return response()->json($playlists);
+        $playlists = DB::table('playlist')
+            ->select('playlist.*')
+            ->get();
+
+        if ($playlists->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'ERROR 404'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => $playlists->map(function ($item) {
+                return [
+                    'ma_playlist' => $item->ma_playlist,
+                    'ten_playlist' => $item->ten_playlist,
+                ];
+            }),
+            'message' => 'Get all songs successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
     }
 
     // Tạo mới một nghệ sĩ

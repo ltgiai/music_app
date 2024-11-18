@@ -20,15 +20,20 @@ use App\Http\Controllers\SongController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PlaylistController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
 Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
-Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']);
+Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
+Route::get('/songs/artist', [SongController::class, 'renderListOfSongsInEveryArtist']); // Liệt kê danh sách nghệ sĩ
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
 Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
+
+// Route Playlist
+Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
 
 // Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);
@@ -158,16 +163,15 @@ Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
 Route::post('/comment', [CommentController::class, 'store']);
 
 // Route GenreController
-Route::get('/genres', [GenreController::class, 'getListOfGenres']);
-Route::get('/genres/songs', [GenreController::class, 'getListOfSongsInGenres']);
-Route::get('/genre/{ma_tb}', [GenreController::class, 'show']);
-Route::post('/genre', [GenreController::class, 'store']);
+Route::get('/genres', [GenreController::class, 'getListOfGenres']); // Liệt kê danh sách thể loại
+Route::get('/genres/songs', [GenreController::class, 'getListOfSongsInGenre']); // Liệt kê danh sách bài hát theo từng thể loại
+Route::get('/genre/{ma_tb}', [GenreController::class, 'show']); // Tìm kiếm theo mã thể loại
+Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 
 // Route LikeSongController
 // Route GenreSongController
 
 Route::apiResource('song-likes', LikeSongController::class);
-Route::apiResource('genre-songs', GenreSongController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
