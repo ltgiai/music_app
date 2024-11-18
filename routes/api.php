@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\LikeSongController;
 use App\Http\Controllers\SongCategoryController;
 use Illuminate\Http\Request;
@@ -21,13 +22,13 @@ use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
 
 // Route SongController
-Route::prefix('songs')->group(function () {
-    Route::get('/', [SongController::class, 'getAllSongs']); // Liệt kê danh sách bài hát trên trang chủ
-    Route::get('/{ma_bai_hat}', [SongController::class, 'show']); // Tìm kiếm bài hát theo mã bài hát
-    Route::post('/', [SongController::class, 'store']); // Thêm một bài hát
-    Route::put('/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
-    Route::delete('/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
-});
+Route::get('/songs', [SongController::class, 'getAllSongs']); // Liệt kê danh sách bài hát trên trang chủ
+Route::get('/songs/collab', [SongController::class, 'getSongWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
+Route::get('/songs/category', [SongController::class, 'getSongInCategory']); //Liệt kê danh sách bài hát theo thể loại
+Route::get('/songs/{ma_bai_hat}', [SongController::class, 'show']); // Tìm kiếm bài hát theo mã bài hát
+Route::post('/songs', [SongController::class, 'store']); // Thêm một bài hát
+Route::put('/songs/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
+Route::delete('/songs/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
 
 // Route AccountController
 Route::get('/accounts', [AccountController::class, 'index']);
@@ -64,19 +65,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Rote Album
-Route::prefix('/albums') -> group(function() {
-    Route::get('/',[App\Http\Controllers\AlbumController::class, 'index']); 
-    Route::post('/',[App\Http\Controllers\AlbumController::class, 'store']);
-    Route::get('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'show']); 
-    Route::put('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'update']); 
-    Route::delete('/{ma_album}',[App\Http\Controllers\AlbumController::class, 'destroy']); 
-    Route::get('/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); 
-    Route::get('/{ma_album}/songs',[App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']); 
-    Route::post('/{ma_album}/like',[App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
-    Route::post('/{ma_album}/unlike',[App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
-    Route::get('/search/admin',[App\Http\Controllers\AlbumController::class, 'searchForAdmin']); 
-    Route::get('/search/artist/{ma_tk}',[App\Http\Controllers\AlbumController::class, 'searchForArtist']); 
-}); 
+Route::prefix('/albums')->group(function () {
+    Route::get('/', [App\Http\Controllers\AlbumController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\AlbumController::class, 'store']);
+    Route::get('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show']);
+    Route::put('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']);
+    Route::delete('/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
+    Route::get('/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
+    Route::get('/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
+    Route::post('/{ma_album}/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
+    Route::post('/{ma_album}/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
+    Route::get('/search/admin', [App\Http\Controllers\AlbumController::class, 'searchForAdmin']);
+    Route::get('/search/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'searchForArtist']);
+});
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
