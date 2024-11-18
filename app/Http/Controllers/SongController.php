@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SongController extends Controller
 {
-    public function getListOfSongs()
+    public function renderListOfSongs()
     {
         $songs = DB::table('bai_hat')
             ->join('album', 'bai_hat.ma_album', '=', 'album.ma_album')
@@ -31,19 +31,19 @@ class SongController extends Controller
         }
 
         return response()->json([
-            'data' => $songs->map(function ($song) {
+            'data' => $songs->map(function ($item) {
                 return [
-                    'ma_bai_hat' => $song->ma_bai_hat,
-                    'ten_bai_hat' => $song->ten_bai_hat,
-                    'album' => $song->ten_album,
-                    'artist' => $song->ten_user,
-                    'thoi_luong' => $song->thoi_luong,
-                    'luot_nghe' => $song->luot_nghe,
-                    'hinh_anh' => $song->hinh_anh,
-                    'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                    'chat_luong' => $song->chat_luong,
-                    'link_bai_hat' => $song->link_bai_hat,
-                    'trang_thai' => $song->trang_thai
+                    'ma_bai_hat' => $item->ma_bai_hat,
+                    'ten_bai_hat' => $item->ten_bai_hat,
+                    'album' => $item->ten_album,
+                    'artist' => $item->ten_user,
+                    'thoi_luong' => $item->thoi_luong,
+                    'luot_nghe' => $item->luot_nghe,
+                    'hinh_anh' => $item->hinh_anh,
+                    'ngay_phat_hanh' => $item->ngay_phat_hanh,
+                    'chat_luong' => $item->chat_luong,
+                    'link_bai_hat' => $item->link_bai_hat,
+                    'trang_thai' => $item->trang_thai
                 ];
             }),
             'message' => 'Get all songs successfully',
@@ -51,7 +51,35 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getListOfSongWithCollabArtist()
+    public function renderListOfArtists()
+    {
+        $artists = DB::table('tai_khoan')
+            ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
+            ->select('tai_khoan.*', 'user.*')
+            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') 
+            ->get();
+
+        if ($artists->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'ERROR 404'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => $artists->map(function ($item) {
+                return [
+                    'ma_artist' => $item->ma_tk,
+                    'ten_artist' => $item->ten_user
+                ];
+            }),
+            'message' => 'Get all artists successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
+    }
+
+    public function renderListOfSongsWithCollabArtist()
     {
         $songs = DB::table('bai_hat_subartist')
             ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'bai_hat_subartist.ma_bai_hat')
@@ -92,44 +120,8 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getListOfSongInCategory()
-    {
-        $songs = DB::table('theloai_baihat')
-            ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
-            ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
-            ->join('tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
-            ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
-            ->select('bai_hat.*', 'the_loai.*')
-            ->get();
-
-        if ($songs->isEmpty()) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'data' => $songs->map(function ($song) {
-                return [
-                    'ma_the_loai' => $song->ma_the_loai,
-                    'ten_the__loai' => $song->ten_the_loai,
-                    'ma_bai_hat' => $song->ma_bai_hat,
-                    'ten_bai_hat' => $song->ten_bai_hat,
-                    // 'artist' => $song->ten_user,
-                    'luot_nghe' => $song->luot_nghe,
-                    'hinh_anh' => $song->hinh_anh,
-                    'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                    'trang_thai' => $song->trang_thai
-                ];
-            }),
-            'message' => 'Get all songs successfully',
-            'status' => Response::HTTP_OK,
-        ], Response::HTTP_OK);
-    }
-
     // Hiển thị thông tin chi tiết của một bài hát
-    public function show($ma_bai_hat)
+    public function renderSongDetails($ma_bai_hat)
     {
         // Tìm bài hát dựa vào mã bài hát
         $song = DB::table('bai_hat')
@@ -179,49 +171,7 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function showArtists() {
-        // Tìm bài hát dựa vào mã bài hát
-        $song = DB::table('tai_khoan')
-            ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
-            ->select(
-                'bai_hat.*',
-                'album.ten_album',
-                'user.ten_user as ten_artist',
-                'the_loai.ten_the_loai',
-                'chat_luong_bai_hat.chat_luong',
-                'chat_luong_bai_hat.link_bai_hat'
-            )
-            // ->where('bai_hat.ma_bai_hat', $ma_bai_hat)
-            ->first();
 
-        // Kiểm tra kết quả trả về
-        if (!$song) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Song not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        // Trả về dữ liệu JSON
-        return response()->json([
-            'data' => [
-                'ma_bai_hat' => $song->ma_bai_hat,
-                'ten_bai_hat' => $song->ten_bai_hat,
-                'album' => $song->ten_album,
-                'artist' => $song->ten_artist,
-                'the_loai' => $song->ten_the_loai,
-                'thoi_luong' => $song->thoi_luong,
-                'trang_thai' => $song->trang_thai,
-                'luot_nghe' => $song->luot_nghe,
-                'hinh_anh' => $song->hinh_anh,
-                'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                'chat_luong' => $song->chat_luong,
-                'link_bai_hat' => $song->link_bai_hat,
-            ],
-            'message' => 'Song details retrieved successfully',
-            'status' => Response::HTTP_OK,
-        ], Response::HTTP_OK);
-    }
 
     // Lưu trữ một bài hát mới
     public function store(Request $request)
