@@ -3,105 +3,92 @@
 namespace App\Http\Controllers;
 
 use App\Models\GenreModel;
-use App\Models\SongModel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class GenreController extends Controller
 {
+    // Lấy danh sách tất cả thể loại
     public function renderListOfGenres()
     {
-        $genre = DB::table('the_loai')
-            ->select('the_loai.*')
-            ->get();
+        $genres = GenreModel::all();
 
-        if ($genre->isEmpty()) {
+        if ($genres->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
+                'message' => 'No genres found',
             ], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json([
-            'data' => $genre->map(function ($item) {
+            'data' => $genres->map(function ($genre) {
                 return [
-                    'ma_the_loai' => $item->ma_the_loai,
-                    'ten_the_loai' => $item->ten_the_loai
+                    'ma_the_loai' => $genre->ma_the_loai,
+                    'ten_the_loai' => $genre->ten_the_loai,
                 ];
             }),
-            'message' => 'Get all genre successfully',
+            'message' => 'Genres retrieved successfully',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
 
-    public function store(Request $request)
+    public function renderListOfSongsInGenre($genreId)
     {
-        $validatedData = $request->validate([
-            'ten_the_loai' => 'required|string|max:255',
-        ]);
-
-        $genre = GenreModel::create($validatedData);
-        return response()->json($genre, 201);
-    }
-
-    public function renderListOfSongsInGenre()
-    {
+        // Lấy danh sách bài hát thuộc thể loại cụ thể
         $songs = DB::table('theloai_baihat')
-            ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
-            ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
-            ->join('tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
-            ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
-            ->select('bai_hat.*', 'the_loai.*')
+            ->join('bai_hat', 'theloai_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
+            ->join('the_loai', 'theloai_baihat.ma_the_loai', '=', 'the_loai.ma_the_loai')
+            ->where('theloai_baihat.ma_the_loai', $genreId)
+            ->select(
+                'the_loai.ma_the_loai',
+                'the_loai.ten_the_loai',
+                'bai_hat.ma_bai_hat',
+                'bai_hat.ten_bai_hat',
+                'bai_hat.thoi_luong'
+            )
             ->get();
 
+        // Kiểm tra nếu không có dữ liệu
         if ($songs->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
+                'message' => 'Không tìm thấy bài hát cho thể loại này',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json([
-            'data' => $songs->map(function ($song) {
+        // Nhóm bài hát theo thể loại
+        $data = [
+            'ma_the_loai' => $songs->first()->ma_the_loai,
+            'ten_the_loai' => $songs->first()->ten_the_loai,
+            'bai_hat' => $songs->map(function ($song) {
                 return [
-                    'ma_the_loai' => $song->ma_the_loai,
-                    'ten_the__loai' => $song->ten_the_loai,
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'ten_bai_hat' => $song->ten_bai_hat,
-                    // 'artist' => $song->ten_user,
-                    'luot_nghe' => $song->luot_nghe,
-                    'hinh_anh' => $song->hinh_anh,
-                    'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                    'trang_thai' => $song->trang_thai
+                    'thoi_luong' => $song->thoi_luong,
                 ];
-            }),
-            'message' => 'Get all songs successfully',
+            })->values(),
+        ];
+
+        return response()->json([
+            'data' => $data,
+            'message' => 'Lấy danh sách bài hát theo thể loại thành công',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
 
+    // Lấy thông tin chi tiết của một thể loại
     public function renderGenreDetails($id)
     {
-        // Tìm thể loại dựa vào mã thể loại
-        $genre = DB::table('the_loai')
-            ->select(
-                'the_loai.*',
-            )
-            ->where('the_loai.ma_the_loai', $id)
-            ->first();
+        $genre = GenreModel::find($id);
 
-        // Kiểm tra kết quả trả về
         if (!$genre) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Song not found',
+                'message' => 'Genre not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        // Trả về dữ liệu JSON
         return response()->json([
             'data' => [
                 'ma_the_loai' => $genre->ma_the_loai,
@@ -112,12 +99,42 @@ class GenreController extends Controller
         ], Response::HTTP_OK);
     }
 
+    // Thêm mới một thể loại
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'ten_the_loai' => 'required|string|max:255',
+        ]);
+
+        $genre = GenreModel::create([
+            'ma_the_loai' => 'CATE' . str_pad((int) substr(GenreModel::max('ma_the_loai'), 4) + 1, 4, '0', STR_PAD_LEFT),
+            'ten_the_loai' => $validatedData['ten_the_loai'],
+        ]);
+
+        return response()->json([
+            'data' => $genre,
+            'message' => 'Genre created successfully',
+            'status' => Response::HTTP_CREATED,
+        ], Response::HTTP_CREATED);
+    }
+
+    // Xóa thể loại
     public function destroy($id)
     {
         $genre = GenreModel::find($id);
-        if (!$genre) return response()->json(['message' => 'Not found'], 404);
+
+        if (!$genre) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Genre not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         $genre->delete();
-        return response()->json(['message' => 'Deleted']);
+
+        return response()->json([
+            'message' => 'Genre deleted successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
     }
 }
