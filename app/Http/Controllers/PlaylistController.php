@@ -53,6 +53,7 @@ class PlaylistController extends Controller
                 'bai_hat.ma_bai_hat',
                 'bai_hat.ten_bai_hat',
                 'bai_hat.thoi_luong',
+                'bai_hat.ngay_phat_hanh',
                 'album.ma_album',
                 'album.ten_album'
             )
@@ -81,10 +82,8 @@ class PlaylistController extends Controller
                         'ma_bai_hat' => $song->ma_bai_hat,
                         'ten_bai_hat' => $song->ten_bai_hat,
                         'thoi_luong' => $song->thoi_luong,
-                        'album' => $song->ma_album ? [ // Chỉ thêm album nếu có
-                            'ma_album' => $song->ma_album,
-                            'ten_album' => $song->ten_album,
-                        ] : null,
+                        'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                        'album' => $song->ten_album,
                     ];
                 })->values(),
             ];
@@ -96,11 +95,6 @@ class PlaylistController extends Controller
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
-
-
-
-
-
 
     // Tạo mới một playlist
     public function store(Request $request)
