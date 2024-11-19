@@ -54,7 +54,7 @@ class AccountController extends Controller
         $user = User::create([
             'ma_tk' => $maTk,
             'ten_user' => $request->ten_user,
-            'anh_dai_dien' => null,
+            'anh_dai_dien' => $request->anh_dai_dien,
         ]);
     
         return response()->json($account, 201);
@@ -66,7 +66,7 @@ class AccountController extends Controller
 
         if ($account) {
             $account->update([
-            'gmail' => $request->gmail,
+            'email' => $request->email,
             'mat_khau' => $request->mat_khau,
             'trang_thai' => $request->trang_thai,
             'ma_phan_quyen' => $request->ma_phan_quyen,

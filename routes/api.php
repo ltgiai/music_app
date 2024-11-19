@@ -20,6 +20,7 @@ use App\Http\Controllers\SongController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
 
 // Route SongController
@@ -35,40 +36,6 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 // Route Playlist
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
 Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
-
-// Route AccountController
-Route::get('/accounts', [AccountController::class, 'index']);
-Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
-Route::post('/accounts', [AccountController::class, 'store']);
-Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
-Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
-
-// Route UserController
-Route::get('/users', [UserController::class, 'index']);
-Route::put('/users/{ma_tk}', [UserController::class, 'update']);
-
-// Route DecentralizationController
-Route::get('/decentralizations', [DecentralizationController::class, 'index']);
-Route::get('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'show']);
-Route::post('/decentralizations', [DecentralizationController::class, 'store']);
-Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
-Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
-Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
-
-// Route FunctionController
-Route::get('/functionns', [FunctionnController::class, 'index']);
-Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
-Route::post('/functionns', [FunctionnController::class, 'store']);
-Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update']);
-Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
-
-// Route NotificationController
-Route::get('/notifications', [NotificationController::class, 'index']);
-Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
-Route::post('/notifications', [NotificationController::class, 'store']);
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
@@ -123,10 +90,14 @@ Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{id}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{id}', [FunctionnController::class, 'destroy']);
 
+// -------------
+
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/login', [AuthController::class, 'login']);
-
+//image
+Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
+//account
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);

@@ -38,8 +38,8 @@ class AdvertisementController extends Controller
             'ngay_huy' => 'required|date',
             'luot_phat' => 'nullable|numeric|min:0',
             'hinh_anh' => 'nullable|url',
-            'trang_thai' => 'nullable|numeric|between:0,9'
-            'ma_nqc' => 'required|exists:advertisers,ma_nqc'
+            'trang_thai' => 'nullable|numeric|between:0,9',
+            'ma_nqc' => 'required|exists:advertisers,ma_nqc',
         ]);
 
         $advertisement = AdvertisementModel::create($validated);
@@ -62,8 +62,8 @@ class AdvertisementController extends Controller
             'ngay_huy' => 'required|date',
             'luot_phat' => 'nullable|numeric|min:0',
             'hinh_anh' => 'nullable|url',
-            'trang_thai' => 'nullable|numeric|between:0,9'
-            'ma_nqc' => 'required|exists:advertisers,ma_nqc'
+            'trang_thai' => 'nullable|numeric|between:0,9',
+            'ma_nqc' => 'required|exists:advertisers,ma_nqc',
         ]);
 
         $advertisement->update($validated);
