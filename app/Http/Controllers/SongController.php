@@ -14,40 +14,48 @@ class SongController extends Controller
     public function renderListOfSongs()
     {
         $songs = DB::table('bai_hat')
-            ->join('album', 'bai_hat.ma_album', '=', 'album.ma_album')
+            ->join('album as song_album', 'bai_hat.ma_album', '=', 'song_album.ma_album')
             ->join('tai_khoan', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
             ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
             ->join('theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
             ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
             ->join('chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
-            ->select('bai_hat.*', 'user.*', 'tai_khoan.*', 'album.*', 'theloai_baihat.*', 'the_loai.*', 'chat_luong_bai_hat.*')
+            ->select(
+                'bai_hat.*',
+                'bai_hat.hinh_anh as bai_hat_hinh_anh', // Alias cho hinh_anh của bảng bai_hat
+                'song_album.ten_album as album_name',
+                'user.ten_user as artist_name',
+                'chat_luong_bai_hat.*'
+            )
             ->get();
 
         if ($songs->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
+                'message' => 'ERROR 404 - No songs found'
             ], Response::HTTP_NOT_FOUND);
         }
 
+        $formattedSongs = $songs->map(function ($item) {
+            return [
+                'ma_bai_hat' => $item->ma_bai_hat,
+                'ten_bai_hat' => $item->ten_bai_hat,
+                'album' => $item->album_name, // Alias từ bảng album
+                'artist' => $item->artist_name, // Alias từ bảng user
+                'thoi_luong' => $item->thoi_luong,
+                'luot_nghe' => $item->luot_nghe,
+                'hinh_anh' => $item->bai_hat_hinh_anh, // Sử dụng alias của hinh_anh từ bảng bai_hat
+                'ngay_phat_hanh' => $item->ngay_phat_hanh,
+                'chat_luong' => $item->chat_luong,
+                'link_bai_hat' => $item->link_bai_hat,
+                'trang_thai' => $item->trang_thai
+            ];
+        });
+
         return response()->json([
-            'data' => $songs->map(function ($item) {
-                return [
-                    'ma_bai_hat' => $item->ma_bai_hat,
-                    'ten_bai_hat' => $item->ten_bai_hat,
-                    'album' => $item->ten_album,
-                    'artist' => $item->ten_user,
-                    'thoi_luong' => $item->thoi_luong,
-                    'luot_nghe' => $item->luot_nghe,
-                    'hinh_anh' => $item->hinh_anh,
-                    'ngay_phat_hanh' => $item->ngay_phat_hanh,
-                    'chat_luong' => $item->chat_luong,
-                    'link_bai_hat' => $item->link_bai_hat,
-                    'trang_thai' => $item->trang_thai
-                ];
-            }),
+            'data' => $formattedSongs,
             'message' => 'Get all songs successfully',
-            'status' => Response::HTTP_OK,
+            'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
     }
 
