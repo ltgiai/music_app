@@ -165,7 +165,7 @@ Route::post('/comment', [CommentController::class, 'store']);
 
 // Route GenreController
 Route::get('/genres', [GenreController::class, 'renderListOfGenres']); // Liệt kê danh sách thể loại
-Route::get('/genres/songs', [GenreController::class, 'renderListOfSongsInGenre']); // Liệt kê danh sách bài hát theo từng thể loại
+Route::get('/genre/songs/{ma_the_loai}', [GenreController::class, 'renderListOfSongsInGenre']); // Tìm kiếm các bài hát theo mã thể loại
 Route::get('/genre/{ma_the_loai}', [GenreController::class, 'renderGenreDetails']); // Tìm kiếm theo mã thể loại
 Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
