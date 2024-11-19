@@ -10,7 +10,7 @@ class AdvertiserModel extends Model
     use HasFactory;
 
     public $incrementing = false;
-    protected $table = 'nhadangkyquangcao';
+    protected $table = 'nha_dang_ky_quang_cao';
     protected $primaryKey = 'ma_nqc';
     protected $keyType = 'string';
     protected $fillable = ['ma_nqc', 'ten_nqc', 'so_dien_thoai'];

@@ -32,11 +32,6 @@ class Account extends Model
         return $this->belongsTo(Decentralization::class, 'ma_phan_quyen');
     }
 
-    public function album_tai_khoan()
-    {
-        return $this->hasMany(AlbumAccountModel::class, 'ma_tk');
-    }
-
     public function dang_ky_premium()
     {
         // return $this->hasMany(VoucherRegisterModel::class, 'ma_tk');

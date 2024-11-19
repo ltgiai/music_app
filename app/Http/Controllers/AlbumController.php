@@ -16,19 +16,24 @@ use Illuminate\Support\Facades\DB;
     1: dang hoat dong
     2: dang cho duyet
     0: da xoa
+    
+    Dang tai bai truoc sau do moi tao album
+
+    Sau khi tao album thi them bai hat vao album
+    
+    Co the them truc tiep bai hat vao trong luc tao album hoac sau khi tao album
 */
 
 class AlbumController extends Controller
 {
-
     //admin muon xem toan bo danh sach album
-    public function index()
+    public function index() //checked
     {
-        $albums = DB::table('album') // clm du chu s
-            // ->join('album_tai_khoan', 'albums.ma_album', '=', 'album_tai_khoan.ma_album')
-            // ->join('tai_khoan', 'album_tai_khoan.ma_tk', '=', 'tai_khoan.ma_tk')
-            // ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
-            // ->select('albums.*', 'artists.ten_artist')
+        $albums = DB::table('album')
+            ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+            ->select('album.*', 'user.ten_user as ten_artist')
+            ->whereIn('album.trang_thai', [1, 2])
             ->get();
 
         if ($albums->isEmpty()) {
@@ -47,7 +52,7 @@ class AlbumController extends Controller
                         'luot_yeu_thich' => $album->luot_yeu_thich,
                         'trang_thai' => $album->trang_thai,
                         'so_luong_bai_hat' => $album->so_luong_bai_hat,
-                        // 'nguoi_so_huu' => $album->ten_artist,
+                        'nguoi_so_huu' => $album->ten_artist,
                     ];
                 }),
                 'message' => 'Get all albums successfully',
@@ -56,17 +61,105 @@ class AlbumController extends Controller
         }
     }
 
-    public function store(Request $request)
+    // bài hát sẽ được tạo trước đó, không cần phải tạo mới
+    // hàm này mặc dù trả về status 500 và báo lỗi nhưng data vẫn được thêm vào db
+    public function store(Request $request, $ma_tk) //checked cho cả lúc chỉ tạo hoặc thêm n bài lúc tạo
     {
-        $validator = Validator::make($request->all(), [
+        $albumValidator = Validator::make($request->all(), [
             'ten_album' => 'required|string|max:255',
             'hinh_anh' => 'required|url',
-            'songs' => 'required|array',
-            'songs.*.ten_bai_hat' => 'required|string|max:255',
-            'songs.*.thoi_luong' => 'required|integer|min:1',
-            'songs.*.link_bai_hat' => 'required|url',
-            'songs.*.ma_artist' => 'required|integer|exists:artists,id',
-            'songs.*.ma_phi_luot_nghe' => 'required|integer|exists:phi_luot_nghe,id',
+        ]);
+
+        if ($albumValidator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Album validation error',
+                'errors' => $albumValidator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($request->has('songs')) {
+            $songsValidator = Validator::make($request->all(), [
+                'songs' => 'sometimes|array',
+                'songs.*.ma_bai_hat' => 'required|string',
+                'songs.*.ten_bai_hat' => 'required|string|max:255',
+                'songs.*.thoi_luong' => 'required|numeric',
+                'songs.*.ngay_phat_hanh' => 'required|date',
+                'songs.*.ma_album' => 'nullable|in:null',
+            ]);
+
+            if ($songsValidator->fails()) {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'success' => false,
+                    'message' => 'Songs validation error',
+                    'errors' => $songsValidator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        try {
+            do {
+                $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                $ma_album = 'AL' . $uniqueNumber;
+            } while (AlbumModel::where('ma_album', $ma_album)->exists());
+
+            $album = AlbumModel::create([
+                'ma_tk' => $ma_tk,
+                'ma_album' => $ma_album,
+                'ten_album' => $request->ten_album,
+                'ngay_tao' => now(),
+                'hinh_anh' => $request->hinh_anh,
+                'luot_yeu_thich' => 0,
+                'trang_thai' => 2,
+                'so_luong_bai_hat' => 0,
+            ]);
+
+            if ($request->has('songs') && is_array($request->songs)) {
+                foreach ($request->songs as $song) {
+                    $existingSong = SongModel::where('ma_bai_hat', $song['ma_bai_hat'])->first();
+                    if ($existingSong && $existingSong->ma_album === null) {
+                        $existingSong->ma_album = $ma_album;
+                        $existingSong->save();
+                    }
+                }
+                $album->so_luong_bai_hat = count($request->songs);
+                $album->save();
+            }
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Album created successfully, account = ' . $ma_tk,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Album creation failed: ' . $e->getMessage());
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Album creation failed',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // sau khi đã tạo được album thì thêm bài hát vào album
+    public function addSongsToAlbum(Request $request, $ma_album) //checked
+    {
+        // Kiểm tra xem album có tồn tại hay không
+        $album = AlbumModel::find($ma_album);
+        if (!$album) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Album not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'songs' => 'sometimes|array',
+            'songs.*.ma_bai_hat' => 'required|string',
+            'songs.*.ten_bai_hat' => 'required|string',
+            'songs.*.thoi_luong' => 'required|numeric',
+            'songs.*.ngay_phat_hanh' => 'required|date',
+            'songs.*.ma_album' => 'nullable|in:null',
         ]);
 
         if ($validator->fails()) {
@@ -79,70 +172,52 @@ class AlbumController extends Controller
         }
 
         try {
-            do {
-                $date = now()->format('dmY');
-                $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $ma_album = 'ALBUM' . $date . $uniqueNumber;
-            } while (AlbumModel::where('ma_album', $ma_album)->exists());
-
-            $album = AlbumModel::create([
-                'ma_album' => $ma_album,
-                'ten_album' => $request->ten_album,
-                'ngay_tao' => now(),
-                'hinh_anh' => $request->hinh_anh,
-                'luot_yeu_thich' => 0,
-                'trang_thai' => 2,
-                'so_luong_bai_hat' => 0,
-            ]);
-
-            if ($request->has('songs')) {
+            // Thêm bài hát vào album
+            if ($request->has('songs') && is_array($request->songs)) {
                 foreach ($request->songs as $song) {
-                    SongModel::create([
-                        'ma_bai_hat' => 'SONG' . $date . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT),
-                        'ten_bai_hat' => $song['ten_bai_hat'],
-                        'thoi_luong' => $song['thoi_luong'],
-                        'trang_thai' => 2,
-                        'luot_nghe' => 0,
-                        'hinh_anh' => null,
-                        'album' => $ma_album,
-                        'link_bai_hat' => $song['link_bai_hat'],
-                        'ngay_phat_hanh' => now(),
-                        'ma_artist' => $song['ma_artist'],
-                        'ma_phi_luot_nghe' => $song['ma_phi_luot_nghe'],
-                        'doanh_thu' => 0,
-                    ]);
+                    $songModel = SongModel::where('ma_bai_hat', $song['ma_bai_hat'])->first();
+                    if ($songModel && $songModel->ma_album === null) {
+                        $songModel->ma_album = $ma_album;
+                        $songModel->save();
+                    }
                 }
-                $album->so_luong_bai_hat = count($request->songs);
+                $album->so_luong_bai_hat += count($request->songs);
                 $album->save();
             }
 
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Album created successfully',
+                'message' => 'Songs added to album successfully ma_album = ' . $ma_album,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('Album created failed: ' . $e->getMessage());
+            Log::error('Adding songs to album failed: ' . $e->getMessage());
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Album created failed'
+                'message' => 'Adding songs to album failed, Error: ' . $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show($ma_album)
-    { 
-        $account = AlbumModel::where('ma_album', $ma_album)->first();
-        if ($account) {
+    public function show($ma_album) //checked
+    {
+        $album = DB::table('album')
+            ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+            ->select('album.*', 'user.ten_user as ten_artist')
+            ->where('album.ma_album', $ma_album)
+            ->first();
+        if ($album) {
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'data' => [
-                    'ma_album' => $account->ma_album,
-                    'ten_album' => $account->ten_album,
-                    'ngay_tao' => $account->ngay_tao,
-                    'hinh_anh' => $account->hinh_anh,
-                    'luot_yeu_thich' => $account->luot_yeu_thich,
-                    'trang_thai' => $account->trang_thai,
-                    'so_luong_bai_hat' => $account->so_luong_bai_hat,
+                    'ma_album' => $album->ma_album,
+                    'ten_album' => $album->ten_album,
+                    'ngay_tao' => $album->ngay_tao,
+                    'hinh_anh' => $album->hinh_anh,
+                    'luot_yeu_thich' => $album->luot_yeu_thich,
+                    'trang_thai' => $album->trang_thai,
+                    'so_luong_bai_hat' => $album->so_luong_bai_hat,
+                    'nguoi_so_huu' => $album->ten_artist,
                 ],
             ], response::HTTP_OK);
         } else {
@@ -153,7 +228,8 @@ class AlbumController extends Controller
         }
     }
 
-    public function update(Request $request, $ma_album)
+    // những thông tin không dính đến những bảng khác được update ở đây
+    public function update(Request $request, $ma_album) // checked
     {
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -164,11 +240,8 @@ class AlbumController extends Controller
         }
         $validator = Validator::make($request->all(), [
             'ten_album' => 'required',
-            'ngay_tao' => 'required',
             'hinh_anh' => 'required',
-            'luot_yeu_thich' => 'required',
-            'trang_thai' => 'required|integer|in:0,1,2,3',
-            'so_luong_bai_hat' => 'required',
+            'trang_thai' => 'required|integer|in:0,1,2',
         ]);
 
         if ($validator->fails()) {
@@ -181,11 +254,8 @@ class AlbumController extends Controller
         try {
             $album->update([
                 'ten_album' => $request->ten_album,
-                'ngay_tao' => $request->ngay_tao,
                 'hinh_anh' => $request->hinh_anh,
-                'luot_yeu_thich' => $request->luot_yeu_thich,
                 'trang_thai' => $request->trang_thai,
-                'so_luong_bai_hat' => $request->so_luong_bai_hat,
             ]);
 
             return response()->json([
@@ -201,7 +271,8 @@ class AlbumController extends Controller
         }
     }
 
-    public function destroy($ma_album) // set trang thai ve 0
+    // set trang thai ve 0
+    public function destroy($ma_album) //checked
     {
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -214,7 +285,6 @@ class AlbumController extends Controller
         try {
             $album->trang_thai = 0;
             $album->save();
-
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Album status updated to deleted successfully',
@@ -228,13 +298,12 @@ class AlbumController extends Controller
         }
     }
 
-    // xem xet lai bao mat o ham nay hmmm
-    public function getAlbumsByArtistAccount($ma_tk)
+    // admin mới mò tới hàm này, cơ mà hàm này có cần không thì ko thấy
+    public function getAlbumsByArtistAccount($ma_tk) //checked
     {
         try {
-            $albums = DB::table('album_tai_khoan')
-                ->join('album', 'album_tai_khoan.ma_album', '=', 'album.ma_album')
-                ->where('album_tai_khoan.ma_tk', $ma_tk)
+            $albums = DB::table('album')
+                ->where('album.ma_tk', $ma_tk)
                 ->whereIn('album.trang_thai', [1, 2])
                 ->select('album.*')
                 ->get();
@@ -268,13 +337,30 @@ class AlbumController extends Controller
         }
     }
 
-    public function getSongsInAlbum($ma_album)
+    //chỉ hiển thị những thông tin cần thiết trong figma
+    public function getSongsInAlbum($ma_album) //checked
     {
         try {
+            $album = DB::table('album')
+                ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+                ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+                ->select('album.*', 'user.ten_user as ten_artist')
+                ->where('album.ma_album', $ma_album)
+                ->where('album.trang_thai', 1)
+                ->first();
+
+            if (!$album) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Album not found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
             $songs = DB::table('album')
                 ->join('bai_hat', 'bai_hat.ma_album', '=', 'album.ma_album')
                 ->where('album.ma_album', $ma_album)
-                ->select('song.*')
+                ->select('bai_hat.*')
+                ->where('bai_hat.trang_thai', 1)
                 ->get();
 
             if ($songs->isEmpty()) {
@@ -282,8 +368,18 @@ class AlbumController extends Controller
                     'status' => Response::HTTP_NOT_FOUND,
                     'message' => 'Song is empty'
                 ], Response::HTTP_NOT_FOUND);
-            } else {
-                return response()->json([
+            }
+
+            return response()->json([
+                'album' => [
+                    'ma_album' => $album->ma_album,
+                    'ten_album' => $album->ten_album,
+                    'ngay_tao' => $album->ngay_tao,
+                    'hinh_anh' => $album->hinh_anh,
+                    'luot_yeu_thich' => $album->luot_yeu_thich,
+                    'trang_thai' => $album->trang_thai,
+                    'so_luong_bai_hat' => $album->so_luong_bai_hat,
+                    'nguoi_so_huu' => $album->ten_artist,
                     'songs' => $songs->map(function ($song) {
                         return [
                             'ma_bai_hat' => $song->ma_bai_hat,
@@ -292,19 +388,15 @@ class AlbumController extends Controller
                             'trang_thai' => $song->trang_thai,
                             'luot_nghe' => $song->luot_nghe,
                             'hinh_anh' => $song->hinh_anh,
-                            'ma_album' => $song->ma_album,
-                            'link_bai_hat' => $song->link_bai_hat,
                             'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                            'ma_artist' => $song->ma_artist,
-                            'ma_phi_luot_nghe' => $song->ma_phi_luot_nghe,
-                            'doanh_thu' => $song->doang_thu
                         ];
                     }),
-                    'message' => 'Get all songs successfully',
-                    'status' => Response::HTTP_OK,
-                ], Response::HTTP_OK);
-            }
+                ],
+                'message' => 'Get all songs successfully',
+                'status' => Response::HTTP_OK,
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Get songs in album failed'
@@ -312,9 +404,19 @@ class AlbumController extends Controller
         }
     }
 
-    public function likeAlbum(Request $request, $ma_album)
+    // tách ra để đúng logic, không được bỏ chung với hàm update()
+    // test ACC0009 thich album AL0001
+    public function likeAlbum(Request $request, $ma_album) //checked
     {
         $ma_tk = $request->input('ma_tk');
+
+        if (!$ma_tk) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'ma_tk is required',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
 
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -327,38 +429,21 @@ class AlbumController extends Controller
         $like = DB::table('luot_thich_album')
             ->where('ma_album', $ma_album)
             ->where('ma_tk', $ma_tk)
-            ->first();  // kiem tra xem da like chua
+            ->first();
 
         try {
-            if (!$like) {  // neu chua like truoc do 
+            if (!$like) { // chua thich album nay
                 DB::table('luot_thich_album')->insert([
                     'ma_album' => $ma_album,
                     'ma_tk' => $ma_tk,
-                    'ngay_tao' => now(),
-                    'ngay_chinh_sua' => now(),
-                    'ngay_huy' => null,
+                    'ngay_thich' => now(),
                 ]);
 
-                $album->increment('luot_thich_album');
+                $album->increment('luot_yeu_thich');
 
                 return response()->json([
                     'status' => Response::HTTP_OK,
                     'message' => 'Album liked successfully',
-                ], Response::HTTP_OK);
-            } elseif ($like && $like->ngay_huy !== null) { // thich lai
-                DB::table('luot_thich_album')
-                    ->where('ma_album', $ma_album)
-                    ->where('ma_tk', $ma_tk)
-                    ->update([
-                        'ngay_huy' => null,
-                        'ngay_chinh_sua' => now(),
-                    ]);
-
-                $album->increment('luot_thich_album'); // tang z on ko 
-
-                return response()->json([
-                    'status' => Response::HTTP_OK,
-                    'message' => 'Album liked again successfully',
                 ], Response::HTTP_OK);
             } else {
                 return response()->json([
@@ -370,14 +455,22 @@ class AlbumController extends Controller
             Log::error('Album like failed: ' . $e->getMessage());
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Album like failed',
+                'message' => 'Album like failed Error: ' . $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function unlikeAlbum(Request $request, $ma_album)
+    // tách ra để đúng logic, không được bỏ chung với hàm update()
+    public function unlikeAlbum(Request $request, $ma_album) //checked
     {
         $ma_tk = $request->input('ma_tk');
+
+        if (!$ma_tk) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'ma_tk is required',
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -392,7 +485,7 @@ class AlbumController extends Controller
             ->where('ma_tk', $ma_tk)
             ->first(); // da thich album nay chua
 
-        if (!$like || $like->ngay_huy !== null) {
+        if (!$like) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Album not liked by this account',
@@ -403,13 +496,10 @@ class AlbumController extends Controller
             DB::table('luot_thich_album')
                 ->where('ma_album', $ma_album)
                 ->where('ma_tk', $ma_tk)
-                ->update([
-                    'ngay_huy' => now(),
-                    'ngay_chinh_sua' => now(),
-                ]);
+                ->delete();
 
-            if ($album->luot_thich_album > 0) {
-                $album->decrement('luot_thich_album');
+            if ($album->luot_yeu_thich > 0) {
+                $album->decrement('luot_yeu_thich');
             }
 
             return response()->json([
@@ -420,72 +510,16 @@ class AlbumController extends Controller
             Log::error('Album unlike failed: ' . $e->getMessage());
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Album unlike failed',
+                'message' => 'Album unlike failed Error: ' . $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    // cmt tạm để xem xét nghiệp vụ
-    // public function addSongsToAlbum(Request $request, $ma_album)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'songs' => 'required|array', // Kiểm tra xem có danh sách bài hát không
-    //         'songs.*.ma_bai_hat' => 'required|string', // Mã bài hát cần thiết để cập nhật
-    //         // Các trường khác nếu cần
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'status' => Response::HTTP_BAD_REQUEST,
-    //             'success' => false,
-    //             'message' => 'Validation error',
-    //             'errors' => $validator->errors()
-    //         ], Response::HTTP_BAD_REQUEST);
-    //     }
-
-    //     // Kiểm tra xem album có tồn tại hay không
-    //     $album = AlbumModel::find($ma_album);
-    //     if (!$album) {
-    //         return response()->json([
-    //             'status' => Response::HTTP_NOT_FOUND,
-    //             'message' => 'Album not found',
-    //         ], Response::HTTP_NOT_FOUND);
-    //     }
-
-    //     try {
-    //         // Thêm bài hát vào album
-    //         foreach ($request->songs as $song) {
-    //             $songModel = SongModel::find($song['ma_bai_hat']);
-    //             if ($songModel) {
-    //                 $songModel->ma_album = $ma_album;
-    //                 $songModel->save();
-    //             }
-    //         }
-
-    //         $album->so_luong_bai_hat += count($request->songs);
-    //         $album->save();
-
-    //         return response()->json([
-    //             'status' => Response::HTTP_OK,
-    //             'message' => 'Songs added to album successfully',
-    //         ], Response::HTTP_OK);
-    //     } catch (\Exception $e) {
-    //         Log::error('Adding songs to album failed: ' . $e->getMessage());
-    //         return response()->json([
-    //             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-    //             'message' => 'Adding songs to album failed'
-    //         ], Response::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
-
     // search cho admin
-    public function searchForAdmin(Request $request)
+    public function searchForAdmin(Request $request) // khỏi cũng dc
     {
-        
         $query = DB::table('album')
-            ->join('album_tai_khoan', 'album.ma_album', '=', 'album_tai_khoan.ma_album')
-            ->join('tai_khoan', 'album_tai_khoan.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
             ->select('albums.*', 'artists.ten_artist');
 
@@ -547,12 +581,9 @@ class AlbumController extends Controller
         }
     }
 
-    public function searchForArtist(Request $request, $ma_tk)
+    public function searchForArtist(Request $request, $ma_tk) // khỏi cũng dc nào phát sinh thì check
     {
-        
-        $query = DB::table('album')
-            ->where('album_tai_khoan.ma_tk', $ma_tk)
-            ->select('albums.*');
+        $query = DB::table('album')->select('albums.*');
 
         // Tìm kiếm theo từ khóa theo tên album
         if ($request->has('keyword')) {
@@ -574,7 +605,6 @@ class AlbumController extends Controller
 
         try {
             $albums = $query->get();
-
             if ($albums->isEmpty()) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
