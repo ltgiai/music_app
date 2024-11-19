@@ -225,11 +225,12 @@ class SongController extends Controller
     // Lưu trữ một bài hát mới
     public function store(Request $request)
     {
+        // Xác thực dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'ten_bai_hat' => 'required',
             'thoi_luong' => 'required|numeric',
             'hinh_anh' => 'required',
-            'ma_album' => 'required',
+            'ma_album' => 'nullable', // Cho phép null
             'link_bai_hat' => 'required',
             'ngay_phat_hanh' => 'required|date',
             'ma_artist' => 'required',
@@ -240,31 +241,31 @@ class SongController extends Controller
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
                 'errors' => $validator->errors(),
-                'message' => 'Validation error'
+                'message' => 'Validation error',
             ], Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            // Tạo mã bài hát duy nhất
-            do {
-                $date = now()->format('dmY');
-                $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $ma_bai_hat = 'SONG-' . $date . $uniqueNumber;
-            } while (SongModel::where('ma_bai_hat', $ma_bai_hat)->exists());
+            // Tạo mã bài hát duy nhất với định dạng BHxxxx
+            $lastSong = SongModel::latest('ma_bai_hat')->first();
+            $lastNumber = $lastSong ? (int)substr($lastSong->ma_bai_hat, 2) : 0;
+            $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+            $ma_bai_hat = 'BH' . $newNumber;
 
+            // Lưu bài hát vào cơ sở dữ liệu
             SongModel::create([
                 'ma_bai_hat' => $ma_bai_hat,
                 'ten_bai_hat' => $request->ten_bai_hat,
                 'thoi_luong' => $request->thoi_luong,
-                'trang_thai' => 1, // mặc định là active
-                'luot_nghe' => 0,
+                'trang_thai' => 1, // Mặc định active
+                'luot_nghe' => 0, // Mặc định 0 lượt nghe
                 'hinh_anh' => $request->hinh_anh,
-                'ma_album' => $request->ma_album,
+                'ma_album' => $request->ma_album, // Cho phép null
                 'link_bai_hat' => $request->link_bai_hat,
                 'ngay_phat_hanh' => $request->ngay_phat_hanh,
                 'ma_artist' => $request->ma_artist,
                 'ma_phi_luot_nghe' => $request->ma_phi_luot_nghe,
-                'doanh_thu' => 0,
+                'doanh_thu' => 0, // Mặc định 0 doanh thu
             ]);
 
             return response()->json([
@@ -339,28 +340,33 @@ class SongController extends Controller
     // Cập nhật trạng thái bài hát về đã xóa
     public function destroy($ma_bai_hat)
     {
+        // Tìm bài hát dựa trên mã bài hát
         $song = SongModel::find($ma_bai_hat);
+    
         if (!$song) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Song not found',
             ], Response::HTTP_NOT_FOUND);
         }
-
+    
         try {
-            $song->trang_thai = 0; // cập nhật trạng thái là đã xóa
+            // Chuyển trạng thái bài hát thành 0 (soft delete)
+            $song->trang_thai = 0;
             $song->save();
-
+    
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Song deleted successfully',
+                'message' => 'Song deleted (soft delete) successfully',
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
+            // Ghi log lỗi nếu xảy ra vấn đề
             Log::error('Song deletion failed: ' . $e->getMessage());
+    
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Song deletion failed',
-            ]);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
