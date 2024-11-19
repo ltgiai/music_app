@@ -81,32 +81,24 @@ class AuthController extends Controller
         $password = $request->input('password');
 
         // Kiểm tra email và mật khẩu
-        $account = Account::with('user')->where('email', $request->email)->first();
-
+        $account = Account::with('phan_quyen','user')->where('email', $request->email)->first();
         if ($account && $password === $account->mat_khau) {
-            // return response()->json(['message' => 'Đăng nhập thành công', 'acc' => $acc], 200);
+            // $user1 = User::find($account->ma_tk);
             return response()->json([
                 'redirect' => 'http://localhost:5173',
                 'account' => [
                     'ma_tk' => $account->ma_tk,
                     'email' => $account->email,
-                    'ngay_tao' =>$account->ngay_tao,
-                    'password' =>$account->mat_khau,
-                    'ten_user' =>$account->user->ten_user,
-                    // 'token' => $user->token  // nếu bạn sử dụng token
-                ]
+                    'ngay_tao' => $account->ngay_tao,
+                    'password' => $account->mat_khau,
+                    'ten_user' => $account->user->ten_user,
+                    'avatar' => $account->user->anh_dai_dien,
+                    'ma_quyen' =>  $account->phan_quyen->ma_phan_quyen,
+                    'quyen' =>  $account->phan_quyen->ten_quyen_han,
+                ],
             ]);
         } else {
-                // Mật khẩu sai
                 return response()->json(['message' => 'Thông tin đăng nhập không hợp lệ'], 401);
         }
-        
-        // if ($acc && Hash::check($password, $acc->mat_khau)) {
-        //     // Đăng nhập thành công
-        //     return response()->json(['message' => 'Đăng nhập thành công', 'acc' => $acc], 200);
-        // } else {
-        //     // Đăng nhập thất bại
-        //     return response()->json(['message' => 'Sai email hoặc mật khẩu'], 401);
-        // }
     }
-}
+};
