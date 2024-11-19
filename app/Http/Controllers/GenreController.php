@@ -106,13 +106,14 @@ class GenreController extends Controller
             'ten_the_loai' => 'required|string|max:255',
         ]);
 
+        $ma_the_loai = 'CATE' . str_pad((int) substr(GenreModel::max('ma_the_loai'), 4) + 1, 4, '0', STR_PAD_LEFT);
         $genre = GenreModel::create([
-            'ma_the_loai' => 'CATE' . str_pad((int) substr(GenreModel::max('ma_the_loai'), 4) + 1, 4, '0', STR_PAD_LEFT),
+            'ma_the_loai' => $ma_the_loai,
             'ten_the_loai' => $validatedData['ten_the_loai'],
         ]);
 
         return response()->json([
-            'data' => $genre,
+            'data' => $ma_the_loai,
             'message' => 'Genre created successfully',
             'status' => Response::HTTP_CREATED,
         ], Response::HTTP_CREATED);
