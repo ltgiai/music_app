@@ -10,17 +10,17 @@ class AdvertisementModel extends Model
     
     use HasFactory;
 
-    protected $table = 'quangcao';
+    protected $table = 'quang_cao';
 
     // Cho phép các cột có thể được gán giá trị hàng loạt
     protected $fillable = [
         'ma_quang_cao', 
         'ten_quang_cao', 
         'ngay_tao', 
-        'ngay_huy', 
-        'luot_phat', 
-        'link_quang_cao', 
-        'trang_thai'
+        'luot_phat_tich_luy', 
+        'hinh_anh', 
+        'trang_thai',
+        'ma_nqc'
     ];
 
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
