@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdvertisertModel;
+use App\Models\AdvertiserModel;
 use Illuminate\Http\Request;
 
 class AdvertiserController extends Controller
@@ -13,7 +13,7 @@ class AdvertiserController extends Controller
         return response()->json($advertisers);
     }
 
-    public function show($id)
+    public function show($ma_nqc)
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
         ->first();
@@ -41,7 +41,7 @@ class AdvertiserController extends Controller
         return response()->json($advertiser, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $ma_nqc)
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
         ->first();
@@ -61,7 +61,7 @@ class AdvertiserController extends Controller
         return response()->json($advertiser);
     }
 
-    public function destroy($id)
+    public function destroy($ma_nqc)
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
         ->first();

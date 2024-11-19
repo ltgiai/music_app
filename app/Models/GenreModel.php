@@ -17,4 +17,10 @@ class GenreModel extends Model
         'ten_the_loai',
     ];
 
+    public function relationships()
+    {
+        return [
+            'theloai_baihat' => $this->hasMany(GenreSongModel::class, 'ma_the_loai', 'ma_the_loai'),
+        ];
+    }
 }
