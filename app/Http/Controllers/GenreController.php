@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GenreController extends Controller
 {
-    public function getListOfGenres()
+    public function renderListOfGenres()
     {
         $genre = DB::table('the_loai')
             ->select('the_loai.*')
@@ -47,7 +47,7 @@ class GenreController extends Controller
         return response()->json($genre, 201);
     }
 
-    public function getListOfSongsInGenre()
+    public function renderListOfSongsInGenre()
     {
         $songs = DB::table('theloai_baihat')
             ->join('bai_hat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
@@ -83,23 +83,33 @@ class GenreController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function show($id)
+    public function renderGenreDetails($id)
     {
-        $genre = GenreModel::find($id);
-        return $genre ? response()->json($genre) : response()->json(['message' => 'Not found'], 404);
-    }
+        // Tìm thể loại dựa vào mã thể loại
+        $genre = DB::table('the_loai')
+            ->select(
+                'the_loai.*',
+            )
+            ->where('the_loai.ma_the_loai', $id)
+            ->first();
 
-    public function update(Request $request, $id)
-    {
-        $genre = GenreModel::find($id);
-        if (!$genre) return response()->json(['message' => 'Not found'], 404);
+        // Kiểm tra kết quả trả về
+        if (!$genre) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Song not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
-        $validatedData = $request->validate([
-            'ten_the_loai' => 'string|max:255',
-        ]);
-
-        $genre->update($validatedData);
-        return response()->json($genre);
+        // Trả về dữ liệu JSON
+        return response()->json([
+            'data' => [
+                'ma_the_loai' => $genre->ma_the_loai,
+                'ten_the_loai' => $genre->ten_the_loai,
+            ],
+            'message' => 'Genre details retrieved successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
     }
 
     public function destroy($id)
