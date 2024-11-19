@@ -131,15 +131,7 @@ class SongController extends Controller
                         'doanh_thu' => $song->doanh_thu,
                         'luot_nghe' => $song->luot_nghe,
                         'hinh_anh' => $song->song_image,
-                        'album' => [
-                            'ma_album' => $song->ma_album,
-                            'ten_album' => $song->ten_album,
-                            'ngay_phat_hanh' => $song->ngay_tao,
-                            'hinh_anh' => $song->album_image,
-                            'luot_yeu_thich' => $song->luot_yeu_thich,
-                            'trang_thai' => $song->trang_thai,
-                            'so_luong_bai_hat' => $song->so_luong_bai_hat
-                        ]
+                        'album' => $song->ten_album
                     ];
                 })->values(),
             ];
@@ -200,15 +192,7 @@ class SongController extends Controller
                         'doanh_thu' => $song->doanh_thu,
                         'luot_nghe' => $song->luot_nghe,
                         'hinh_anh' => $song->song_image,
-                        'album' => [
-                            'ma_album' => $song->ma_album,
-                            'ten_album' => $song->ten_album,
-                            'ngay_phat_hanh' => $song->ngay_tao,
-                            'hinh_anh' => $song->album_image,
-                            'luot_yeu_thich' => $song->luot_yeu_thich,
-                            'trang_thai' => $song->trang_thai,
-                            'so_luong_bai_hat' => $song->so_luong_bai_hat
-                        ]
+                        'album' => $song->ten_album,
                     ];
                 })->values(),
             ];
