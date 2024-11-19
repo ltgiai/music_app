@@ -4,19 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Models\VoucherModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class VoucherController extends Controller
 {
     public function renderListOfVouchers()
     {
-        $vouchers = VoucherModel::all();
-        return response()->json($vouchers);
+        $voucher = DB::table('goi_premium')
+            ->select('goi_premium.*')
+            ->get();
+
+        if ($voucher->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'ERROR 404 - Not founded'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $formattedVouchers = $voucher->map(function ($item) {
+            return [
+                'ma_goi' => $item->ma_goi,
+                'ten_goi' => $item->ten_goi,
+                'thoi_han' => $item->thoi_han,
+                'gia_goi' => $item->gia_goi,
+                'doanh_thu' => $item->doanh_thu, 
+                'mo_ta' => $item->mo_ta,
+                'trang_thai' => $item->trang_thai
+            ];
+        });
+
+        return response()->json([
+            'data' => $formattedVouchers,
+            'message' => 'Get all vouchers successfully',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function show($ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
-        ->first();
+            ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
@@ -48,7 +78,7 @@ class VoucherController extends Controller
     public function update(Request $request, $ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
-        ->first();
+            ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);
@@ -71,7 +101,7 @@ class VoucherController extends Controller
     public function destroy($ma_goi)
     {
         $voucher = VoucherModel::where('ma_goi', $ma_goi)
-        ->first();
+            ->first();
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher not found'], 404);

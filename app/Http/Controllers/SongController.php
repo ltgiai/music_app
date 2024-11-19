@@ -87,24 +87,35 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function renderListOfSongsInEveryArtist()
+    public function renderListOfSongsByArtist()
     {
+        // Lấy danh sách nghệ sĩ và bài hát của họ
         $artists = DB::table('tai_khoan')
             ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
             ->join('bai_hat', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
-            ->select('tai_khoan.ma_tk', 'user.ten_user', 'bai_hat.ma_bai_hat', 'bai_hat.ten_bai_hat', 'bai_hat.thoi_luong')
+            ->join('album', 'album.ma_album', '=', 'bai_hat.ma_album')
+            ->select(
+                'tai_khoan.*',
+                'user.*',
+                'bai_hat.*',
+                'bai_hat.hinh_anh as song_image',
+                'album.*',
+                'album.hinh_anh as album_image'
+            )
             ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') // Chỉ lấy tài khoản có quyền nghệ sĩ
             ->get()
             ->groupBy('ma_tk'); // Nhóm dữ liệu theo mã tài khoản (nghệ sĩ)
 
+        // Kiểm tra nếu không tìm thấy nghệ sĩ nào
         if ($artists->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404',
+                'message' => 'Không tìm thấy nghệ sĩ và bài hát nào',
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // Chuẩn bị dữ liệu trả về
         $data = $artists->map(function ($songs, $ma_artist) {
             $artistInfo = $songs->first(); // Lấy thông tin cơ bản của nghệ sĩ
             return [
@@ -115,14 +126,98 @@ class SongController extends Controller
                         'ma_bai_hat' => $song->ma_bai_hat,
                         'ten_bai_hat' => $song->ten_bai_hat,
                         'thoi_luong' => $song->thoi_luong,
+                        'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                        'trang_thai' => $song->trang_thai,
+                        'doanh_thu' => $song->doanh_thu,
+                        'luot_nghe' => $song->luot_nghe,
+                        'hinh_anh' => $song->song_image,
+                        'album' => [
+                            'ma_album' => $song->ma_album,
+                            'ten_album' => $song->ten_album,
+                            'ngay_phat_hanh' => $song->ngay_tao,
+                            'hinh_anh' => $song->album_image,
+                            'luot_yeu_thich' => $song->luot_yeu_thich,
+                            'trang_thai' => $song->trang_thai,
+                            'so_luong_bai_hat' => $song->so_luong_bai_hat
+                        ]
                     ];
                 })->values(),
             ];
         })->values();
 
+        // Trả về kết quả
         return response()->json([
             'data' => $data,
-            'message' => 'Get all artists and their songs successfully',
+            'message' => 'Lấy danh sách nghệ sĩ và bài hát thành công',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
+    }
+
+
+
+    public function renderListOfSongsBySearchedArtist($ma_artist)
+    {
+        // Lấy danh sách nghệ sĩ và bài hát của họ
+        $artists = DB::table('tai_khoan')
+            ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
+            ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
+            ->join('bai_hat', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+            ->join('album', 'album.ma_album', '=', 'bai_hat.ma_album')
+            ->select(
+                'tai_khoan.*',
+                'user.*',
+                'bai_hat.*',
+                'bai_hat.hinh_anh as song_image',
+                'album.*',
+                'album.hinh_anh as album_image'
+            )
+            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') // Chỉ lấy tài khoản có quyền nghệ sĩ
+            ->where('tai_khoan.ma_tk', '=', $ma_artist)
+            ->get()
+            ->groupBy('ma_tk'); // Nhóm dữ liệu theo mã tài khoản (nghệ sĩ)
+
+        // Kiểm tra nếu không tìm thấy nghệ sĩ nào
+        if ($artists->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Không tìm thấy nghệ sĩ và bài hát nào',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Chuẩn bị dữ liệu trả về
+        $data = $artists->map(function ($songs, $ma_artist) {
+            $artistInfo = $songs->first(); // Lấy thông tin cơ bản của nghệ sĩ
+            return [
+                'ma_artist' => $ma_artist,
+                'ten_artist' => $artistInfo->ten_user,
+                'bai_hat' => $songs->map(function ($song) {
+                    return [
+                        'ma_bai_hat' => $song->ma_bai_hat,
+                        'ten_bai_hat' => $song->ten_bai_hat,
+                        'thoi_luong' => $song->thoi_luong,
+                        'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                        'trang_thai' => $song->trang_thai,
+                        'doanh_thu' => $song->doanh_thu,
+                        'luot_nghe' => $song->luot_nghe,
+                        'hinh_anh' => $song->song_image,
+                        'album' => [
+                            'ma_album' => $song->ma_album,
+                            'ten_album' => $song->ten_album,
+                            'ngay_phat_hanh' => $song->ngay_tao,
+                            'hinh_anh' => $song->album_image,
+                            'luot_yeu_thich' => $song->luot_yeu_thich,
+                            'trang_thai' => $song->trang_thai,
+                            'so_luong_bai_hat' => $song->so_luong_bai_hat
+                        ]
+                    ];
+                })->values(),
+            ];
+        })->values();
+
+        // Trả về kết quả
+        return response()->json([
+            'data' => $data,
+            'message' => 'Lấy danh sách nghệ sĩ và bài hát thành công',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
@@ -342,19 +437,19 @@ class SongController extends Controller
     {
         // Tìm bài hát dựa trên mã bài hát
         $song = SongModel::find($ma_bai_hat);
-    
+
         if (!$song) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Song not found',
             ], Response::HTTP_NOT_FOUND);
         }
-    
+
         try {
             // Chuyển trạng thái bài hát thành 0 (soft delete)
             $song->trang_thai = 0;
             $song->save();
-    
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Song deleted (soft delete) successfully',
@@ -362,7 +457,7 @@ class SongController extends Controller
         } catch (\Exception $e) {
             // Ghi log lỗi nếu xảy ra vấn đề
             Log::error('Song deletion failed: ' . $e->getMessage());
-    
+
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Song deletion failed',

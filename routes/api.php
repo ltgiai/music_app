@@ -27,7 +27,8 @@ use App\Http\Controllers\PlaylistController;
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
 Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
-Route::get('/songs/artist', [SongController::class, 'renderListOfSongsInEveryArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
@@ -72,7 +73,7 @@ Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContrac
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);
 
 // Route VoucherController
-Route::get('/vouchers', [VoucherController::class, 'index']);
+Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
