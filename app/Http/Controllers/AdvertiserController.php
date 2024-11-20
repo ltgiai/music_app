@@ -24,7 +24,8 @@ class AdvertiserController extends Controller
                     return [
                         'ma_nqc' => $ad->ma_nqc,
                         'ten_nqc' => $ad->ten_nqc,
-                        'so_dien_thoai' => $ad->so_dien_thoai
+                        'so_dien_thoai' => $ad->so_dien_thoai,
+                        'trang_thai' => $ad->trang_thai 
                     ];
                 }),
                 'message' => 'Get all advertiser successfully',
@@ -75,7 +76,8 @@ class AdvertiserController extends Controller
             AdvertiserModel::create([
                 'ma_nqc' => $ma_nqc,
                 'ten_nqc' => $request->ten_nqc,
-                'so_dien_thoai' => $request->so_dien_thoai
+                'so_dien_thoai' => $request->so_dien_thoai,
+                'trang_thai' => 1   
             ]);
             return response()->json([
                 'message' => 'Advertiser created',
@@ -123,10 +125,13 @@ class AdvertiserController extends Controller
         if ($hasAds) {
             return response()->json([
                 'message' => 'Cannot delete advertiser with associated ads',
-                'status' => 400
-            ], 400);
+                'status' => Response::HTTP_BAD_REQUEST
+            ], Response::HTTP_BAD_REQUEST);
         }
-        $advertiser->delete();
-        return response()->json(['message' => 'Advertiser deleted']);
+        $advertiser->update(['trang_thai' => 0]);
+        return response()->json([ 
+            'message' => 'Advertiser deleted', 
+            'status' => Response::HTTP_OK 
+        ], Response::HTTP_OK);
     }
 }

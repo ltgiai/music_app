@@ -31,7 +31,6 @@ class AdvertisementController extends Controller
         $advertisements = DB::table('quang_cao')
             ->join('nha_dang_ky_quang_cao', 'quang_cao.ma_nqc', '=', 'nha_dang_ky_quang_cao.ma_nqc')
             ->select('quang_cao.*', 'nha_dang_ky_quang_cao.ten_nqc', 'nha_dang_ky_quang_cao.so_dien_thoai')
-            ->where('quang_cao.trang_thai', '=', 1)
             ->get();
         if ($advertisements->isEmpty()) {
             return response()->json([
@@ -64,7 +63,6 @@ class AdvertisementController extends Controller
         $advertisement = DB::table('quang_cao')
             ->join('nha_dang_ky_quang_cao', 'quang_cao.ma_nqc', '=', 'nha_dang_ky_quang_cao.ma_nqc')
             ->select('quang_cao.*', 'nha_dang_ky_quang_cao.ten_nqc', 'nha_dang_ky_quang_cao.so_dien_thoai')
-            ->where('quang_cao.trang_thai', '=', 1)
             ->where('quang_cao.ma_quang_cao', '=', $id)
             ->first();
 
