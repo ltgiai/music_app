@@ -11,6 +11,7 @@ class AlbumModel extends Model
     
     protected $table = 'album';
     protected $primaryKey = 'ma_album';
+    protected $keyType = 'string';
     public $timestamps = false;
     protected $fillable = ['ma_tk', 'ma_album', 'ten_album', 'ngay_tao', 'hinh_anh', 'luot_yeu_thich', 'trang_thai', 'so_luong_bai_hat'];
 
