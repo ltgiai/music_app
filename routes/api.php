@@ -145,7 +145,6 @@ Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
-
 Route::apiResource('song-likes', LikeSongController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
