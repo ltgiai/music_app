@@ -314,6 +314,7 @@ class SongController extends Controller
             'ngay_phat_hanh' => 'required|date',
             'ma_artist' => 'required',
             'ma_phi_luot_nghe' => 'required',
+            'ma_the_loai' => 'required|exists:the_loai,ma_the_loai', // Bắt buộc nhập và phải tồn tại trong bảng the_loai
         ]);
 
         if ($validator->fails()) {
@@ -332,7 +333,7 @@ class SongController extends Controller
             $ma_bai_hat = 'BH' . $newNumber;
 
             // Lưu bài hát vào cơ sở dữ liệu
-            SongModel::create([
+            $song = SongModel::create([
                 'ma_bai_hat' => $ma_bai_hat,
                 'ten_bai_hat' => $request->ten_bai_hat,
                 'thoi_luong' => $request->thoi_luong,
@@ -344,12 +345,22 @@ class SongController extends Controller
                 'ngay_phat_hanh' => $request->ngay_phat_hanh,
                 'ma_artist' => $request->ma_artist,
                 'ma_phi_luot_nghe' => $request->ma_phi_luot_nghe,
+                'ma_the_loai' => $request->ma_the_loai, // Liên kết với thể loại
                 'doanh_thu' => 0, // Mặc định 0 doanh thu
             ]);
 
+            // Lấy danh sách thể loại để gửi kèm
+            $genres = DB::table('the_loai')
+                ->select('ma_the_loai', 'ten_the_loai')
+                ->get();
+
             return response()->json([
-                'status' => Response::HTTP_OK,
+                'data' => [
+                    'song' => $song,
+                    'genres' => $genres, // Gửi kèm danh sách thể loại
+                ],
                 'message' => 'Song created successfully',
+                'status' => Response::HTTP_OK,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             Log::error('Song creation failed: ' . $e->getMessage());
@@ -359,6 +370,7 @@ class SongController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     // Cập nhật thông tin bài hát
     public function update(Request $request, $ma_bai_hat)
