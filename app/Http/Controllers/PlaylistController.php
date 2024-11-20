@@ -8,6 +8,7 @@ use App\Models\SongModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Expr\Cast\String_;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -107,24 +108,98 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
-
-    // Tạo mới một playlist
     public function store(Request $request)
     {
-        // Validate dữ liệu
-        $validatedData = $request->validate([
-            'ten_playlist' => 'required|string|max:255',
-            'ma_tk' => 'required|string|exists:tai_khoan,ma_tk',
-            'so_luong_bai_hat' => 'nullable|numeric',
+        // Lấy dữ liệu từ request
+        $data = $request->only(['ma_tai_khoan', 'ma_bai_hat', 'ma_playlist']);
+
+        // Kiểm tra dữ liệu đầu vào
+        $validator = Validator::make($data, [
+            'ma_tai_khoan' => 'required|string|exists:tai_khoan,ma_tk',
+            'ma_bai_hat' => 'required|string|exists:bai_hat,ma_bai_hat',
+            'ma_playlist' => 'nullable|string|exists:playlist,ma_playlist',
         ]);
 
-        // Tạo ID mới cho artist trong controller
-        $validatedData['ma_playlist'] = $this->generateCustomId();
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
-        // Thêm nghệ sĩ mới
-        $playlist = (new PlaylistModel())->addPlaylist($validatedData);
+        // Nếu có ma_playlist -> Thêm bài hát vào playlist có sẵn
+        if (!empty($data['ma_playlist'])) {
+            // Kiểm tra quyền sở hữu playlist
+            $playlist = DB::table('playlist')
+                ->where('ma_playlist', $data['ma_playlist'])
+                ->where('ma_tk', $data['ma_tai_khoan'])
+                ->first();
 
-        return response()->json($playlist, 201); // Trả về HTTP status code 201 (Created)
+            if (!$playlist) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Playlist not found or does not belong to this account',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Thêm bài hát vào bảng playlist_baihat
+            DB::table('playlist_baihat')->insert([
+                'ma_playlist' => $data['ma_playlist'],
+                'ma_bai_hat' => $data['ma_bai_hat'],
+            ]);
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Song added to existing playlist successfully',
+            ], Response::HTTP_OK);
+        }
+
+        // Nếu không có ma_playlist -> Tạo mới playlist
+        try {
+            $latestPlaylist = DB::table('playlist')
+                ->where('ma_tk', $data['ma_tai_khoan'])
+                ->latest('ma_playlist')
+                ->first();
+
+            // Đặt tên cho playlist mới
+            $newPlaylistName = 'Danh sách phát của tôi #' .
+                ($latestPlaylist ? intval(preg_replace('/[^0-9]/', '', $latestPlaylist->ten_playlist)) + 1 : 1);
+
+            // Tạo mã playlist mới
+            $newPlaylistId = 'PL' . str_pad(
+                (int) filter_var(DB::table('playlist')->max('ma_playlist'), FILTER_SANITIZE_NUMBER_INT) + 1,
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
+
+            // Thêm playlist mới
+            DB::table('playlist')->insert([
+                'ma_playlist' => $newPlaylistId,
+                'ma_tk' => $data['ma_tai_khoan'],
+                'ten_playlist' => $newPlaylistName,
+                'hinh_anh' => null, // Có thể truyền hình ảnh mặc định nếu cần
+            ]);
+
+            // Thêm bài hát vào playlist mới
+            DB::table('playlist_baihat')->insert([
+                'ma_playlist' => $newPlaylistId,
+                'ma_bai_hat' => $data['ma_bai_hat'],
+            ]);
+
+            return response()->json([
+                'status' => Response::HTTP_CREATED,
+                'message' => 'Playlist created and song added successfully',
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            Log::error('Error creating playlist: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to create playlist or add song',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Hiển thị chi tiết một playlist
@@ -141,41 +216,147 @@ class PlaylistController extends Controller
     }
 
     // Cập nhật thông tin một playlist
-    public function update(Request $request, $id)
+    public function update(Request $request, $ma_playlist)
     {
-        // Validate dữ liệu
-        $validatedData = $request->validate([
-            'ma_tk' => 'nullable|string|exists:accounts,ma_tk',
-            'ten_artist' => 'nullable|string|max:255',
-            'anh_dai_dien' => 'nullable|string',
-            'tong_tien' => 'nullable|numeric',
+        // Validate dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'ten_playlist' => 'nullable|string|max:255',
+            'so_luong_bai_hat' => 'nullable|numeric',
+            'hinh_anh' => 'nullable|string',
+            'ma_tk' => 'nullable|string|exists:tai_khoan,ma_tk',
         ]);
 
-        // Cập nhật playlist
-        $playlist = (new PlaylistModel())->updatePlaylist($id, $validatedData);
-
-        if ($playlist) {
-            return response()->json($playlist);
+        // Kiểm tra lỗi validate
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json(['message' => 'Playlist not found'], 404);
-    }
+        // Dữ liệu đã được validate
+        $validatedData = $validator->validated();
 
-    // Xóa một playlist
-    public function destroy($id)
-    {
-        $deleted = (new PlaylistModel())->deletePlaylist($id);
+        try {
+            // Tìm playlist theo mã
+            $playlist = PlaylistModel::where('ma_playlist', $ma_playlist)->first();
 
-        if ($deleted) {
-            return response()->json(['message' => 'Playlist deleted']);
+            if (!$playlist) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Playlist not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Cập nhật playlist
+            $playlist->update($validatedData);
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Playlist updated successfully',
+                'data' => $playlist,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Ghi log lỗi nếu có
+            Log::error('Error updating playlist: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to update playlist',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return response()->json(['message' => 'Playlist not found'], 404);
     }
 
-    // Hàm tạo custom ID cho playlist
-    private function generateCustomId()
+    //Xóa toàn bộ playlist
+    public function deletePlaylist($ma_tai_khoan, $ma_playlist)
     {
-        return 'PL' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        try {
+            // Kiểm tra playlist thuộc tài khoản
+            $playlistOwner = DB::table('playlist')
+                ->where('ma_playlist', $ma_playlist)
+                ->where('ma_tk', $ma_tai_khoan)
+                ->exists();
+
+            if (!$playlistOwner) {
+                return response()->json([
+                    'status' => Response::HTTP_FORBIDDEN,
+                    'message' => 'Playlist does not belong to this account',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            // Xóa các bài hát trong playlist
+            DB::table('playlist_baihat')
+                ->where('ma_playlist', $ma_playlist)
+                ->delete();
+
+            // Xóa playlist
+            $deleted = DB::table('playlist')
+                ->where('ma_playlist', $ma_playlist)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json([
+                    'status' => Response::HTTP_OK,
+                    'message' => 'Playlist deleted successfully',
+                ], Response::HTTP_OK);
+            }
+
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Playlist not found',
+            ], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            Log::error('Error deleting playlist: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to delete playlist',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Xóa bài hát trong playlist của một tài khoản
+    public function deleteSongFromPlaylist($ma_tai_khoan, $ma_playlist, $ma_bai_hat)
+    {
+        try {
+            // Kiểm tra playlist thuộc tài khoản
+            $playlistOwner = DB::table('playlist')
+                ->where('ma_playlist', $ma_playlist)
+                ->where('ma_tk', $ma_tai_khoan)
+                ->exists();
+
+            if (!$playlistOwner) {
+                return response()->json([
+                    'status' => Response::HTTP_FORBIDDEN,
+                    'message' => 'Playlist does not belong to this account',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            // Xóa bài hát khỏi playlist
+            $deleted = DB::table('playlist_baihat')
+                ->where('ma_playlist', $ma_playlist)
+                ->where('ma_bai_hat', $ma_bai_hat)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json([
+                    'status' => Response::HTTP_OK,
+                    'message' => 'Song removed from playlist successfully',
+                ], Response::HTTP_OK);
+            }
+
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Song not found in the specified playlist',
+            ], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            Log::error('Error deleting song from playlist: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to remove song from playlist',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
