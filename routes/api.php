@@ -36,7 +36,7 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 
 // Route Playlist
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
-Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
+Route::get('/playlists/account/{ma_playlist}/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
@@ -74,16 +74,15 @@ Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingCont
 
 // Route VoucherController
 Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
+Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
 Route::delete('/vouchers/{id}', [VoucherController::class, 'destroy']);
 
-// Route VoucherRegisterController
-Route::get('/voucher-registers', [VoucherRegisterController::class, 'index']);
-Route::get('/voucher-registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
-Route::post('/voucher-registers', [VoucherRegisterController::class, 'store']);
-Route::put('/voucher-registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
+Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
+Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
+Route::put('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
 
 // Route FunctionnController
 Route::get('/functionns', [FunctionnController::class, 'index']);
@@ -97,8 +96,10 @@ Route::delete('/functionns/{id}', [FunctionnController::class, 'destroy']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/login', [AuthController::class, 'login']);
+
 //image
 Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
+
 //account
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
@@ -144,7 +145,6 @@ Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
-// Route GenreSongController
 
 Route::apiResource('song-likes', LikeSongController::class);
 
