@@ -22,6 +22,7 @@ use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\FunctionalDetailController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
@@ -127,6 +128,9 @@ Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
+// Route 
+Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
+Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
