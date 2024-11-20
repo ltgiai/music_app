@@ -39,7 +39,7 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function renderPlaylistsWithSongsByAccount($ma_tk)
+    public function renderPlaylistsWithSongsByAccount($ma_playlist, $ma_tk)
     {
         // Lấy dữ liệu tài khoản cùng playlist, bài hát và album liên quan
         $playlists = DB::table('tai_khoan')
@@ -48,6 +48,7 @@ class PlaylistController extends Controller
             ->leftJoin('bai_hat', 'playlist_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
             ->leftJoin('album', 'bai_hat.ma_album', '=', 'album.ma_album') // Thêm thông tin album
             ->select(
+                'tai_khoan.ma_tk',
                 'playlist.ma_playlist',
                 'playlist.ten_playlist',
                 'bai_hat.ma_bai_hat',
@@ -57,10 +58,12 @@ class PlaylistController extends Controller
                 'album.ma_album',
                 'album.ten_album'
             )
-            ->where('tai_khoan.ma_tk', '=', $ma_tk) // Lọc theo tài khoản được truyền qua URL
+            ->where('tai_khoan.ma_tk', '=', $ma_tk) // Lọc theo tài khoản
+            ->where('playlist.ma_playlist', '=', $ma_playlist) // Lọc theo playlist
             ->get()
             ->groupBy('ma_playlist'); // Nhóm theo playlist
 
+        // Kiểm tra nếu không có dữ liệu
         if ($playlists->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
@@ -68,11 +71,15 @@ class PlaylistController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        // Tạo cấu trúc JSON lồng ghép
+        // Xử lý và tạo cấu trúc JSON
         $data = $playlists->map(function ($songs, $ma_playlist) {
             $playlistInfo = $songs->first(); // Lấy thông tin playlist từ bài hát đầu tiên
+            if (!$playlistInfo) {
+                return null; // Tránh lỗi nếu không có bài hát nào
+            }
 
             return [
+                'ma_tk' => $playlistInfo->ma_tk,
                 'ma_playlist' => $ma_playlist,
                 'ten_playlist' => $playlistInfo->ten_playlist,
                 'bai_hat' => $songs->filter(function ($song) {
@@ -83,11 +90,14 @@ class PlaylistController extends Controller
                         'ten_bai_hat' => $song->ten_bai_hat,
                         'thoi_luong' => $song->thoi_luong,
                         'ngay_phat_hanh' => $song->ngay_phat_hanh,
-                        'album' => $song->ten_album,
+                        'album' => [
+                            'ma_album' => $song->ma_album,
+                            'ten_album' => $song->ten_album,
+                        ],
                     ];
                 })->values(),
             ];
-        })->values();
+        })->filter()->values(); // Loại bỏ null và sắp xếp lại chỉ mục
 
         return response()->json([
             'data' => $data,
@@ -95,6 +105,7 @@ class PlaylistController extends Controller
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
+
 
     // Tạo mới một playlist
     public function store(Request $request)

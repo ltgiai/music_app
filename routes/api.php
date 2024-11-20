@@ -28,7 +28,8 @@ use App\Http\Controllers\FunctionalDetailController;
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
 Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
-Route::get('/songs/artist', [SongController::class, 'renderListOfSongsInEveryArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
@@ -36,7 +37,7 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 
 // Route Playlist
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
-Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
+Route::get('/playlists/account/{ma_playlist}/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
@@ -56,6 +57,7 @@ Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
 Route::post('/advertisements', [AdvertisementController::class, 'store']);
 Route::put('/advertisements/{id}', [AdvertisementController::class, 'update']);
 Route::delete('/advertisements/{id}', [AdvertisementController::class, 'destroy']);
+Route::put('/advertisements/{id}/use', [AdvertisementController::class, 'useAdvertisement']);
 
 // Route AdvertiserController
 Route::get('/advertisers', [AdvertiserController::class, 'index']);
@@ -66,23 +68,22 @@ Route::delete('/advertisers/{id}', [AdvertiserController::class, 'destroy']);
 
 // Route AdvertisingContractController
 Route::get('/advertising-contracts', [AdvertisingContractController::class, 'index']);
-Route::get('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'show']);
+Route::get('/advertising-contracts/{ma_hop_dong}', [AdvertisingContractController::class, 'show']);
 Route::post('/advertising-contracts', [AdvertisingContractController::class, 'store']);
 Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'update']);
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);
 
 // Route VoucherController
-Route::get('/vouchers', [VoucherController::class, 'index']);
+Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
+Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
 Route::delete('/vouchers/{id}', [VoucherController::class, 'destroy']);
 
-// Route VoucherRegisterController
-Route::get('/voucher-registers', [VoucherRegisterController::class, 'index']);
-Route::get('/voucher-registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
-Route::post('/voucher-registers', [VoucherRegisterController::class, 'store']);
-Route::put('/voucher-registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
+Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
+Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
+Route::put('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
 
 // Route FunctionnController
 Route::get('/functionns', [FunctionnController::class, 'index']);
@@ -96,8 +97,10 @@ Route::delete('/functionns/{id}', [FunctionnController::class, 'destroy']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/login', [AuthController::class, 'login']);
+
 //image
 Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
+
 //account
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
@@ -140,15 +143,17 @@ Route::post('/comment', [CommentController::class, 'store']);
 
 // Route GenreController
 Route::get('/genres', [GenreController::class, 'renderListOfGenres']); // Liệt kê danh sách thể loại
-Route::get('/genres/songs', [GenreController::class, 'renderListOfSongsInGenre']); // Liệt kê danh sách bài hát theo từng thể loại
+Route::get('/genre/songs/{ma_the_loai}', [GenreController::class, 'renderListOfSongsInGenre']); // Tìm kiếm các bài hát theo mã thể loại
 Route::get('/genre/{ma_the_loai}', [GenreController::class, 'renderGenreDetails']); // Tìm kiếm theo mã thể loại
 Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
-// Route GenreSongController
 
-Route::apiResource('song-likes', LikeSongController::class);
+Route::get('/song-likes', [LikeSongController::class, 'index']);
+Route::post('/song-likes', [LikeSongController::class, 'store']);
+Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
+Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
