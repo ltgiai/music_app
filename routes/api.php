@@ -67,7 +67,7 @@ Route::delete('/advertisers/{id}', [AdvertiserController::class, 'destroy']);
 
 // Route AdvertisingContractController
 Route::get('/advertising-contracts', [AdvertisingContractController::class, 'index']);
-Route::get('/advertising-contracts/{ma_hop_dong}', [AdvertisingContractController::class, 'show']); 
+Route::get('/advertising-contracts/{ma_hop_dong}', [AdvertisingContractController::class, 'show']);
 Route::post('/advertising-contracts', [AdvertisingContractController::class, 'store']);
 Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'update']);
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);

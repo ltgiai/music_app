@@ -107,30 +107,15 @@ class GenreController extends Controller
             'ten_the_loai' => 'required|string|max:255',
         ]);
 
-        // Lấy mã thể loại lớn nhất hiện tại
-        $maxId = DB::table('the_loai')->max('ma_the_loai');
-
-        // Kiểm tra và tạo mã thể loại mới
-        if ($maxId && preg_match('/^CATE(\d{4})$/', $maxId, $matches)) {
-            $nextId = (int)$matches[1] + 1; // Tách số và tăng giá trị
-        } else {
-            $nextId = 1; // Mặc định nếu chưa có mã thể loại hoặc sai định dạng
-        }
-
-        $newMaTheLoai = 'CATE' . str_pad($nextId, 4, '0', STR_PAD_LEFT); // Tạo mã mới theo định dạng
-
-        // Tạo thể loại mới
+        $ma_the_loai = 'CATE' . str_pad((int) substr(GenreModel::max('ma_the_loai'), 4) + 1, 4, '0', STR_PAD_LEFT);
         $genre = GenreModel::create([
-            'ma_the_loai' => $newMaTheLoai,
+            'ma_the_loai' => $ma_the_loai,
             'ten_the_loai' => $validatedData['ten_the_loai'],
         ]);
 
         // Trả về JSON chứa dữ liệu vừa được thêm
         return response()->json([
-            'data' => [
-                'ma_the_loai' => $genre->ma_the_loai,
-                'ten_the_loai' => $genre->ten_the_loai,
-            ],
+            'data' => $ma_the_loai,
             'message' => 'Genre created successfully',
             'status' => Response::HTTP_CREATED,
         ], Response::HTTP_CREATED);
