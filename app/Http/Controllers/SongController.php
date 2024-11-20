@@ -299,8 +299,6 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-
-
     // Lưu trữ một bài hát mới
     public function store(Request $request)
     {
@@ -309,12 +307,11 @@ class SongController extends Controller
             'ten_bai_hat' => 'required',
             'thoi_luong' => 'required|numeric',
             'hinh_anh' => 'required',
-            'ma_album' => 'nullable', // Cho phép null
-            'link_bai_hat' => 'required',
+            'ma_album' => 'nullable|exists:album,ma_album', // Nếu có, phải tồn tại trong bảng album
+            // 'link_bai_hat' => 'required',
             'ngay_phat_hanh' => 'required|date',
-            'ma_artist' => 'required',
-            'ma_phi_luot_nghe' => 'required',
-            'ma_the_loai' => 'required|exists:the_loai,ma_the_loai', // Bắt buộc nhập và phải tồn tại trong bảng the_loai
+            'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk', // Bắt buộc, phải tồn tại trong bảng artist
+            'ma_the_loai' => 'required|exists:the_loai,ma_the_loai', // Bắt buộc, phải tồn tại trong bảng thể loại
         ]);
 
         if ($validator->fails()) {
@@ -332,6 +329,25 @@ class SongController extends Controller
             $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
             $ma_bai_hat = 'BH' . $newNumber;
 
+            // Kiểm tra mã album (nếu có) và mã tài khoản nghệ sĩ
+            if ($request->ma_album) {
+                $albumExists = DB::table('album')->where('ma_album', $request->ma_album)->exists();
+                if (!$albumExists) {
+                    return response()->json([
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'message' => 'Invalid album ID',
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            }
+
+            $artistExists = DB::table('tai_khoan')->where('ma_tk', $request->ma_tk_artist)->exists();
+            if (!$artistExists) {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'Invalid artist account ID',
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
             // Lưu bài hát vào cơ sở dữ liệu
             $song = SongModel::create([
                 'ma_bai_hat' => $ma_bai_hat,
@@ -340,25 +356,16 @@ class SongController extends Controller
                 'trang_thai' => 1, // Mặc định active
                 'luot_nghe' => 0, // Mặc định 0 lượt nghe
                 'hinh_anh' => $request->hinh_anh,
-                'ma_album' => $request->ma_album, // Cho phép null
-                'link_bai_hat' => $request->link_bai_hat,
+                'ma_album' => $request->ma_album, // Nếu null thì để trống
+                // 'link_bai_hat' => $request->link_bai_hat,
                 'ngay_phat_hanh' => $request->ngay_phat_hanh,
-                'ma_artist' => $request->ma_artist,
-                'ma_phi_luot_nghe' => $request->ma_phi_luot_nghe,
+                'ma_tk_artist' => $request->ma_tk_artist,
                 'ma_the_loai' => $request->ma_the_loai, // Liên kết với thể loại
                 'doanh_thu' => 0, // Mặc định 0 doanh thu
             ]);
 
-            // Lấy danh sách thể loại để gửi kèm
-            $genres = DB::table('the_loai')
-                ->select('ma_the_loai', 'ten_the_loai')
-                ->get();
-
             return response()->json([
-                'data' => [
-                    'song' => $song,
-                    'genres' => $genres, // Gửi kèm danh sách thể loại
-                ],
+                'data' => $song,
                 'message' => 'Song created successfully',
                 'status' => Response::HTTP_OK,
             ], Response::HTTP_OK);
@@ -370,6 +377,7 @@ class SongController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     // Cập nhật thông tin bài hát

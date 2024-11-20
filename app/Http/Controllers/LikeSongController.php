@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class LikeSongController extends Controller
 {
-    public function index()
+    public function renderLikeEachSong()
     {
-        return response()->json(LikeSongModel::all());
+
+    }
+
+    public function renderLikeOfSong($ma_bai_hat)
+    {
+        
     }
 
     public function store(Request $request)
