@@ -35,7 +35,7 @@ class SongSubArtistModel extends Model
     public function relationships()
     {
         return [
-            'subartist' => $this->belongsTo(ArtistModel::class, 'ma_subartist', 'ma_tk'),
+            'subartist' => $this->belongsTo(Account::class, 'ma_subartist', 'ma_tk'),
         ];
     }
 

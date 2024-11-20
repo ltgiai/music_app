@@ -9,11 +9,11 @@ use App\Models\Decentralization;
 class DecentralizationController extends Controller
 {
     public function index(){
-        $decentralizations = Decentralization::with('taikhoan')->get();
+        $decentralizations = Decentralization::all();
         return response()->json($decentralizations);
     }
     public function show($ma_phan_quyen){
-        $decentralization = Decentralization::with(['chuc_nang', 'taikhoan'])->find($ma_phan_quyen);
+        $decentralization = Decentralization::with(['chuc_nang'])->find($ma_phan_quyen);
 
         if ($decentralization) {
             return response()->json($decentralization);

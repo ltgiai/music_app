@@ -14,7 +14,7 @@ class Account extends Model
     public $timestamps = false;
     protected $table = 'tai_khoan';
     protected $primaryKey = 'ma_tk';
-    protected $keyType = 'string'; // Nếu khóa chính là chuỗi
+    protected $keyType = 'string';
     protected $fillable = ['ma_tk', 'token', 'email', 'mat_khau', 'ngay_tao', 'trang_thai', 'ma_phan_quyen'];
 
     public function user()
@@ -30,11 +30,6 @@ class Account extends Model
     public function phan_quyen()
     {
         return $this->belongsTo(Decentralization::class, 'ma_phan_quyen');
-    }
-
-    public function album_tai_khoan()
-    {
-        return $this->hasMany(AlbumAccountModel::class, 'ma_tk');
     }
 
     public function dang_ky_premium()
