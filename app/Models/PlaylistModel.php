@@ -56,9 +56,9 @@ class PlaylistModel extends Model
         return null;
     }
 
-    public function deletePlaylist($id)
+    public function deletePlaylist($ma_playlist)
     {
-        $playlist = self::find($id);
+        $playlist = self::find($ma_playlist);
         if ($playlist) {
             return $playlist->delete();
         }
