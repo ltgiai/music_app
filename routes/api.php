@@ -146,7 +146,10 @@ Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
 
-Route::apiResource('song-likes', LikeSongController::class);
+Route::get('/song-likes', [LikeSongController::class, 'index']);
+Route::post('/song-likes', [LikeSongController::class, 'store']);
+Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
+Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
