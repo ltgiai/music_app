@@ -22,6 +22,7 @@ use App\Http\Controllers\VoucherRegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\FunctionalDetailController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
@@ -127,15 +128,22 @@ Route::post('/functionns', [FunctionnController::class, 'store']);
 Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update']);
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
+// Route 
+Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
+Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
 
 // Route CommentController
+Route::get('/comments/song/{songId}', [CommentController::class, 'getCommentsBySong']);
 Route::get('/comments', [CommentController::class, 'index']);
-Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
-Route::post('/comment', [CommentController::class, 'store']);
+Route::get('/comments/{ma_bl}', [CommentController::class, 'show']);
+Route::post('/comments', [CommentController::class, 'store']);
+Route::put('/comments/{ma_bl}', [CommentController::class, 'update']);
+Route::delete('/comments/{ma_bl}', [CommentController::class, 'destroy']);
+
 
 // Route GenreController
 Route::get('/genres', [GenreController::class, 'renderListOfGenres']); // Liệt kê danh sách thể loại
@@ -146,7 +154,10 @@ Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
 
-Route::apiResource('song-likes', LikeSongController::class);
+Route::get('/song-likes', [LikeSongController::class, 'index']);
+Route::post('/song-likes', [LikeSongController::class, 'store']);
+Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
+Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -11,8 +11,9 @@ class User extends Model
     public $timestamps = false;
     protected $table = 'user';
     protected $primaryKey = 'ma_tk';
+    protected $keyType = 'string';
     protected $fillable = ['ma_tk','ten_user','anh_dai_dien'];
-    protected $keyType = 'string'; // Nếu khóa chính là chuỗi
+    
     public function tai_khoan()
     {
         return $this->belongsTo(Account::class, 'ma_tk', 'ma_tk');

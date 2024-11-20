@@ -15,7 +15,7 @@ class Account extends Model
     public $timestamps = false;
     protected $table = 'tai_khoan';
     protected $primaryKey = 'ma_tk';
-    protected $keyType = 'string'; // Nếu khóa chính là chuỗi
+    protected $keyType = 'string';
     protected $fillable = ['ma_tk', 'token', 'email', 'mat_khau', 'ngay_tao', 'trang_thai', 'ma_phan_quyen'];
 
 
