@@ -71,4 +71,15 @@ class CommentController extends Controller
         $comment->delete();
         return response()->json(['message' => 'Comment deleted']);
     }
+    public function getCommentsBySong($songId)
+    {
+        // Lấy tất cả bình luận của bài hát theo ma_bai_hat
+        $comments = CommentModel::where('ma_bai_hat', $songId)->get();
+        
+        if ($comments->isEmpty()) {
+            return response()->json(['message' => 'No comments found for this song'], 404);
+        }
+
+        return response()->json($comments);
+    }
 }

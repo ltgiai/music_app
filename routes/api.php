@@ -133,9 +133,13 @@ Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
 
 // Route CommentController
+Route::get('/comments/song/{songId}', [CommentController::class, 'getCommentsBySong']);
 Route::get('/comments', [CommentController::class, 'index']);
-Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
-Route::post('/comment', [CommentController::class, 'store']);
+Route::get('/comments/{ma_bl}', [CommentController::class, 'show']);
+Route::post('/comments', [CommentController::class, 'store']);
+Route::put('/comments/{ma_bl}', [CommentController::class, 'update']);
+Route::delete('/comments/{ma_bl}', [CommentController::class, 'destroy']);
+
 
 // Route GenreController
 Route::get('/genres', [GenreController::class, 'renderListOfGenres']); // Liệt kê danh sách thể loại
