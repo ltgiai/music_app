@@ -108,6 +108,7 @@ class AdvertisementController extends Controller
                 'status' => Response::HTTP_BAD_REQUEST
             ], Response::HTTP_BAD_REQUEST);
         } else {
+            $timeCreated = now();
             try {
                 do {
                     $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -116,13 +117,15 @@ class AdvertisementController extends Controller
                 AdvertisementModel::create([
                     'ma_quang_cao' => $ma_quang_cao,
                     'ten_quang_cao' => $request->ten_quang_cao,
-                    'ngay_tao' => now(),
+                    'ngay_tao' => $timeCreated,
                     'luot_phat_tich_luy' => 0,
                     'hinh_anh' => $request->hinh_anh,
                     'trang_thai' => 1,
                     'ma_nqc' => $request->ma_nqc
                 ]);
                 return response()->json([
+                    'ma_quang_cao' => $ma_quang_cao,
+                    'ngay_tao' => $timeCreated,
                     'message' => 'Create advertisement successfully',
                     'status' => Response::HTTP_CREATED
                 ], Response::HTTP_CREATED);
