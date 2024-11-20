@@ -14,7 +14,6 @@ class AdvertisingContractController extends Controller
         $advertising_contracts = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
             ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai')
-            ->where('quang_cao.trang_thai', '=', 1)
             ->get();
         if ($advertising_contracts->isEmpty()) {
             return response()->json([
@@ -46,7 +45,6 @@ class AdvertisingContractController extends Controller
         $advertising_contract = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
             ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai')
-            ->where('quang_cao.trang_thai', '=', 1)
             ->where('hop_dong_quang_cao.ma_hop_dong', '=', $ma_hop_dong)
             ->first();
         if (!$advertising_contract) {

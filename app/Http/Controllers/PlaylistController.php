@@ -39,7 +39,7 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function renderPlaylistsWithSongsByAccount($ma_playlist, $ma_tk)
+    public function renderPlaylistsWithSongsByAccount($ma_tk)
     {
         // Lấy dữ liệu tài khoản cùng playlist, bài hát và album liên quan
         $playlists = DB::table('tai_khoan')
@@ -51,6 +51,7 @@ class PlaylistController extends Controller
                 'tai_khoan.ma_tk',
                 'playlist.ma_playlist',
                 'playlist.ten_playlist',
+                'playlist.hinh_anh',
                 'bai_hat.ma_bai_hat',
                 'bai_hat.ten_bai_hat',
                 'bai_hat.thoi_luong',
@@ -59,7 +60,6 @@ class PlaylistController extends Controller
                 'album.ten_album'
             )
             ->where('tai_khoan.ma_tk', '=', $ma_tk) // Lọc theo tài khoản
-            ->where('playlist.ma_playlist', '=', $ma_playlist) // Lọc theo playlist
             ->get()
             ->groupBy('ma_playlist'); // Nhóm theo playlist
 
@@ -82,6 +82,7 @@ class PlaylistController extends Controller
                 'ma_tk' => $playlistInfo->ma_tk,
                 'ma_playlist' => $ma_playlist,
                 'ten_playlist' => $playlistInfo->ten_playlist,
+                'hinh_anh' => $playlistInfo->hinh_anh,
                 'bai_hat' => $songs->filter(function ($song) {
                     return $song->ma_bai_hat !== null; // Loại bỏ playlist không có bài hát
                 })->map(function ($song) {

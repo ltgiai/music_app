@@ -13,7 +13,7 @@ class AdvertiserModel extends Model
     protected $table = 'nha_dang_ky_quang_cao';
     protected $primaryKey = 'ma_nqc';
     protected $keyType = 'string';
-    protected $fillable = ['ma_nqc', 'ten_nqc', 'so_dien_thoai'];
+    protected $fillable = ['ma_nqc', 'ten_nqc', 'so_dien_thoai', 'trang_thai'];
     public $timestamps = false;
 
     // Thiết lập quan hệ 1 nhà quảng cáo có nhiều hợp đồng quảng cáo

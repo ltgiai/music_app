@@ -13,13 +13,14 @@ class PlaylistModel extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['ma_playlist', 'ten_playlist', 'ma_tk', 'so_luong_bai_hat'];
+    protected $fillable = ['ma_playlist', 'ten_playlist', 'ma_tk', 'so_luong_bai_hat', 'hinh_anh'];
     public $timestamps = false;
 
     private $ma_playlist;
     private $ten_playlist;
     private $ma_tk;
     private $so_luong_bai_hat;
+    private $hinh_anh;
 
     public function __construct(array $attributes = [])
     {
@@ -28,6 +29,7 @@ class PlaylistModel extends Model
         $this->ten_playlist = $attributes['ten_playlist'] ?? null;
         $this->ma_tk = $attributes['ma_tk'] ?? null;
         $this->so_luong_bai_hat = $attributes['so_luong_bai_hat'] ?? 0;
+        $this->hinh_anh = $attributes['hinh_anh'] ?? null;
     }
 
     // Gom các relationships vào một phương thức
