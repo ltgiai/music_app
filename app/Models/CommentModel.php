@@ -9,20 +9,22 @@ class CommentModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'binh_luan'; 
+    protected $table = 'binh_luan';
 
-    protected $primaryKey = 'ma_comment'; 
+    protected $primaryKey = 'ma_binh_luan'; 
+    public $incrementing = false; 
+    protected $keyType = 'string';
 
-    public $timestamps = false; 
+    public $timestamps = false;
 
     protected $fillable = [
+        'ma_binh_luan',
         'ma_tk',
         'ma_bai_hat',
         'noi_dung',
         'ngay_tao',
     ];
 
-    const CREATED_AT = 'ngay_tao';
 
 
     public function user()
