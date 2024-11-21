@@ -20,18 +20,14 @@ class AdvertiserController extends Controller
             ], Response::HTTP_NOT_FOUND);
         } else {
             return response()->json([
-                "advertisers" => $advertisers
-                    ->filter(function ($ad) {
-                        return $ad->trang_thai == 1; // Lọc chỉ giữ những quảng cáo có trang_thai = 1
-                    })
-                    ->map(function ($ad) {
-                        return [
-                            'ma_nqc' => $ad->ma_nqc,
-                            'ten_nqc' => $ad->ten_nqc,
-                            'so_dien_thoai' => $ad->so_dien_thoai,
-                            'trang_thai' => $ad->trang_thai
-                        ];
-                    }),
+                "advertisers" => $advertisers->map(function ($ad) {
+                    return [
+                        'ma_nqc' => $ad->ma_nqc,
+                        'ten_nqc' => $ad->ten_nqc,
+                        'so_dien_thoai' => $ad->so_dien_thoai,
+                        'trang_thai' => $ad->trang_thai
+                    ];
+                }),
                 'message' => 'Get all advertiser successfully',
                 'status' => Response::HTTP_OK
             ], Response::HTTP_OK);
