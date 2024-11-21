@@ -26,6 +26,7 @@ use App\Http\Controllers\FunctionalDetailController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
+Route::get('/songs/likes', [SongController::class, 'renderListOfLikesForSong']); // Liệt kê danh sách bài hát có lượt yêu thích trên trang chủ
 Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
 Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
