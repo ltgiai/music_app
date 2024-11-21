@@ -49,13 +49,22 @@ class LikeSongController extends Controller
         return response()->json($songLike);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $songLike = LikeSongModel::find($id);
-        if (!$songLike)
-            return response()->json(['message' => 'Not found'], 404);
+        $validatedData = $request->validate([
+            'ma_tk' => 'required|string',
+            'ma_bai_hat' => 'required|string',
+        ]);
 
-        $songLike->delete();
-        return response()->json(['message' => 'Deleted']);
+        $deleted = LikeSongModel::where('ma_tk', $validatedData['ma_tk'])
+            ->where('ma_bai_hat', $validatedData['ma_bai_hat'])
+            ->delete();
+
+        if ($deleted) {
+            return response()->json(['message' => 'Deleted']);
+        }
+
+        return response()->json(['message' => 'Not found'], 404);
     }
+
 }
