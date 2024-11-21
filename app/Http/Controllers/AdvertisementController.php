@@ -39,19 +39,23 @@ class AdvertisementController extends Controller
             ], Response::HTTP_NOT_FOUND);
         } else {
             return response()->json([
-                "advertisements" => $advertisements->map(function ($ad) {
-                    return [
-                        'ma_quang_cao' => $ad->ma_quang_cao,
-                        'ten_quang_cao' => $ad->ten_quang_cao,
-                        'ngay_tao' => $ad->ngay_tao,
-                        'luot_phat_tich_luy' => $ad->luot_phat_tich_luy,
-                        'hinh_anh' => $ad->hinh_anh,
-                        'trang_thai' => $ad->trang_thai,
-                        'ma_nqc' => $ad->ma_nqc,
-                        'ten_nqc' => $ad->ten_nqc,
-                        'sdt' => $ad->so_dien_thoai
-                    ];
-                }),
+                "advertisements" => $advertisements
+                    ->filter(function ($ad) {
+                        return $ad->trang_thai == 1; // Lọc chỉ giữ những quảng cáo có trang_thai = 1
+                    })
+                    ->map(function ($ad) {
+                        return [
+                            'ma_quang_cao' => $ad->ma_quang_cao,
+                            'ten_quang_cao' => $ad->ten_quang_cao,
+                            'ngay_tao' => $ad->ngay_tao,
+                            'luot_phat_tich_luy' => $ad->luot_phat_tich_luy,
+                            'hinh_anh' => $ad->hinh_anh,
+                            'trang_thai' => $ad->trang_thai,
+                            'ma_nqc' => $ad->ma_nqc,
+                            'ten_nqc' => $ad->ten_nqc,
+                            'sdt' => $ad->so_dien_thoai
+                        ];
+                    }),
                 'message' => 'Get all advertisement successfully',
                 'status' => Response::HTTP_OK
             ], Response::HTTP_OK);
