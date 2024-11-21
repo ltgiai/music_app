@@ -20,13 +20,33 @@ class SongController extends Controller
             ->join('theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
             ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
             ->join('chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
+            ->join('luot_thich_bai_hat', 'bai_hat.ma_bai_hat', '=', 'luot_thich_bai_hat.ma_bai_hat')
             ->select(
                 'bai_hat.*',
                 'bai_hat.hinh_anh as bai_hat_hinh_anh', // Alias cho hinh_anh của bảng bai_hat
                 'song_album.ten_album as album_name',
                 'user.ten_user as artist_name',
                 'chat_luong_bai_hat.*',
-                'the_loai.*'
+                'the_loai.*',
+                DB::raw('COUNT(luot_thich_bai_hat.ma_bai_hat) as so_luot_thich')
+            )
+            ->groupBy(
+                'bai_hat.ma_bai_hat',
+                'bai_hat.ten_bai_hat',
+                'bai_hat.thoi_luong',
+                'bai_hat.trang_thai',
+                'bai_hat.luot_nghe',
+                'bai_hat.hinh_anh',
+                'bai_hat.ngay_phat_hanh',
+                'bai_hat.ma_album',
+                'bai_hat.ma_tk_artist',
+                'bai_hat.doanh_thu',
+                'song_album.ten_album',
+                'user.ten_user',
+                'chat_luong_bai_hat.chat_luong',
+                'chat_luong_bai_hat.link_bai_hat',
+                'the_loai.ma_the_loai',
+                'the_loai.ten_the_loai'
             )
             ->get();
 
@@ -51,6 +71,7 @@ class SongController extends Controller
                 'link_bai_hat' => $item->link_bai_hat,
                 'ma_the_loai' => $item->ma_the_loai,
                 'ten_the_loai' => $item->ten_the_loai,
+                'luot_thich' => $item->so_luot_thich,
                 'trang_thai' => $item->trang_thai
             ];
         });
