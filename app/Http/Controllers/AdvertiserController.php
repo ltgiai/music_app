@@ -80,6 +80,7 @@ class AdvertiserController extends Controller
                 'trang_thai' => 1   
             ]);
             return response()->json([
+                'ma_nqc' =>  $ma_nqc,
                 'message' => 'Advertiser created',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
@@ -111,7 +112,7 @@ class AdvertiserController extends Controller
         return response()->json($advertiser);
     }
 
-     // chỉ có thể xóa nếu như mà nhà quảng cáo không có quảng cáo nào
+    // chỉ có thể xóa nếu như mà nhà quảng cáo không có quảng cáo nào
     public function destroy($ma_nqc) // checked
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)->first();
