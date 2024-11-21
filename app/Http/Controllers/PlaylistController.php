@@ -40,7 +40,7 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function renderPlaylistsWithSongsByAccount($ma_tk)
+    public function renderPlaylistByAccount($ma_tk)
     {
         // Lấy dữ liệu tài khoản cùng playlist, bài hát và album liên quan
         $playlists = DB::table('tai_khoan')
@@ -108,14 +108,79 @@ class PlaylistController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function renderPlaylistByID($ma_playlist)
+    {
+        // Lấy dữ liệu tài khoản cùng playlist, bài hát và album liên quan
+        $playlist = DB::table('playlist')
+            ->leftJoin('playlist_baihat', 'playlist_baihat.ma_playlist', '=', 'playlist.ma_playlist')
+            ->leftJoin('bai_hat', 'playlist_baihat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
+            ->leftJoin('album', 'bai_hat.ma_album', '=', 'album.ma_album') // Thêm thông tin album
+            ->select(
+                'playlist.ma_playlist',
+                'playlist.ten_playlist',
+                'playlist.hinh_anh',
+                'bai_hat.ma_bai_hat',
+                'bai_hat.ten_bai_hat',
+                'bai_hat.thoi_luong',
+                'bai_hat.ngay_phat_hanh',
+                'album.ma_album',
+                'album.ten_album'
+            )
+            ->where('playlist.ma_playlist', '=', $ma_playlist) // Lọc theo playlist
+            ->get()
+            ->groupBy('ma_playlist'); // Nhóm theo playlist
+
+        // Kiểm tra nếu không có dữ liệu
+        if ($playlist->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'No playlists or songs found for this account',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Xử lý và tạo cấu trúc JSON
+        $data = $playlist->map(function ($songs, $ma_playlist) {
+            $playlistInfo = $songs->first(); // Lấy thông tin playlist từ bài hát đầu tiên
+            if (!$playlistInfo) {
+                return null; // Tránh lỗi nếu không có bài hát nào
+            }
+
+            return [
+                'ma_playlist' => $ma_playlist,
+                'ten_playlist' => $playlistInfo->ten_playlist,
+                'hinh_anh' => $playlistInfo->hinh_anh,
+                'bai_hat' => $songs->filter(function ($song) {
+                    return $song->ma_bai_hat !== null; // Loại bỏ playlist không có bài hát
+                })->map(function ($song) {
+                    return [
+                        'ma_bai_hat' => $song->ma_bai_hat,
+                        'ten_bai_hat' => $song->ten_bai_hat,
+                        'thoi_luong' => $song->thoi_luong,
+                        'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                        'album' => [
+                            'ma_album' => $song->ma_album,
+                            'ten_album' => $song->ten_album,
+                        ],
+                    ];
+                })->values(),
+            ];
+        })->filter()->values(); // Loại bỏ null và sắp xếp lại chỉ mục
+
+        return response()->json([
+            'data' => $data,
+            'message' => 'Get playlists with songs successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
+    }
+
     public function store(Request $request)
     {
         // Lấy dữ liệu từ request
-        $data = $request->only(['ma_tai_khoan', 'ma_bai_hat', 'ma_playlist']);
+        $data = $request->only(['ma_tk', 'ma_bai_hat', 'ma_playlist']);
 
         // Kiểm tra dữ liệu đầu vào
         $validator = Validator::make($data, [
-            'ma_tai_khoan' => 'required|string|exists:tai_khoan,ma_tk',
+            'ma_tk' => 'required|string|exists:tai_khoan,ma_tk',
             'ma_bai_hat' => 'required|string|exists:bai_hat,ma_bai_hat',
             'ma_playlist' => 'nullable|string|exists:playlist,ma_playlist',
         ]);
@@ -133,7 +198,7 @@ class PlaylistController extends Controller
             // Kiểm tra quyền sở hữu playlist
             $playlist = DB::table('playlist')
                 ->where('ma_playlist', $data['ma_playlist'])
-                ->where('ma_tk', $data['ma_tai_khoan'])
+                ->where('ma_tk', $data['ma_tk'])
                 ->first();
 
             if (!$playlist) {
@@ -158,7 +223,7 @@ class PlaylistController extends Controller
         // Nếu không có ma_playlist -> Tạo mới playlist
         try {
             $latestPlaylist = DB::table('playlist')
-                ->where('ma_tk', $data['ma_tai_khoan'])
+                ->where('ma_tk', $data['ma_tk'])
                 ->latest('ma_playlist')
                 ->first();
 
@@ -168,16 +233,12 @@ class PlaylistController extends Controller
 
             // Tạo mã playlist mới
             $newPlaylistId = 'PL' . str_pad(
-                (int) filter_var(DB::table('playlist')->max('ma_playlist'), FILTER_SANITIZE_NUMBER_INT) + 1,
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
+                (int) filter_var(DB::table('playlist')->max('ma_playlist'), FILTER_SANITIZE_NUMBER_INT) + 1, 4, '0', STR_PAD_LEFT);
 
             // Thêm playlist mới
             DB::table('playlist')->insert([
                 'ma_playlist' => $newPlaylistId,
-                'ma_tk' => $data['ma_tai_khoan'],
+                'ma_tk' => $data['ma_tk'],
                 'ten_playlist' => $newPlaylistName,
                 'hinh_anh' => null, // Có thể truyền hình ảnh mặc định nếu cần
             ]);
