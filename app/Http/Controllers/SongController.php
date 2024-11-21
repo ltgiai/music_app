@@ -195,7 +195,8 @@ class SongController extends Controller
                         'doanh_thu' => $song->doanh_thu,
                         'luot_nghe' => $song->luot_nghe,
                         'hinh_anh' => $song->song_image,
-                        'album' => $song->ten_album,
+                        'ma_album' => $song->ma_album,
+                        'ten_album' => $song->ten_album,
                     ];
                 })->values(),
             ];
@@ -304,82 +305,84 @@ class SongController extends Controller
 
     // Lưu trữ một bài hát mới
     public function store(Request $request)
-    {
-        // Xác thực dữ liệu đầu vào
-        $validator = Validator::make($request->all(), [
-            'ten_bai_hat' => 'required',
-            'thoi_luong' => 'required|numeric',
-            'hinh_anh' => 'required',
-            'ma_album' => 'nullable|exists:album,ma_album', // Nếu có, phải tồn tại trong bảng album
-            // 'link_bai_hat' => 'required',
-            'ngay_phat_hanh' => 'required|date',
-            'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk', // Bắt buộc, phải tồn tại trong bảng artist
-            'ma_the_loai' => 'required|exists:the_loai,ma_the_loai', // Bắt buộc, phải tồn tại trong bảng thể loại
+{
+    // Xác thực dữ liệu đầu vào
+    $validator = Validator::make($request->all(), [
+        'ten_bai_hat' => 'required|string|max:255',
+        'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk', // Kiểm tra tài khoản nghệ sĩ tồn tại
+        'ma_album' => 'nullable|exists:album,ma_album', // Album có thể null
+        'thoi_luong' => 'required|integer|min:1', // Thời lượng phải là số nguyên dương
+        'trang_thai' => 'required|in:0,1', // Chỉ chấp nhận giá trị 0 hoặc 1
+        'hinh_anh' => 'nullable|string', // Hình ảnh có thể là đường dẫn
+        'ngay_phat_hanh' => 'required|date', // Ngày phát hành hợp lệ
+        'doanh_thu' => 'nullable|numeric|min:0', // Doanh thu tối thiểu là 0
+        'the_loai' => 'required|array|min:1', // Danh sách thể loại, ít nhất 1 thể loại
+        'the_loai.*' => 'exists:the_loai,ma_the_loai', // Kiểm tra thể loại tồn tại
+        'links' => 'required|array|size:2', // Bài hát cần 2 link cho 2 chất lượng
+        'links.cao' => 'required|string', // Link chất lượng cao
+        'links.thap' => 'required|string', // Link chất lượng thấp
+        'subartists' => 'nullable|array', // Danh sách subartists có thể null
+        'subartists.*' => 'exists:tai_khoan,ma_tk', // Mã tài khoản subartist phải tồn tại
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Tạo mã bài hát tự động dạng BHxxxx
+    $lastSong = DB::table('bai_hat')->orderBy('ma_bai_hat', 'desc')->first();
+    $nextId = $lastSong ? (int)substr($lastSong->ma_bai_hat, 2) + 1 : 1;
+    $ma_bai_hat = 'BH' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+
+    // Tạo bài hát mới
+    $song = [
+        'ma_bai_hat' => $ma_bai_hat,
+        'ten_bai_hat' => $request->ten_bai_hat,
+        'ma_tk_artist' => $request->ma_tk_artist,
+        'ma_album' => $request->ma_album,
+        'thoi_luong' => $request->thoi_luong,
+        'trang_thai' => $request->trang_thai,
+        'hinh_anh' => $request->hinh_anh,
+        'ngay_phat_hanh' => $request->ngay_phat_hanh,
+        'doanh_thu' => $request->doanh_thu ?? 0,
+        'luot_nghe' => 0, // Mặc định lượt nghe là 0
+    ];
+
+    DB::table('bai_hat')->insert($song);
+
+    // Lưu các thể loại vào bảng theloai_baihat
+    foreach ($request->the_loai as $ma_the_loai) {
+        DB::table('theloai_baihat')->insert([
+            'ma_bai_hat' => $ma_bai_hat,
+            'ma_the_loai' => $ma_the_loai,
         ]);
+    }
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => Response::HTTP_BAD_REQUEST,
-                'errors' => $validator->errors(),
-                'message' => 'Validation error',
-            ], Response::HTTP_BAD_REQUEST);
-        }
+    // Lưu link nhạc vào bảng chat_luong_bai_hat
+    DB::table('chat_luong_bai_hat')->insert([
+        ['ma_bai_hat' => $ma_bai_hat, 'chat_luong' => 'cao', 'link_bai_hat' => $request->links['cao']],
+        ['ma_bai_hat' => $ma_bai_hat, 'chat_luong' => 'thap', 'link_bai_hat' => $request->links['thap']],
+    ]);
 
-        try {
-            // Tạo mã bài hát duy nhất với định dạng BHxxxx
-            $lastSong = SongModel::latest('ma_bai_hat')->first();
-            $lastNumber = $lastSong ? (int)substr($lastSong->ma_bai_hat, 2) : 0;
-            $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
-            $ma_bai_hat = 'BH' . $newNumber;
-
-            // Kiểm tra mã album (nếu có) và mã tài khoản nghệ sĩ
-            if ($request->ma_album) {
-                $albumExists = DB::table('album')->where('ma_album', $request->ma_album)->exists();
-                if (!$albumExists) {
-                    return response()->json([
-                        'status' => Response::HTTP_BAD_REQUEST,
-                        'message' => 'Invalid album ID',
-                    ], Response::HTTP_BAD_REQUEST);
-                }
-            }
-
-            $artistExists = DB::table('tai_khoan')->where('ma_tk', $request->ma_tk_artist)->exists();
-            if (!$artistExists) {
-                return response()->json([
-                    'status' => Response::HTTP_BAD_REQUEST,
-                    'message' => 'Invalid artist account ID',
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            // Lưu bài hát vào cơ sở dữ liệu
-            $song = SongModel::create([
+    // Lưu subartists vào bảng bai_hat_subartist (nếu có)
+    if ($request->filled('subartists')) {
+        foreach ($request->subartists as $subartist) {
+            DB::table('bai_hat_subartist')->insert([
                 'ma_bai_hat' => $ma_bai_hat,
-                'ten_bai_hat' => $request->ten_bai_hat,
-                'thoi_luong' => $request->thoi_luong,
-                'trang_thai' => 1, // Mặc định active
-                'luot_nghe' => 0, // Mặc định 0 lượt nghe
-                'hinh_anh' => $request->hinh_anh,
-                'ma_album' => $request->ma_album, // Nếu null thì để trống
-                // 'link_bai_hat' => $request->link_bai_hat,
-                'ngay_phat_hanh' => $request->ngay_phat_hanh,
-                'ma_tk_artist' => $request->ma_tk_artist,
-                'ma_the_loai' => $request->ma_the_loai, // Liên kết với thể loại
-                'doanh_thu' => 0, // Mặc định 0 doanh thu
+                'ma_subartist' => $subartist,
             ]);
-
-            return response()->json([
-                'data' => $song,
-                'message' => 'Song created successfully',
-                'status' => Response::HTTP_OK,
-            ], Response::HTTP_OK);
-        } catch (\Exception $e) {
-            Log::error('Song creation failed: ' . $e->getMessage());
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Song creation failed',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Trả về phản hồi
+    return response()->json([
+        'message' => 'Bài hát đã được tạo thành công!',
+        'data' => $song,
+    ], 201);
+}
+
+
+
 
 
 
