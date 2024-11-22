@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdvertisementModel;
+use App\Models\AdvertisingContractModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -94,9 +95,9 @@ class AdvertisementController extends Controller
     public function store(Request $request) //checked
     {
         $validated = $request->validate([
-            'ten_quang_cao' => 'required|string|max:50',
+            'ten_quang_cao' => 'required|string',
             'hinh_anh' => 'nullable|url',
-            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc', // chỗ này nên để vầy k ?????
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc'
         ]);
         if (!$validated) {
             return response()->json([
@@ -143,7 +144,16 @@ class AdvertisementController extends Controller
 
         $validated = $request->validate([
             'ten_quang_cao' => 'required|string|max:50',
-        ]); 
+            'ngay_tao' => 'required|date',
+            'ngay_huy' => 'required|date',
+            'luot_phat' => 'nullable|numeric|min:0',
+            'hinh_anh' => 'nullable|url',
+            'trang_thai' => 'require',
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc',
+        ]);
+
+        $advertisement->update($validated);
+        return response()->json($advertisement);
         if (!$validated) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -167,7 +177,7 @@ class AdvertisementController extends Controller
         }
     }
 
-    public function destroy($id) //chẹcked nhưng để xem nghiệp vụ như nào nữa là dc
+    public function destroy($id) //checked
     {
         $advertisement = AdvertisementModel::where('ma_quang_cao', $id)->first();
         if (!$advertisement) {
@@ -176,9 +186,14 @@ class AdvertisementController extends Controller
                 'status' => Response::HTTP_NOT_FOUND
             ], Response::HTTP_NOT_FOUND);
         } else {
-            if ($advertisement->trang_thai == 1 && $advertisement->luot_phat_tich_luy == 0) {   
+            if ($advertisement->trang_thai == 1) {
                 try {
-                    $advertisement->update(['trang_thai' => 0]);
+                    $hasContract = AdvertisingContractModel::where('ma_quang_cao', $id)->first();
+                    if ($hasContract) {
+                        $advertisement->update(['trang_thai' => 0]);
+                    } else {
+                        $advertisement->delete();
+                    }
                     return response()->json([
                         'message' => 'Advertisement deleted successfully',
                         'status' => Response::HTTP_OK
@@ -219,7 +234,11 @@ class AdvertisementController extends Controller
         if ($advertisement->luot_phat_tich_luy > 0) {
             $advertisement->luot_phat_tich_luy -= 1;
             if ($advertisement->luot_phat_tich_luy == 0) {
-                $advertisement->trang_thai = 0;
+                $contract = AdvertisingContractModel::where('ma_quang_cao', $id)->first();
+                if ($contract) {
+                    $contract->ngay_thanh_toan = now();
+                    $contract->save();
+                }
             }
             $advertisement->save();
             return response()->json([
