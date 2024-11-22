@@ -95,11 +95,9 @@ class AdvertisementController extends Controller
     public function store(Request $request) //checked
     {
         $validated = $request->validate([
-            'ten_quang_cao' => 'required|string|max:50',
+            'ten_quang_cao' => 'required|string',
             'hinh_anh' => 'nullable|url',
-            'trang_thai' => 'nullable|numeric|between:0,9',
-            'ma_nqc' => 'required|exists:advertisers,ma_nqc',
-            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc', // chỗ này nên để vầy k ?????
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc'
         ]);
         if (!$validated) {
             return response()->json([

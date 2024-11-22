@@ -31,7 +31,7 @@ class AdvertisingContractController extends Controller
                         'luot_phat' => $contract->luot_phat,
                         'doanh_thu' => $contract->doanh_thu,
                         'ngay_hieu_luc' => $contract->ngay_hieu_luc,
-                        'ngay_thanh_toan' => $contract->ngay_thanh_toan,
+                        'ngay_hoan_thanh' => $contract->ngay_hoan_thanh,
                         'trang_thai_quang_cao' => $contract->trang_thai,
                     ];
                 }),
@@ -63,7 +63,7 @@ class AdvertisingContractController extends Controller
                     'luot_phat' => $advertising_contract->luot_phat,
                     'doanh_thu' => $advertising_contract->doanh_thu,
                     'ngay_hieu_luc' => $advertising_contract->ngay_hieu_luc,
-                    'ngay_thanh_toan' => $advertising_contract->ngay_thanh_toan,
+                    'ngay_hoan_thanh' => $advertising_contract->ngay_hoan_thanh,
                     'trang_thai_quang_cao' => $advertising_contract->trang_thai,
                 ],
                 'message' => 'Get all advertising contracts successfully',
@@ -79,6 +79,7 @@ class AdvertisingContractController extends Controller
             'luot_phat' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
             'ngay_hieu_luc' => 'required|date',
+            'ngay_hoan_thanh' => 'required|date'
         ]);
         if (!$validated) {
             return response()->json(
@@ -99,8 +100,8 @@ class AdvertisingContractController extends Controller
                     'ma_quang_cao' => $validated['ma_quang_cao'],
                     'luot_phat' => $validated['luot_phat'],
                     'doanh_thu' => $validated['doanh_thu'],
-                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'], 
-                    'ngay_thanh_toan' => null,
+                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'],
+                    'ngay_hoan_thanh' => $validated['ngay_hoan_thanh'],
                 ]);
                 DB::table('quang_cao')
                     ->where('ma_quang_cao', $validated['ma_quang_cao'])

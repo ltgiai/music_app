@@ -12,7 +12,7 @@ class AdvertiserController extends Controller
 {
     public function index() //checked
     {
-        $advertisers = AdvertiserModel::all();
+        $advertisers = AdvertiserModel::where('trang_thai', 1);
         if (!$advertisers) {
             return response()->json([
                 'message' => 'No advertiser found',
@@ -37,6 +37,7 @@ class AdvertiserController extends Controller
     public function show($ma_nqc) //checked
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)
+            ->where('trang_thai', 1)
             ->first();
         if (!$advertiser) {
             return response()->json([
@@ -80,6 +81,7 @@ class AdvertiserController extends Controller
                 'trang_thai' => 1
             ]);
             return response()->json([
+                'ma_nqc' => $ma_nqc,
                 'message' => 'Advertiser created',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
