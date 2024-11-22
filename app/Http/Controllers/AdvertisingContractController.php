@@ -108,6 +108,7 @@ class AdvertisingContractController extends Controller
                     ->update(['luot_phat_tich_luy' => $validated['luot_phat']]);
                 return response()->json(
                     [
+                        'ma_hop_dong' => $ma_hop_dong,
                         'message' => 'Create advertising contract successfully',
                         'status' => Response::HTTP_CREATED
                     ],
