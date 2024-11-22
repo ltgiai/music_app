@@ -132,33 +132,23 @@ class AdvertisementController extends Controller
         }
     }
 
-    public function update(Request $request, $id) //checked
+    public function update(Request $request) //checked
     {
-        $advertisement = AdvertisementModel::where('ma_quang_cao', $id)->first();
-        if (!$advertisement) {
-            return response()->json([
-                'message' => 'Advertisement not found',
-                'status' => Response::HTTP_NOT_FOUND
-            ], Response::HTTP_NOT_FOUND);
-        }
-
         $validated = $request->validate([
-            'ten_quang_cao' => 'required|string|max:50',
-            'ngay_tao' => 'required|date',
-            'ngay_huy' => 'required|date',
-            'luot_phat' => 'nullable|numeric|min:0',
-            'hinh_anh' => 'nullable|url',
-            'trang_thai' => 'require',
-            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc',
+            'ten_quang_cao' => 'required|string'
         ]);
-
-        $advertisement->update($validated);
-        return response()->json($advertisement);
         if (!$validated) {
             return response()->json([
                 'message' => 'Validation failed',
                 'status' => Response::HTTP_BAD_REQUEST
             ], Response::HTTP_BAD_REQUEST);
+        }
+        $advertisement = AdvertisementModel::where('ma_quang_cao', $request->ma_quang_cao)->first();
+        if (!$advertisement) {
+            return response()->json([
+                'message' => 'Advertisement not found',
+                'status' => Response::HTTP_NOT_FOUND
+            ], Response::HTTP_NOT_FOUND);
         } else {
             try {
                 $advertisement->update([
