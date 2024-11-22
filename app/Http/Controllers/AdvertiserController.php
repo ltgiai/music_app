@@ -12,7 +12,7 @@ class AdvertiserController extends Controller
 {
     public function index() //checked
     {
-        $advertisers = AdvertiserModel::where('trang_thai', 1);
+        $advertisers = AdvertiserModel::where('trang_thai', 1)->get();
         if (!$advertisers) {
             return response()->json([
                 'message' => 'No advertiser found',
