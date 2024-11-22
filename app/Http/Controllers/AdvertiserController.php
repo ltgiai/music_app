@@ -80,7 +80,6 @@ class AdvertiserController extends Controller
                 'trang_thai' => 1
             ]);
             return response()->json([
-                'ma_nqc' =>  $ma_nqc,
                 'message' => 'Advertiser created',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
@@ -112,8 +111,7 @@ class AdvertiserController extends Controller
         return response()->json($advertiser);
     }
 
-    // chỉ có thể xóa nếu như mà nhà quảng cáo không có quảng cáo nào
-    public function destroy($ma_nqc) // checked
+    public function destroy($ma_nqc)
     {
         $advertiser = AdvertiserModel::where('ma_nqc', $ma_nqc)->first();
         if (!$advertiser) {
@@ -121,18 +119,24 @@ class AdvertiserController extends Controller
                 'message' => 'Advertiser not found',
                 'status' => Response::HTTP_NOT_FOUND
             ], Response::HTTP_NOT_FOUND);
+        } else {
+            if ($advertiser->trang_thai == 1) {
+                $hasAds = AdvertisementModel::where('ma_nqc', $ma_nqc)->exists();
+                if ($hasAds) {
+                    $advertiser->update(['trang_thai' => 0]);
+                } else {
+                    $advertiser->delete();
+                }
+                return response()->json([
+                    'message' => 'Advertiser deleted',
+                    'status' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            } else {
+                return response()->json([
+                    'message' => 'Advertiser already deleted',
+                    'status' => Response::HTTP_BAD_REQUEST
+                ], Response::HTTP_BAD_REQUEST);
+            }
         }
-        $hasAds = AdvertisementModel::where('ma_nqc', $ma_nqc)->exists();
-        if ($hasAds) {
-            return response()->json([
-                'message' => 'Cannot delete advertiser with associated ads',
-                'status' => Response::HTTP_BAD_REQUEST
-            ], Response::HTTP_BAD_REQUEST);
-        }
-        $advertiser->update(['trang_thai' => 0]);
-        return response()->json([
-            'message' => 'Advertiser deleted',
-            'status' => Response::HTTP_OK
-        ], Response::HTTP_OK);
     }
 }
