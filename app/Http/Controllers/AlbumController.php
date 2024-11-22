@@ -406,17 +406,25 @@ class AlbumController extends Controller
 
     // tách ra để đúng logic, không được bỏ chung với hàm update()
     // test ACC0009 thich album AL0001
-    public function likeAlbum(Request $request, $ma_album) //checked
+    public function likeAlbum(Request $request)
     {
         $ma_tk = $request->input('ma_tk');
+        $ma_album = $request->input('ma_album');
 
-        if (!$ma_tk) {
+        if (!$ma_tk || !$ma_album) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'ma_tk is required',
+                'message' => 'Both ma_tk and ma_album are required',
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        $accountExists = DB::table('tai_khoan')->where('ma_tk', $ma_tk)->exists();
+        if (!$accountExists) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Account not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         $album = AlbumModel::find($ma_album);
         if (!$album) {
@@ -432,7 +440,7 @@ class AlbumController extends Controller
             ->first();
 
         try {
-            if (!$like) { // chua thich album nay
+            if (!$like) {
                 DB::table('luot_thich_album')->insert([
                     'ma_album' => $ma_album,
                     'ma_tk' => $ma_tk,
@@ -461,15 +469,24 @@ class AlbumController extends Controller
     }
 
     // tách ra để đúng logic, không được bỏ chung với hàm update()
-    public function unlikeAlbum(Request $request, $ma_album) //checked
+    public function unlikeAlbum(Request $request)
     {
         $ma_tk = $request->input('ma_tk');
+        $ma_album = $request->input('ma_album');
 
-        if (!$ma_tk) {
+        if (!$ma_tk || !$ma_album) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'ma_tk is required',
+                'message' => 'Both ma_tk and ma_album are required',
             ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $accountExists = DB::table('tai_khoan')->where('ma_tk', $ma_tk)->exists();
+        if (!$accountExists) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Account not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
         $album = AlbumModel::find($ma_album);
@@ -483,7 +500,7 @@ class AlbumController extends Controller
         $like = DB::table('luot_thich_album')
             ->where('ma_album', $ma_album)
             ->where('ma_tk', $ma_tk)
-            ->first(); // da thich album nay chua
+            ->first();
 
         if (!$like) {
             return response()->json([
