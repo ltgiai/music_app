@@ -53,9 +53,9 @@ Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::cla
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
-Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
+Route::patch('/advertisements', [AdvertisementController::class, 'update']);
 Route::post('/advertisements', [AdvertisementController::class, 'store']);
-Route::put('/advertisements/{id}', [AdvertisementController::class, 'update']);
+Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
 Route::delete('/advertisements/{id}', [AdvertisementController::class, 'destroy']);
 Route::put('/advertisements/{id}/use', [AdvertisementController::class, 'useAdvertisement']);
 
