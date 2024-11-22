@@ -15,30 +15,36 @@ use Symfony\Component\HttpFoundation\Response;
 class PlaylistController extends Controller
 {
     // Hiển thị danh sách playlist
-    public function renderListOfPlaylists()
+    public function renderListOfPlaylists($ma_tk)
     {
+        // Lấy tất cả các playlist thuộc về tài khoản với mã tài khoản $ma_tk
         $playlists = DB::table('playlist')
-            ->select('playlist.*')
+            ->where('ma_tk', '=', $ma_tk) // Lọc theo mã tài khoản
+            ->select('ma_playlist', 'ten_playlist', 'hinh_anh')
             ->get();
 
+        // Kiểm tra nếu không có playlist nào
         if ($playlists->isEmpty()) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'ERROR 404'
+                'message' => 'No playlists found for this account'
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // Trả về danh sách các playlist của tài khoản
         return response()->json([
             'data' => $playlists->map(function ($item) {
                 return [
                     'ma_playlist' => $item->ma_playlist,
                     'ten_playlist' => $item->ten_playlist,
+                    'hinh_anh' => $item->hinh_anh, // Thêm thông tin hình ảnh playlist
                 ];
             }),
-            'message' => 'Get all songs successfully',
+            'message' => 'Get playlists successfully',
             'status' => Response::HTTP_OK,
         ], Response::HTTP_OK);
     }
+
 
     public function renderPlaylistByAccount($ma_tk, $ma_playlist)
     {

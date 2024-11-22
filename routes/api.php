@@ -37,7 +37,7 @@ Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh 
 Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
 
 // Route Playlist
-Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
+Route::get('/playlist/{ma_tk}', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist cuả tài khoản 
 Route::get('/playlist/{ma_tk}/{ma_playlist}', [PlaylistController::class, 'renderPlaylistByAccount']); // Liệt kê playlist theo mã tk, mã playlist
 Route::post('/playlist', [PlaylistController::class, 'store']); // Thêm playlist
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::class, 'deletePlaylist']); // Xóa toàn bộ playlist
