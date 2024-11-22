@@ -125,7 +125,7 @@ Route::post('/decentralizations', [DecentralizationController::class, 'store']);
 Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
 Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
 Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
-
+Route::put('/updateNameDecentralization/{ma_phan_quyen}', [DecentralizationController::class, 'updateTenQuyenHan']);
 // Route FunctionController
 Route::get('/functionns', [FunctionnController::class, 'index']);
 Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
@@ -134,8 +134,9 @@ Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update'])
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
 // Route 
-Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
+Route::put('/functionalDetail/update', [FunctionalDetailController::class, 'update']);
 Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
+Route::get('/functional-details', [FunctionalDetailController::class, 'getFunctionalDetail']);
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
