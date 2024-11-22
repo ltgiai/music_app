@@ -26,10 +26,6 @@ use App\Http\Controllers\FunctionalDetailController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
-<<<<<<< HEAD
-Route::get('/songs/likes', [SongController::class, 'renderListOfLikesForSong']); // Liệt kê danh sách bài hát có lượt yêu thích trên trang chủ
-=======
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
 Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
@@ -40,25 +36,13 @@ Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh 
 Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
 
 // Route Playlist
-<<<<<<< HEAD
-Route::get('/playlist/{ma_tk}', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist cuả tài khoản 
-Route::get('/playlist/{ma_tk}/{ma_playlist}', [PlaylistController::class, 'renderPlaylistByAccount']); // Liệt kê playlist theo mã tk, mã playlist
-Route::post('/playlist', [PlaylistController::class, 'store']); // Thêm playlist
-Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::class, 'deletePlaylist']); // Xóa toàn bộ playlist
-Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistController::class, 'deleteSongFromPlaylist']); //Xóa một bài hát trong playlist của một tài khoản
-=======
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
 Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
 Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
-<<<<<<< HEAD
-Route::delete('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
-=======
 Route::post('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 Route::post('/albums/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'store'])->where('ma_album', 'ACC\d{4}');
 Route::put('/albums/{ma_album}/add', [App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
 Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}');
@@ -66,13 +50,6 @@ Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, '
 Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
 Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
-<<<<<<< HEAD
-
-//Route LikeAlbumController
-Route::get('/albums-likes', [App\Http\Controllers\LikeAlbumController::class, 'index']);
-Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\LikeAlbumController::class, 'accountLikesAlbums']);
-=======
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
@@ -143,7 +120,7 @@ Route::post('/decentralizations', [DecentralizationController::class, 'store']);
 Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
 Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
 Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
-Route::put('/updateNameDecentralization/{ma_phan_quyen}', [DecentralizationController::class, 'updateTenQuyenHan']);
+
 // Route FunctionController
 Route::get('/functionns', [FunctionnController::class, 'index']);
 Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
@@ -152,14 +129,8 @@ Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update'])
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
 // Route 
-<<<<<<< HEAD
-Route::put('/functionalDetail/update', [FunctionalDetailController::class, 'update']);
-Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
-Route::get('/functional-details', [FunctionalDetailController::class, 'getFunctionalDetail']);
-=======
 Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
 Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
@@ -185,11 +156,7 @@ Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 Route::get('/song-likes', [LikeSongController::class, 'index']);
 Route::post('/song-likes', [LikeSongController::class, 'store']);
-<<<<<<< HEAD
-Route::delete('/song-likes', [LikeSongController::class, 'destroy']);
-=======
 Route::delete('/song-likes/{id}', [LikeSongController::class, 'destroy']);
->>>>>>> b127be5db991ace4b046291a6d3d4a3c03a20ecf
 Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
