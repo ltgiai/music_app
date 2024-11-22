@@ -21,8 +21,6 @@ use Illuminate\Support\Facades\DB;
     Quảng cáo khi mới tạo chưa có hợp đồng gì thì có thể xóa được
 
     Chỉ có thể chỉnh sửa tên quảng cáo 
-
-    Không thấy xóa hợp đồng à ????
 */
 
 class AdvertisementController extends Controller
@@ -32,6 +30,7 @@ class AdvertisementController extends Controller
         $advertisements = DB::table('quang_cao')
             ->join('nha_dang_ky_quang_cao', 'quang_cao.ma_nqc', '=', 'nha_dang_ky_quang_cao.ma_nqc')
             ->select('quang_cao.*', 'nha_dang_ky_quang_cao.ten_nqc', 'nha_dang_ky_quang_cao.so_dien_thoai')
+            ->where('quang_cao.trang_thai', '=', 1)
             ->get();
         if ($advertisements->isEmpty()) {
             return response()->json([
@@ -65,6 +64,7 @@ class AdvertisementController extends Controller
             ->join('nha_dang_ky_quang_cao', 'quang_cao.ma_nqc', '=', 'nha_dang_ky_quang_cao.ma_nqc')
             ->select('quang_cao.*', 'nha_dang_ky_quang_cao.ten_nqc', 'nha_dang_ky_quang_cao.so_dien_thoai')
             ->where('quang_cao.ma_quang_cao', '=', $id)
+            ->where('quang_cao.trang_thai', '=', 1)
             ->first();
 
         if (!$advertisement) {
@@ -85,13 +85,12 @@ class AdvertisementController extends Controller
                     'ten_nqc' => $advertisement->ten_nqc,
                     'sdt' => $advertisement->so_dien_thoai
                 ],
-                'message' => 'Get all advertisement successfully',
+                'message' => 'Get advertisement successfully',
                 'status' => Response::HTTP_OK
             ], Response::HTTP_OK);
         }
     }
 
-    // hay là truyền mã nhà quảng cáo vào ?????
     public function store(Request $request) //checked
     {
         $validated = $request->validate([
@@ -120,6 +119,7 @@ class AdvertisementController extends Controller
                     'ma_nqc' => $request->ma_nqc
                 ]);
                 return response()->json([
+                    'ma_quang_cao' => $ma_quang_cao,
                     'message' => 'Create advertisement successfully',
                     'status' => Response::HTTP_CREATED
                 ], Response::HTTP_CREATED);
