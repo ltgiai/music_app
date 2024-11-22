@@ -13,7 +13,7 @@ class AdvertisingContractController extends Controller
     {
         $advertising_contracts = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
-            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai')
+            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai', 'quang_cao.hinh_anh')
             ->get();
         if ($advertising_contracts->isEmpty()) {
             return response()->json([
@@ -27,11 +27,12 @@ class AdvertisingContractController extends Controller
                         'ma_hop_dong' => $contract->ma_hop_dong,
                         'ma_quang_cao' => $contract->ma_quang_cao,
                         'ten_quang_cao' => $contract->ten_quang_cao,
+                        'hinh_anh' => $contract->hinh_anh,
                         'luot_phat' => $contract->luot_phat,
                         'doanh_thu' => $contract->doanh_thu,
                         'ngay_hieu_luc' => $contract->ngay_hieu_luc,
                         'ngay_thanh_toan' => $contract->ngay_thanh_toan,
-                        'trang_thai' => $contract->trang_thai,
+                        'trang_thai_quang_cao' => $contract->trang_thai,
                     ];
                 }),
                 'message' => 'Get all advertising contracts successfully',
@@ -44,7 +45,7 @@ class AdvertisingContractController extends Controller
     {
         $advertising_contract = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
-            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai')
+            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai', 'quang_cao.hinh_anh')
             ->where('hop_dong_quang_cao.ma_hop_dong', '=', $ma_hop_dong)
             ->first();
         if (!$advertising_contract) {
@@ -58,11 +59,12 @@ class AdvertisingContractController extends Controller
                     'ma_hop_dong' => $advertising_contract->ma_hop_dong,
                     'ma_quang_cao' => $advertising_contract->ma_quang_cao,
                     'ten_quang_cao' => $advertising_contract->ten_quang_cao,
+                    'hinh_anh' => $advertising_contract->hinh_anh,
                     'luot_phat' => $advertising_contract->luot_phat,
                     'doanh_thu' => $advertising_contract->doanh_thu,
                     'ngay_hieu_luc' => $advertising_contract->ngay_hieu_luc,
                     'ngay_thanh_toan' => $advertising_contract->ngay_thanh_toan,
-                    'trang_thai' => $advertising_contract->trang_thai,
+                    'trang_thai_quang_cao' => $advertising_contract->trang_thai,
                 ],
                 'message' => 'Get all advertising contracts successfully',
                 'status' => Response::HTTP_OK
@@ -70,14 +72,13 @@ class AdvertisingContractController extends Controller
         }
     }
 
-    public function store(Request $request) // nhớ sửa lượt phát của quảng cáo luôn
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'ma_quang_cao' => 'required|exists:quang_cao,ma_quang_cao',
             'luot_phat' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
             'ngay_hieu_luc' => 'required|date',
-            'ngay_thanh_toan' => 'required|date'
         ]);
         if (!$validated) {
             return response()->json(
@@ -98,8 +99,8 @@ class AdvertisingContractController extends Controller
                     'ma_quang_cao' => $validated['ma_quang_cao'],
                     'luot_phat' => $validated['luot_phat'],
                     'doanh_thu' => $validated['doanh_thu'],
-                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'], //??
-                    'ngay_thanh_toan' => $validated['ngay_thanh_toan'] //??
+                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'], 
+                    'ngay_thanh_toan' => null,
                 ]);
                 DB::table('quang_cao')
                     ->where('ma_quang_cao', $validated['ma_quang_cao'])
