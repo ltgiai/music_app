@@ -55,6 +55,10 @@ Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
 Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
 
+//Route LikeAlbumController
+Route::get('/albums-likes', [App\Http\Controllers\LikeAlbumController::class, 'index']);
+Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\LikeAlbumController::class, 'accountLikesAlbums']);
+
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
 Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
