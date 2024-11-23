@@ -96,7 +96,13 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
             'ten_quang_cao' => 'required|string',
             'hinh_anh' => 'nullable|url',
+<<<<<<< HEAD
+            'trang_thai' => 'nullable|numeric|between:0,9',
+            'ma_nqc' => 'required|exists:advertisers,ma_nqc',
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc', // chỗ này nên để vầy k ?????
+=======
             'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc'
+>>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
         ]);
         if (!$validated) {
             return response()->json([
@@ -135,8 +141,22 @@ class AdvertisementController extends Controller
     public function update(Request $request) //checked
     {
         $validated = $request->validate([
+<<<<<<< HEAD
+            'ten_quang_cao' => 'required|string|max:50',
+            'ngay_tao' => 'required|date',
+            'ngay_huy' => 'required|date',
+            'luot_phat' => 'nullable|numeric|min:0',
+            'hinh_anh' => 'nullable|url',
+            'trang_thai' => 'nullable|numeric|between:0,9',
+            'ma_nqc' => 'required|exists:advertisers,ma_nqc',
+        ]);
+
+        $advertisement->update($validated);
+        return response()->json($advertisement);
+=======
             'ten_quang_cao' => 'required|string'
         ]);
+>>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
         if (!$validated) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -176,7 +196,11 @@ class AdvertisementController extends Controller
                 'status' => Response::HTTP_NOT_FOUND
             ], Response::HTTP_NOT_FOUND);
         } else {
+<<<<<<< HEAD
+            if ($advertisement->trang_thai == 1 && $advertisement->luot_phat_tich_luy == 0) {
+=======
             if ($advertisement->trang_thai == 1) {
+>>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
                 try {
                     $hasContract = AdvertisingContractModel::where('ma_quang_cao', $id)->first();
                     if ($hasContract) {

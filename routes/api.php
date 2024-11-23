@@ -50,6 +50,8 @@ Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, '
 Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
 Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
+Route::post('/albums/{ma_album}/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
+Route::post('/albums/{ma_album}/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
@@ -74,12 +76,13 @@ Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContrac
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);
 
 // Route VoucherController
-Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
-Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
+Route::get('/vouchers', [VoucherController::class, 'index']);
+// Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
+// Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
-Route::delete('/vouchers/{id}', [VoucherController::class, 'destroy']);
+Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
 Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
 Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
@@ -120,7 +123,7 @@ Route::post('/decentralizations', [DecentralizationController::class, 'store']);
 Route::put('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'update']);
 Route::delete('/decentralizations/{ma_phan_quyen}', [DecentralizationController::class, 'destroy']);
 Route::post('/decentralizations/{ma_phan_quyen}/attach-chuc-nang/{ma_chuc_nang}', [DecentralizationController::class, 'attachFunctionn']);
-
+Route::put('/updateNameDecentralization/{ma_phan_quyen}', [DecentralizationController::class, 'updateTenQuyenHan']);
 // Route FunctionController
 Route::get('/functionns', [FunctionnController::class, 'index']);
 Route::get('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'show']);
@@ -129,8 +132,14 @@ Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update'])
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
 // Route 
+<<<<<<< HEAD
+Route::put('/functionalDetail/update', [FunctionalDetailController::class, 'update']);
+Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
+Route::get('/functional-details', [FunctionalDetailController::class, 'getFunctionalDetail']);
+=======
 Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
 Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
+>>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);

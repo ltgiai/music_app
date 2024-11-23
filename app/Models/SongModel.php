@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use SoftDeletes;
 
 class SongModel extends Model
 {
     use HasFactory;
 
     protected $table = 'bai_hat';
+
+    protected $dates = ['deleted_at']; // Trường này sẽ được thêm vào bảng
 
     public $incrementing = false;
     protected $keyType = 'string';

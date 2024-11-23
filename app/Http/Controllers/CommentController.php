@@ -15,13 +15,21 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
+        $latestComment = CommentModel::orderBy('ma_binh_luan', 'desc')->first();
+        if ($latestComment) {
+            $lastIdNumber = (int) substr($latestComment->ma_binh_luan, 2);
+            $newIdNumber = $lastIdNumber + 1;
+            $newId = 'BL' . str_pad($newIdNumber, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newId = 'BL0001';
+        }
         $validatedData = $request->validate([
             'noi_dung' => 'required|string',
-            'ma_tk' => 'required|integer',
-            'ma_bai_hat' => 'required|integer',
+            'ma_tk' => 'required|string',
+            'ma_bai_hat' => 'required|string',
         ]);
 
-        $validatedData['ngay_tao'] = now();
+        $validatedData['ma_binh_luan'] = $newId;
 
         $comment = CommentModel::create($validatedData);
         return response()->json($comment, 201);
@@ -45,11 +53,9 @@ class CommentController extends Controller
 
         $validatedData = $request->validate([
             'noi_dung' => 'string',
-            'ma_tk' => 'integer',
-            'ma_bai_hat' => 'integer',
+            'ma_tk' => 'string',
+            'ma_bai_hat' => 'string',
         ]);
-
-        $validatedData['ngay_chinh_sua'] = now(); 
 
         $comment->update($validatedData);
         return response()->json($comment);

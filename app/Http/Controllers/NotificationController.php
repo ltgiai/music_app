@@ -14,7 +14,7 @@ class NotificationController extends Controller
         return response()->json($notifications);
     }
     public function show($ma_tb) {
-        $notification = Notification::with('ma_tb')->find($ma_tk);
+        $notification = Notification::with('ma_tb')->find($ma_tb);
         if ($notification) {
             return response()->json($notification);
         } else {
