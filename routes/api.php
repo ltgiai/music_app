@@ -37,10 +37,12 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 
 // Route Playlist
 Route::get('/playlists', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist có trong hệ thống
-Route::get('/playlists/account/{ma_playlist}/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
+Route::get('/playlists/account/{ma_tai_khoan}', [PlaylistController::class, 'renderPlaylistsWithSongsByAccount']); // Liệt kê danh sách playlist theo từng tài khoản
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
+Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
+Route::post('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
 Route::post('/albums/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'store'])->where('ma_album', 'ACC\d{4}');
 Route::put('/albums/{ma_album}/add', [App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
 Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}');
@@ -53,9 +55,9 @@ Route::post('/albums/{ma_album}/unlike', [App\Http\Controllers\AlbumController::
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
-Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
+Route::patch('/advertisements', [AdvertisementController::class, 'update']);
 Route::post('/advertisements', [AdvertisementController::class, 'store']);
-Route::put('/advertisements/{id}', [AdvertisementController::class, 'update']);
+Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
 Route::delete('/advertisements/{id}', [AdvertisementController::class, 'destroy']);
 Route::put('/advertisements/{id}/use', [AdvertisementController::class, 'useAdvertisement']);
 
@@ -130,18 +132,27 @@ Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update'])
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
 // Route 
+<<<<<<< HEAD
 Route::put('/functionalDetail/update', [FunctionalDetailController::class, 'update']);
 Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
 Route::get('/functional-details', [FunctionalDetailController::class, 'getFunctionalDetail']);
+=======
+Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
+Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
+>>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
 Route::post('/notifications', [NotificationController::class, 'store']);
 
 // Route CommentController
+Route::get('/comments/song/{songId}', [CommentController::class, 'getCommentsBySong']);
 Route::get('/comments', [CommentController::class, 'index']);
-Route::get('/comment/{ma_tb}', [CommentController::class, 'show']);
-Route::post('/comment', [CommentController::class, 'store']);
+Route::get('/comments/{ma_bl}', [CommentController::class, 'show']);
+Route::post('/comments', [CommentController::class, 'store']);
+Route::put('/comments/{ma_bl}', [CommentController::class, 'update']);
+Route::delete('/comments/{ma_bl}', [CommentController::class, 'destroy']);
+
 
 // Route GenreController
 Route::get('/genres', [GenreController::class, 'renderListOfGenres']); // Liệt kê danh sách thể loại

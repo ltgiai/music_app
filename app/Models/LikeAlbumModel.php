@@ -11,6 +11,7 @@ class LikeAlbumModel extends Model
     public $timestamps = false;
 
     protected $table = 'luot_thich_album';
+    protected $keyType = 'string';
     protected $fillable = ['ma_tk', 'ma_album', 'ngay_tao', 'ngay_huy', 'ngay_chinh_sua'];
 
     protected static function newFactory()
