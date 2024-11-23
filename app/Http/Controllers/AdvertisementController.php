@@ -96,7 +96,7 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
             'ten_quang_cao' => 'required|string',
             'hinh_anh' => 'nullable|url',
-            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc',
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc'
         ]);
         if (!$validated) {
             return response()->json([
