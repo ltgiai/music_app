@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class VoucherController extends Controller
-{
+{   
+    public function index() {
+        $voucher = VoucherModel::all();
+        return response()->json($voucher);
+    }
     public function renderListOfVouchers()
     {
         $voucher = DB::table('goi_premium')
@@ -123,18 +127,27 @@ class VoucherController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'ma_goi' => 'required|exists:vouchers,ma_goi',
-            'ten_goi' => 'required|string|max:50',
-            'thoi_han' => 'required|numeric|min:0',
-            'gia_goi' => 'required|numeric|min:0',
-            'doanh_thu' => 'required|numeric|min:0',
-            'mo_ta' => 'required|string',
-            'trang_thai' => 'required|numeric'
+        // Lấy giá trị ma_goi cuối cùng trong cơ sở dữ liệu
+        $lastPackage = VoucherModel::orderBy('ma_goi', 'desc')->first();
+        
+        // Lấy số cuối cùng trong ma_goi (xxxx), giả sử định dạng là GOIxxxx
+        $lastNumber = $lastPackage ? (int)substr($lastPackage->ma_goi, 3) : 0;
+        
+        // Tạo giá trị mới cho ma_goi
+        $newMaGoi = 'GOI' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+        // Tạo gói premium với ma_goi mới
+        $premiumPackage = VoucherModel::create([
+            'ma_goi' => $newMaGoi,
+            'ten_goi' => $request->ten_goi,
+            'thoi_han' => $request->thoi_han,
+            'gia_goi' => $request->gia_goi,
+            'doanh_thu' => $request->doanh_thu ?? '0.000',
+            'mo_ta' => $request->mo_ta,
+            'trang_thai' => $request->trang_thai,
         ]);
 
-        $voucher = VoucherModel::create($validated);
-        return response()->json($voucher, 201);
+        return response()->json(['message' => 'Gói premium đã được thêm thành công', 'data' => $premiumPackage], 201);
     }
 
     public function update(Request $request, $ma_goi)
@@ -162,14 +175,22 @@ class VoucherController extends Controller
 
     public function destroy($ma_goi)
     {
-        $voucher = VoucherModel::where('ma_goi', $ma_goi)
-            ->first();
+        // Tìm gói theo id
+        $voucher = VoucherModel::find($ma_goi);
 
+        // Nếu không tìm thấy gói, trả về lỗi 404
         if (!$voucher) {
-            return response()->json(['message' => 'Voucher not found'], 404);
+            return response()->json([
+                'message' => 'Gói không tồn tại.'
+            ], Response::HTTP_NOT_FOUND);
         }
 
+        // Xóa gói
         $voucher->delete();
-        return response()->json(['message' => 'Voucher deleted']);
+
+        // Trả về phản hồi thành công
+        return response()->json([
+            'message' => 'Gói đã được xóa thành công.'
+        ], Response::HTTP_OK);
     }
 }

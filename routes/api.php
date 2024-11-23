@@ -74,12 +74,13 @@ Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContrac
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);
 
 // Route VoucherController
-Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
-Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
+Route::get('/vouchers', [VoucherController::class, 'index']);
+// Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
+// Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
-Route::delete('/vouchers/{id}', [VoucherController::class, 'destroy']);
+Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
 Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
 Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
