@@ -57,9 +57,9 @@ Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::cla
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
-Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
+Route::patch('/advertisements', [AdvertisementController::class, 'update']);
 Route::post('/advertisements', [AdvertisementController::class, 'store']);
-Route::put('/advertisements/{id}', [AdvertisementController::class, 'update']);
+Route::get('/advertisements/{id}', [AdvertisementController::class, 'show']);
 Route::delete('/advertisements/{id}', [AdvertisementController::class, 'destroy']);
 Route::put('/advertisements/{id}/use', [AdvertisementController::class, 'useAdvertisement']);
 
@@ -78,12 +78,13 @@ Route::put('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContrac
 Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingContractController::class, 'destroy']);
 
 // Route VoucherController
-Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
-Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
+Route::get('/vouchers', [VoucherController::class, 'index']);
+// Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
+// Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
 Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
-Route::delete('/vouchers/{id}', [VoucherController::class, 'destroy']);
+Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
 Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
 Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
