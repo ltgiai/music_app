@@ -132,14 +132,9 @@ Route::put('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'update'])
 Route::delete('/functionns/{ma_chuc_nang}', [FunctionnController::class, 'destroy']);
 
 // Route 
-<<<<<<< HEAD
 Route::put('/functionalDetail/update', [FunctionalDetailController::class, 'update']);
 Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
 Route::get('/functional-details', [FunctionalDetailController::class, 'getFunctionalDetail']);
-=======
-Route::put('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'update']);
-Route::delete('/functionalDetail/{ma_phan_quyen}/{ma_chuc_nang}', [FunctionalDetailController::class, 'delete']);
->>>>>>> daff3b9b7a37138ebfe52e92b0b296b3b4c0b433
 // Route NotificationController
 Route::get('/notifications', [NotificationController::class, 'index']);
 Route::get('/notifications/{ma_tb}', [NotificationController::class, 'show']);
