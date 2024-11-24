@@ -16,6 +16,7 @@ use App\Http\Controllers\GenreSongController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\AdvertisingContractController;
+use App\Http\Controllers\ArtistWithdrawalSlipController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\VoucherRegisterController;
@@ -23,15 +24,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\FunctionalDetailController;
+use App\Models\ArtistWithdrawalSlipModel;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
 Route::get('/songs/likes', [SongController::class, 'renderListOfLikesForSong']); // Liệt kê danh sách bài hát có lượt yêu thích trên trang chủ
-Route::get('/songs/collab', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
 Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
+Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
 Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
@@ -103,10 +105,10 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/login', [AuthController::class, 'login']);
 
-//image
+// Route Image
 Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
 
-//account
+// Route Account
 Route::get('/accounts', [AccountController::class, 'index']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
@@ -159,7 +161,6 @@ Route::post('/genre', [GenreController::class, 'store']); // Thêm thể loại
 Route::delete('/genre/{ma_the_loai}', [GenreController::class, 'destroy']);
 
 // Route LikeSongController
-
 Route::get('/song-likes', [LikeSongController::class, 'index']);
 Route::post('/song-likes', [LikeSongController::class, 'store']);
 Route::delete('/song-likes', [LikeSongController::class, 'destroy']);
@@ -168,6 +169,11 @@ Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Route ArtistWithdrawalSlip
+Route::get('/artist-slip', [ArtistWithdrawalSlipController::class, 'index']);
+
+
 
 /*
 |--------------------------------------------------------------------------
