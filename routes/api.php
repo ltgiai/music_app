@@ -23,6 +23,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\FunctionalDetailController;
+use App\Http\Controllers\PhiLuotNgheController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
@@ -164,6 +165,10 @@ Route::get('/song-likes', [LikeSongController::class, 'index']);
 Route::post('/song-likes', [LikeSongController::class, 'store']);
 Route::delete('/song-likes', [LikeSongController::class, 'destroy']);
 Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
+
+// phi luot nghe
+Route::get('/phi-luot-nghe', [PhiLuotNgheController::class, 'index']);
+Route::put('/phi-luot-nghe/{ma_phi}', [PhiLuotNgheController::class, 'updateGiaTien']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
