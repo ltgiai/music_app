@@ -9,7 +9,7 @@ use App\Models\ArtistWithdrawalSlipModel;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
-class PhieuRutTienArtistController extends Controller
+class ArtistWithdrawalSlipController extends Controller
 {
     // Lấy danh sách phiếu rút tiền artist
     public function index()
@@ -33,6 +33,8 @@ class PhieuRutTienArtistController extends Controller
                     'ma_tk_artist' => $phieu->ma_tk_artist,
                     'ngay_rut_tien' => $phieu->ngay_rut_tien,
                     'tong_tien_rut_ra' => $phieu->tong_tien_rut_ra,
+                    'ma_bank' => $phieu->bank_id,
+                    'ten_bank' => $phieu->bank_name
                 ];
             }),
             'message' => 'Fetched artist withdrawal records successfully',
