@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VoucherRegisterModel;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
 class VoucherRegisterController extends Controller
 {
     public function index()
@@ -34,17 +34,36 @@ class VoucherRegisterController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'ma_tk' => 'required|exists:accounts,ma_tk',
-            'ma_goi' => 'required|exists:vouchers,ma_goi',
-            'ngay_dang_ky' => 'required|date',
-            'ngay_het_han' => 'required|date',
-            'gia_goi' => 'required|numeric|min:0',
-            'trang_thai' => 'required|numeric'
+        // Xác thực dữ liệu từ form request
+        $request->validate([
+            'ma_tk' => 'required|string|max:50',
+            'ma_goi' => 'required|string|max:50',
+            'thang' => 'required|integer',  // Tháng cần cộng thêm
+            'tong_tien_thanh_toan' => 'required|numeric',
+            'trang_thai' => 'required|integer',
         ]);
 
-        $voucher_register = VoucherRegisterModel::create($validated);
-        return response()->json($voucher_register, 201);
+        // Lấy thời gian hiện tại cho ngay_dang_ky
+        $ngay_dang_ky = Carbon::now();
+
+        // Tính ngày hết hạn (ngay_het_han = ngay_dang_ky + số tháng từ request)
+        $ngay_het_han = $ngay_dang_ky->copy()->addMonths($request->thang);
+
+        // Tạo bản ghi mới trong bảng dang_ky_premium
+        $voucher = VoucherRegisterModel::create([
+            'ma_tk' => $request->ma_tk,
+            'ma_goi' => $request->ma_goi,
+            'ngay_dang_ky' => $ngay_dang_ky,
+            'ngay_het_han' => $ngay_het_han,
+            'tong_tien_thanh_toan' => $request->tong_tien_thanh_toan,
+            'trang_thai' => 1,  // Trạng thái luôn là 1
+        ]);
+
+        // Trả về kết quả sau khi tạo thành công
+        return response()->json([
+            'message' => 'Bạn đã đăng ký gói premium này thành công',
+            'voucher' => $voucher,
+        ], 201);
     }
 
     public function update(Request $request, $ma_tk, $ma_goi)

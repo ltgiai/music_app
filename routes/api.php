@@ -24,6 +24,7 @@ use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\FunctionalDetailController;
 use App\Http\Controllers\PhiLuotNgheController;
+use App\Http\Controllers\BankController;
 
 // Route SongController
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
@@ -82,13 +83,15 @@ Route::delete('/advertising-contracts/{ma_quang_cao}/{ma_nqc}', [AdvertisingCont
 Route::get('/vouchers', [VoucherController::class, 'index']);
 // Route::get('/vouchers', [VoucherController::class, 'renderListOfVouchers']);
 // Route::get('/vouchers/registers', [VoucherController::class, 'renderVoucherRegister']);
-Route::get('/vouchers/{id}', [VoucherController::class, 'show']);
+Route::put('/vouchersUpdateStatus/{ma_goi}', [VoucherController::class, 'updateStatus']);
+Route::get('/vouchers/{ma_goi}', [VoucherController::class, 'show']);
 Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
 Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
 Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
-Route::post('/voucher/registers', [VoucherRegisterController::class, 'store']);
+Route::post('/voucherRegisters', [VoucherRegisterController::class, 'store']);
+Route::get('/voucherRegisters', [VoucherRegisterController::class, 'index']);
 Route::put('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
 
 // Route FunctionnController
@@ -169,6 +172,8 @@ Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount
 // phi luot nghe
 Route::get('/phi-luot-nghe', [PhiLuotNgheController::class, 'index']);
 Route::put('/phi-luot-nghe/{ma_phi}', [PhiLuotNgheController::class, 'updateGiaTien']);
+// bank
+Route::put('/banks/{bank_id}/withdraw', [BankController::class, 'withdraw']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

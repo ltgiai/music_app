@@ -39,23 +39,19 @@ class AdvertisementController extends Controller
             ], Response::HTTP_NOT_FOUND);
         } else {
             return response()->json([
-                "advertisements" => $advertisements
-                    ->filter(function ($ad) {
-                        return $ad->trang_thai == 1; // Lọc chỉ giữ những quảng cáo có trang_thai = 1
-                    })
-                    ->map(function ($ad) {
-                        return [
-                            'ma_quang_cao' => $ad->ma_quang_cao,
-                            'ten_quang_cao' => $ad->ten_quang_cao,
-                            'ngay_tao' => $ad->ngay_tao,
-                            'luot_phat_tich_luy' => $ad->luot_phat_tich_luy,
-                            'hinh_anh' => $ad->hinh_anh,
-                            'trang_thai' => $ad->trang_thai,
-                            'ma_nqc' => $ad->ma_nqc,
-                            'ten_nqc' => $ad->ten_nqc,
-                            'sdt' => $ad->so_dien_thoai
-                        ];
-                    }),
+                "advertisements" => $advertisements->map(function ($ad) {
+                    return [
+                        'ma_quang_cao' => $ad->ma_quang_cao,
+                        'ten_quang_cao' => $ad->ten_quang_cao,
+                        'ngay_tao' => $ad->ngay_tao,
+                        'luot_phat_tich_luy' => $ad->luot_phat_tich_luy,
+                        'hinh_anh' => $ad->hinh_anh,
+                        'trang_thai' => $ad->trang_thai,
+                        'ma_nqc' => $ad->ma_nqc,
+                        'ten_nqc' => $ad->ten_nqc,
+                        'sdt' => $ad->so_dien_thoai
+                    ];
+                }),
                 'message' => 'Get all advertisement successfully',
                 'status' => Response::HTTP_OK
             ], Response::HTTP_OK);
@@ -100,7 +96,7 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
             'ten_quang_cao' => 'required|string',
             'hinh_anh' => 'nullable|url',
-            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc',
+            'ma_nqc' => 'required|exists:nha_dang_ky_quang_cao,ma_nqc'
         ]);
         if (!$validated) {
             return response()->json([
@@ -108,8 +104,8 @@ class AdvertisementController extends Controller
                 'status' => Response::HTTP_BAD_REQUEST
             ], Response::HTTP_BAD_REQUEST);
         } else {
-            $timeCreated = now();
             try {
+                $t  = now();
                 do {
                     $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
                     $ma_quang_cao = 'QC' . $uniqueNumber;
@@ -117,15 +113,15 @@ class AdvertisementController extends Controller
                 AdvertisementModel::create([
                     'ma_quang_cao' => $ma_quang_cao,
                     'ten_quang_cao' => $request->ten_quang_cao,
-                    'ngay_tao' => $timeCreated,
+                    'ngay_tao' => $t,
                     'luot_phat_tich_luy' => 0,
                     'hinh_anh' => $request->hinh_anh,
                     'trang_thai' => 1,
                     'ma_nqc' => $request->ma_nqc
                 ]);
                 return response()->json([
+                    'ngay_tao' => $t,
                     'ma_quang_cao' => $ma_quang_cao,
-                    'ngay_tao' => $timeCreated,
                     'message' => 'Create advertisement successfully',
                     'status' => Response::HTTP_CREATED
                 ], Response::HTTP_CREATED);

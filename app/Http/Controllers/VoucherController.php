@@ -109,20 +109,13 @@ class VoucherController extends Controller
     }
 
 
-    public function show($ma_goi)
-    {
-        $voucher = VoucherModel::where('ma_goi', $ma_goi)
-            ->first();
-
-        if (!$voucher) {
-            return response()->json(['message' => 'Voucher not found'], 404);
+    public function show($ma_goi) {
+        $premium = VoucherModel::find($ma_goi);
+        if ($premium) {
+            return response()->json($premium);
+        } else {
+            return response()->json(['message' => 'Premium not found'], 404);
         }
-
-        $relationships = $voucher->relationships();
-        $data = [
-            'voucher' => $voucher,
-        ];
-        return response()->json($data);
     }
 
     public function store(Request $request)
@@ -143,11 +136,37 @@ class VoucherController extends Controller
             'thoi_han' => $request->thoi_han,
             'gia_goi' => $request->gia_goi,
             'doanh_thu' => $request->doanh_thu ?? '0.000',
-            'mo_ta' => $request->mo_ta,
-            'trang_thai' => $request->trang_thai,
+            'mo_ta' => "Nghe nhạc chất lượng cao,Trải nghiệm nghe nhạc không có quảng cáo",
+            'trang_thai' => 1,
         ]);
 
         return response()->json(['message' => 'Gói premium đã được thêm thành công', 'data' => $premiumPackage], 201);
+    }
+
+    public function updateStatus(Request $request, $ma_goi)
+    {
+        // Xác thực dữ liệu đầu vào (nếu cần)
+        $request->validate([
+            'trang_thai' => 'required|boolean', // Chỉ nhận giá trị 0 hoặc 1
+        ]);
+
+        // Tìm gói premium theo `ma_goi`
+        $voucher = VoucherModel::find($ma_goi);
+
+        if (!$voucher) {
+            return response()->json([
+                'message' => 'Không tìm thấy gói premium với mã gói này!',
+            ], 404);
+        }
+
+        // Cập nhật trạng thái
+        $voucher->trang_thai = $request->trang_thai;
+        $voucher->save();
+
+        return response()->json([
+            'message' => 'Cập nhật trạng thái thành công!',
+            'data' => $voucher,
+        ], 200);
     }
 
     public function update(Request $request, $ma_goi)
