@@ -12,6 +12,7 @@ class Decentralization extends Model
     public $timestamps = false;
     protected $table = 'phan_quyen';
     protected $primaryKey = 'ma_phan_quyen';
+    public $incrementing = false;           
     protected $keyType = 'string';
     protected $fillable = ['ma_phan_quyen','ten_quyen_han','ngay_tao','tinh_trang'];
     public function tai_khoan()

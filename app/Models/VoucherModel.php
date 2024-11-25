@@ -27,9 +27,8 @@ class VoucherModel extends Model
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)
     
     // Thiết lập quan hệ 1 voucher có nhiều voucher_register
-    public function voucher_register()
-    {
-         return $this->hasMany(VoucherRegisterModel::class, 'ma_goi', 'ma_goi');
+    public function tai_khoan(){
+        return $this->belongsToMany(Account::class, 'dang_ky_premium', 'ma_goi', 'ma_tk');
     }
 
     // Phương thức thêm voucher
