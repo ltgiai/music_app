@@ -24,6 +24,10 @@ class Account extends Model
         return $this->hasOne(User::class, 'ma_tk', 'ma_tk');
     }
 
+    public function voucher(){
+        return $this->belongsToMany(VoucherModel::class, 'dang_ky_premium', 'ma_tk', 'ma_goi');
+    }
+
     public function thong_bao()
     {
         return $this->hasMany(Notification::class, 'ma_tk');
