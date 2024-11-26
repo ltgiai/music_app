@@ -11,7 +11,6 @@ class FunctionalDetail extends Model
     use HasFactory;
     public $timestamps = false;
     protected $table = 'chi_tiet_phan_quyen';
-    protected $keyType = 'string';
     protected $fillable = ['ma_phan_quyen','ma_chuc_nang','xem','them','sua','xoa'];
     public function phan_quyen()
     {
