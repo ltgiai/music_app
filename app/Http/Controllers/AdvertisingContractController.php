@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
+
+/*
+    Hợp đồng quảng cáo chỉ có 1 cái có trạng thái 1 tương ứng với quảng cáo thôi 
+
+*/
+
 class AdvertisingContractController extends Controller
 {
     public function index() // checked
@@ -45,7 +51,7 @@ class AdvertisingContractController extends Controller
     {
         $advertising_contract = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
-            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai', 'quang_cao.hinh_anh')
+            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai as trang_thai_quang_cao', 'quang_cao.hinh_anh')
             ->where('hop_dong_quang_cao.ma_hop_dong', '=', $ma_hop_dong)
             ->first();
         if (!$advertising_contract) {
@@ -63,8 +69,8 @@ class AdvertisingContractController extends Controller
                     'luot_phat' => $advertising_contract->luot_phat,
                     'doanh_thu' => $advertising_contract->doanh_thu,
                     'ngay_hieu_luc' => $advertising_contract->ngay_hieu_luc,
-                    'ngay_hoan_thanh' => $advertising_contract->ngay_hoan_thanh,
-                    'trang_thai_quang_cao' => $advertising_contract->trang_thai,
+                    'trang_thai_hop_dong' => $advertising_contract->trang_thai,
+                    'trang_thai_quang_cao' => $advertising_contract->trang_thai_quang_cao,
                 ],
                 'message' => 'Get all advertising contracts successfully',
                 'status' => Response::HTTP_OK
@@ -79,7 +85,7 @@ class AdvertisingContractController extends Controller
             'luot_phat' => 'required|numeric|min:0',
             'doanh_thu' => 'required|numeric|min:0',
             'ngay_hieu_luc' => 'required|date',
-            'ngay_hoan_thanh' => 'required|date'    
+            'ngay_hoan_thanh' => 'required|date'
         ]);
         if (!$validated) {
             return response()->json(
@@ -100,8 +106,9 @@ class AdvertisingContractController extends Controller
                     'ma_quang_cao' => $validated['ma_quang_cao'],
                     'luot_phat' => $validated['luot_phat'],
                     'doanh_thu' => $validated['doanh_thu'],
-                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'], 
+                    'ngay_hieu_luc' => $validated['ngay_hieu_luc'],
                     'ngay_hoan_thanh' => $validated['ngay_hoan_thanh'],
+                    'trang_thai' => 1
                 ]);
                 DB::table('quang_cao')
                     ->where('ma_quang_cao', $validated['ma_quang_cao'])

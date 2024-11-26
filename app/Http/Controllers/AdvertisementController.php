@@ -228,7 +228,6 @@ class AdvertisementController extends Controller
             if ($advertisement->luot_phat_tich_luy == 0) {
                 $contract = AdvertisingContractModel::where('ma_quang_cao', $id)->first();
                 if ($contract) {
-                    $contract->ngay_thanh_toan = now();
                     $contract->save();
                 }
             }
