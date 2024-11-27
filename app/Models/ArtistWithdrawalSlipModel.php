@@ -39,7 +39,7 @@ class ArtistWithdrawalSlipModel extends Model
     public function relationships()
     {
         return [
-            'artist' => $this->belongsTo(AccountModel::class, 'ma_subartist', 'ma_tk'), // Artist - Account : 1 - 1
+            'artist' => $this->belongsTo(Account::class, 'ma_subartist', 'ma_tk'), // Artist - Account : 1 - 1
         ];
     }
 

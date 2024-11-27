@@ -182,7 +182,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route ArtistWithdrawalSlip
 Route::get('/artist-slip', [ArtistWithdrawalSlipController::class, 'index']); // Liệt kê danh sách rút tiền của nghệ sĩ
-Route::get('/artist-slip/{ma_phieu}', [ArtistWithdrawalSlipController::class, 'show']); // Liệt kê danh sách rút tiền của nghệ sĩ
+Route::get('/artist-slip/{ma_tai_khoan}', [ArtistWithdrawalSlipController::class, 'show']); // Liệt kê danh sách rút tiền của nghệ sĩ
 Route::post('/artist-slip', [ArtistWithdrawalSlipController::class, 'store']); // Liệt kê danh sách rút tiền của nghệ sĩ
 Route::delete('/artist-slip', [ArtistWithdrawalSlipController::class, 'destroy']); // Liệt kê danh sách rút tiền của nghệ sĩ
 
