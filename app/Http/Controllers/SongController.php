@@ -569,6 +569,54 @@ class SongController extends Controller
         }
     }
 
+    // Cập nhật lượt nghe bài hát
+    public function updateSongListens(Request $request, $ma_bai_hat)
+    {
+        // Tìm bài hát theo mã bài hát
+        $song = SongModel::find($ma_bai_hat);
+        if (!$song) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Song not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Xác thực dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'luot_nghe' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'errors' => $validator->errors(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Cập nhật lượt nghe của bài hát
+            $song->luot_nghe = $request->luot_nghe;
+            $song->save();
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Song listens updated successfully',
+                'data' => [
+                    'ma_bai_hat' => $song->ma_bai_hat,
+                    'luot_nghe' => $song->luot_nghe,
+                ],
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Ghi log lỗi và trả về thông báo lỗi
+            Log::error('Song listens update failed: ' . $e->getMessage());
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Song listens update failed',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     // Cập nhật trạng thái bài hát về đã xóa
     public function destroy($ma_bai_hat)
     {
