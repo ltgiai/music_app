@@ -36,6 +36,7 @@ Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOf
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
+Route::post('/song/listens/{ma_bai_hat}', [SongController::class, 'updateSongListens']); // Chỉnh sửa số lượt nghe của bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
 Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Chỉnh sửa trạng thái bài hát dựa vào mã bài hát
 
