@@ -349,6 +349,7 @@ class SongController extends Controller
             ->select(
                 'bai_hat.*',
                 'album.ten_album',
+                'tk_artist.*',
                 'user_artist.ten_user as ten_artist'
             )
             ->where('bai_hat.ma_bai_hat', $ma_bai_hat)
@@ -398,6 +399,7 @@ class SongController extends Controller
                 'ma_bai_hat' => $song->ma_bai_hat,
                 'ten_bai_hat' => $song->ten_bai_hat,
                 'album' => $song->ten_album,
+                'ma_artist' => $song->ma_tk,
                 'artist' => $song->ten_artist,
                 'thoi_luong' => $song->thoi_luong,
                 'trang_thai' => $song->trang_thai,
