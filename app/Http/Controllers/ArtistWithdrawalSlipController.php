@@ -94,26 +94,27 @@ class ArtistWithdrawalSlipController extends Controller
     }
 
     // Hiển thị chi tiết một phiếu rút tiền artist
-    public function show($ma_phieu)
+    public function show($ma_tai_khoan)
     {
-        $phieuRutTien = ArtistWithdrawalSlipModel::where('ma_phieu', $ma_phieu)->first();
+        // Truy vấn để lấy chi tiết phiếu rút tiền của nghệ sĩ
+        $phieuRutTien = DB::table('phieu_rut_tien_artist')
+            ->where('ma_tk_artist', $ma_tai_khoan)
+            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra')
+            ->first(); // Lấy một bản ghi duy nhất
 
-        if ($phieuRutTien) {
-            return response()->json([
-                'status' => Response::HTTP_OK,
-                'data' => [
-                    'ma_phieu' => $phieuRutTien->ma_phieu,
-                    'ma_tk_artist' => $phieuRutTien->ma_tk_artist,
-                    'ngay_rut_tien' => $phieuRutTien->ngay_rut_tien,
-                    'tong_tien_rut_ra' => $phieuRutTien->tong_tien_rut_ra,
-                ],
-            ], Response::HTTP_OK);
-        } else {
+        // Kiểm tra nếu không tìm thấy
+        if (!$phieuRutTien) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Artist withdrawal record not found',
             ], Response::HTTP_NOT_FOUND);
         }
+
+        // Trả về dữ liệu nếu tìm thấy
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'data' => $phieuRutTien,
+        ], Response::HTTP_OK);
     }
 
     // Cập nhật phiếu rút tiền artist

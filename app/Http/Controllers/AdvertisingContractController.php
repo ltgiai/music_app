@@ -19,7 +19,7 @@ class AdvertisingContractController extends Controller
     {
         $advertising_contracts = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
-            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai', 'quang_cao.hinh_anh')
+            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.hinh_anh')
             ->get();
         if ($advertising_contracts->isEmpty()) {
             return response()->json([
@@ -38,7 +38,7 @@ class AdvertisingContractController extends Controller
                         'doanh_thu' => $contract->doanh_thu,
                         'ngay_hieu_luc' => $contract->ngay_hieu_luc,
                         'ngay_hoan_thanh' => $contract->ngay_hoan_thanh,
-                        'trang_thai_quang_cao' => $contract->trang_thai,
+                        'trang_thai_hop_dong' => $contract->trang_thai,
                     ];
                 }),
                 'message' => 'Get all advertising contracts successfully',
@@ -51,7 +51,7 @@ class AdvertisingContractController extends Controller
     {
         $advertising_contract = DB::table('hop_dong_quang_cao')
             ->join('quang_cao', 'hop_dong_quang_cao.ma_quang_cao', '=', 'quang_cao.ma_quang_cao')
-            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.trang_thai as trang_thai_quang_cao', 'quang_cao.hinh_anh')
+            ->select('hop_dong_quang_cao.*', 'quang_cao.ten_quang_cao', 'quang_cao.hinh_anh')
             ->where('hop_dong_quang_cao.ma_hop_dong', '=', $ma_hop_dong)
             ->first();
         if (!$advertising_contract) {
@@ -70,7 +70,6 @@ class AdvertisingContractController extends Controller
                     'doanh_thu' => $advertising_contract->doanh_thu,
                     'ngay_hieu_luc' => $advertising_contract->ngay_hieu_luc,
                     'trang_thai_hop_dong' => $advertising_contract->trang_thai,
-                    'trang_thai_quang_cao' => $advertising_contract->trang_thai_quang_cao,
                 ],
                 'message' => 'Get all advertising contracts successfully',
                 'status' => Response::HTTP_OK
