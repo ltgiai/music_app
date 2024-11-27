@@ -60,13 +60,19 @@ class ArtistWithdrawalSlipController extends Controller
         }
 
         try {
-            // Tạo mã phiếu không trùng lặp
-            do {
-                $date = now()->format('dmY');
-                $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $ma_phieu = 'PHIEU' . $date . $uniqueNumber;
-            } while (ArtistWithdrawalSlipModel::where('ma_phieu', $ma_phieu)->exists());
+            // Lấy mã phiếu lớn nhất hiện tại
+            $lastRecord = ArtistWithdrawalSlipModel::latest('ma_phieu')->first();
 
+            // Xử lý số thứ tự từ mã phiếu lớn nhất
+            $lastNumber = 0; // Mặc định nếu không có bản ghi nào
+            if ($lastRecord) {
+                $lastNumber = (int) substr($lastRecord->ma_phieu, 3); // Cắt bỏ 'PRT'
+            }
+
+            $newNumber = $lastNumber + 1;
+            $ma_phieu = 'PRT' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+            // Tạo bản ghi mới
             ArtistWithdrawalSlipModel::create([
                 'ma_phieu' => $ma_phieu,
                 'ma_tk_artist' => $request->ma_tk_artist,
