@@ -581,26 +581,14 @@ class SongController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        // Xác thực dữ liệu đầu vào
-        $validator = Validator::make($request->all(), [
-            'luot_nghe' => 'required|integer|min:0',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => Response::HTTP_BAD_REQUEST,
-                'errors' => $validator->errors(),
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
         try {
-            // Cập nhật lượt nghe của bài hát
-            $song->luot_nghe = $request->luot_nghe;
+            // Tăng lượt nghe lên 1
+            $song->luot_nghe += 1;
             $song->save();
 
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Song listens updated successfully',
+                'message' => 'Song listens incremented successfully',
                 'data' => [
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'luot_nghe' => $song->luot_nghe,
@@ -608,13 +596,14 @@ class SongController extends Controller
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             // Ghi log lỗi và trả về thông báo lỗi
-            Log::error('Song listens update failed: ' . $e->getMessage());
+            Log::error('Incrementing song listens failed: ' . $e->getMessage());
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Song listens update failed',
+                'message' => 'Incrementing song listens failed',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     // Cập nhật trạng thái bài hát về đã xóa
