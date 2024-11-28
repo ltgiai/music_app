@@ -57,7 +57,7 @@ Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, '
 Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']);
 Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
-Route::get('/albums{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
+Route::get('/albums/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
 
 // Route AdvertisementController
 Route::get('/advertisements', [AdvertisementController::class, 'index']);
