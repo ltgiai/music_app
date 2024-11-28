@@ -198,6 +198,67 @@ class PlaylistController extends Controller
         }
     }
 
+
+    public function storePlaylistWithoutSongs(Request $request, $ma_tk)
+    {
+        // Kiểm tra mã tài khoản có tồn tại trong bảng tai_khoan
+        $validator = Validator::make(['ma_tk' => $ma_tk], [
+            'ma_tk' => 'required|string|exists:tai_khoan,ma_tk',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Lấy playlist gần nhất của tài khoản để đặt tên mới
+            $latestPlaylist = DB::table('playlist')
+                ->where('ma_tk', $ma_tk)
+                ->latest('ma_playlist')
+                ->first();
+
+            // Đặt tên cho playlist mới
+            $newPlaylistName = 'Danh sách phát của tôi #' .
+                ($latestPlaylist ? intval(preg_replace('/[^0-9]/', '', $latestPlaylist->ten_playlist)) + 1 : 1);
+
+            // Tạo mã playlist mới
+            $newPlaylistId = 'PL' . str_pad(
+                (int) filter_var(DB::table('playlist')->max('ma_playlist'), FILTER_SANITIZE_NUMBER_INT) + 1,
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
+
+            // Thêm playlist mới vào bảng playlist
+            DB::table('playlist')->insert([
+                'ma_playlist' => $newPlaylistId,
+                'ma_tk' => $ma_tk,
+                'ten_playlist' => $newPlaylistName,
+                'hinh_anh' => null, // Có thể truyền hình ảnh mặc định nếu cần
+            ]);
+
+            return response()->json([
+                'status' => Response::HTTP_CREATED,
+                'message' => 'Playlist created successfully',
+                'data' => [
+                    'ma_playlist' => $newPlaylistId,
+                    'ten_playlist' => $newPlaylistName,
+                ],
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            Log::error('Error creating playlist: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to create playlist',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // Hiển thị chi tiết một playlist
     public function show($id)
     {

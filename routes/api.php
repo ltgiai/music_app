@@ -35,6 +35,7 @@ Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']
 Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
+Route::get('/song/account-like/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsLikedByAccount']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::post('/song/listens/{ma_bai_hat}', [SongController::class, 'updateSongListens']); // Chỉnh sửa số lượt nghe của bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
@@ -44,6 +45,7 @@ Route::delete('/song/{ma_bai_hat}', [SongController::class, 'destroy']); // Ch�
 Route::get('/playlist/{ma_tk}', [PlaylistController::class, 'renderListOfPlaylists']); // Liệt kê danh sách playlist cuả tài khoản 
 Route::get('/playlist/{ma_tk}/{ma_playlist}', [PlaylistController::class, 'renderPlaylistByAccount']); // Liệt kê playlist theo mã tk, mã playlist
 Route::post('/playlist', [PlaylistController::class, 'store']); // Thêm playlist
+Route::post('/playlist/{ma_tk}', [PlaylistController::class, 'storePlaylistWithoutSongs']); // Thêm playlist chưa có bài hát
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::class, 'deletePlaylist']); // Xóa toàn bộ playlist
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistController::class, 'deleteSongFromPlaylist']); //Xóa một bài hát trong playlist của một tài khoản
 
