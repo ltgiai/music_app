@@ -342,8 +342,9 @@ class AlbumController extends Controller
     {
         try {
             $album = DB::table('album')
-                ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
-                ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+                // ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+                // ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+                ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
                 ->select('album.*', 'user.ten_user as ten_artist')
                 ->where('album.ma_album', $ma_album)
                 ->where('album.trang_thai', 1)
@@ -352,7 +353,7 @@ class AlbumController extends Controller
             if (!$album) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'Album not found'
+                    'message' => 'Album not foundddd'
                 ], Response::HTTP_NOT_FOUND);
             }
 
@@ -362,13 +363,6 @@ class AlbumController extends Controller
                 ->select('bai_hat.*')
                 ->where('bai_hat.trang_thai', 1)
                 ->get();
-
-            if ($songs->isEmpty()) {
-                return response()->json([
-                    'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'Song is empty'
-                ], Response::HTTP_NOT_FOUND);
-            }
 
             return response()->json([
                 'album' => [
@@ -380,7 +374,7 @@ class AlbumController extends Controller
                     'trang_thai' => $album->trang_thai,
                     'so_luong_bai_hat' => $album->so_luong_bai_hat,
                     'nguoi_so_huu' => $album->ten_artist,
-                    'songs' => $songs->map(function ($song) {
+                    'songs' => $songs->isEmpty() ? null : $songs->map(function ($song) {
                         return [
                             'ma_bai_hat' => $song->ma_bai_hat,
                             'ten_bai_hat' => $song->ten_bai_hat,
