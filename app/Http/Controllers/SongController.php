@@ -155,7 +155,8 @@ class SongController extends Controller
             'data' => $artists->map(function ($item) {
                 return [
                     'ma_artist' => $item->ma_tk,
-                    'ten_artist' => $item->ten_user
+                    'ten_artist' => $item->ten_user,
+                    'anh_dai_dien' => $item->anh_dai_dien
                 ];
             }),
             'message' => 'Get all artists successfully',
