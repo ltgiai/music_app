@@ -51,6 +51,7 @@ Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistCo
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
+Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsLikedByThisUser']);
 Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
 Route::post('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
 Route::get('/albums/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
