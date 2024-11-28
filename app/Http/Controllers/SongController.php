@@ -431,6 +431,56 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function renderListOfSongsLikedByAccount($ma_tai_khoan)
+    {
+        // Lấy danh sách bài hát được thích bởi tài khoản
+        $likedSongs = DB::table('luot_thich_bai_hat')
+            ->join('bai_hat', 'luot_thich_bai_hat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
+            ->leftJoin('album', 'bai_hat.ma_album', '=', 'album.ma_album')
+            ->leftJoin('tai_khoan as tk_artist', 'bai_hat.ma_tk_artist', '=', 'tk_artist.ma_tk')
+            ->select(
+                'bai_hat.ma_bai_hat',
+                'bai_hat.ten_bai_hat',
+                'bai_hat.thoi_luong',
+                'bai_hat.luot_nghe',
+                'bai_hat.hinh_anh',
+                'bai_hat.ngay_phat_hanh',
+                'bai_hat.trang_thai',
+                'album.ten_album',
+            )
+            ->where('luot_thich_bai_hat.ma_tk', $ma_tai_khoan)
+            ->get();
+
+        // Kiểm tra nếu không có bài hát nào được tìm thấy
+        if ($likedSongs->isEmpty()) {
+            return response()->json([
+                'data' => [],
+                'message' => 'No liked songs found for the account',
+                'status' => Response::HTTP_NOT_FOUND,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Định dạng dữ liệu trả về
+        $data = $likedSongs->map(function ($song) {
+            return [
+                'ma_bai_hat' => $song->ma_bai_hat,
+                'ten_bai_hat' => $song->ten_bai_hat,
+                'thoi_luong' => $song->thoi_luong,
+                'luot_nghe' => $song->luot_nghe,
+                'hinh_anh' => $song->hinh_anh,
+                'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                'trang_thai' => $song->trang_thai,
+                'album' => $song->ten_album,
+            ];
+        });
+
+        // Trả về danh sách bài hát dưới dạng JSON
+        return response()->json([
+            'data' => $data,
+            'message' => 'List of liked songs retrieved successfully',
+            'status' => Response::HTTP_OK,
+        ], Response::HTTP_OK);
+    }
 
     // Lưu trữ một bài hát mới
     public function store(Request $request)
