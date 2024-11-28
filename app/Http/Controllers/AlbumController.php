@@ -342,8 +342,9 @@ class AlbumController extends Controller
     {
         try {
             $album = DB::table('album')
-                ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
-                ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+                // ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+                // ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
+                ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
                 ->select('album.*', 'user.ten_user as ten_artist')
                 ->where('album.ma_album', $ma_album)
                 ->where('album.trang_thai', 1)
@@ -352,7 +353,7 @@ class AlbumController extends Controller
             if (!$album) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'Album not found'
+                    'message' => 'Album not foundddd'
                 ], Response::HTTP_NOT_FOUND);
             }
 
@@ -362,13 +363,6 @@ class AlbumController extends Controller
                 ->select('bai_hat.*')
                 ->where('bai_hat.trang_thai', 1)
                 ->get();
-
-            if ($songs->isEmpty()) {
-                return response()->json([
-                    'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'Song is empty'
-                ], Response::HTTP_NOT_FOUND);
-            }
 
             return response()->json([
                 'album' => [
@@ -380,7 +374,7 @@ class AlbumController extends Controller
                     'trang_thai' => $album->trang_thai,
                     'so_luong_bai_hat' => $album->so_luong_bai_hat,
                     'nguoi_so_huu' => $album->ten_artist,
-                    'songs' => $songs->map(function ($song) {
+                    'songs' => $songs->isEmpty() ? null : $songs->map(function ($song) {
                         return [
                             'ma_bai_hat' => $song->ma_bai_hat,
                             'ten_bai_hat' => $song->ten_bai_hat,
@@ -532,123 +526,158 @@ class AlbumController extends Controller
         }
     }
 
+    public function getAlbumsLikedByThisUser($ma_tk)
+    {
+        $albums = DB::table('luot_thich_album')
+            ->join('album', 'luot_thich_album.ma_album', '=', 'album.ma_album')
+            ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
+            ->select('luot_thich_album.ma_tk', 'album.*', 'user.ten_user as ten_artist')
+            ->where('luot_thich_album.ma_tk', $ma_tk)
+            ->where('album.trang_thai', 1)
+            ->get();
+
+        if ($albums->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'No albums found'
+            ], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json([
+                'albums' => $albums->map(function ($album) {
+                    return [
+                        'ma_album' => $album->ma_album,
+                        'ten_album' => $album->ten_album,
+                        'ngay_tao' => $album->ngay_tao,
+                        'hinh_anh' => $album->hinh_anh,
+                        'luot_yeu_thich' => $album->luot_yeu_thich,
+                        'trang_thai' => $album->trang_thai,
+                        'so_luong_bai_hat' => $album->so_luong_bai_hat,
+                        'nguoi_so_huu' => $album->ten_artist,
+                    ];
+                }),
+                'message' => 'Albums found successfully',
+                'status' => Response::HTTP_OK,
+            ], Response::HTTP_OK);
+        }
+    }
+
     // search cho admin
-    public function searchForAdmin(Request $request) // khỏi cũng dc
-    {
-        $query = DB::table('album')
-            ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
-            ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
-            ->select('albums.*', 'artists.ten_artist');
+    // public function searchForAdmin(Request $request) // khỏi cũng dc
+    // {
+    //     $query = DB::table('album')
+    //         ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
+    //         ->join('artists', 'tai_khoan.ma_artist', '=', 'artists.ma_artist')
+    //         ->select('albums.*', 'artists.ten_artist');
 
-        // Tìm kiếm theo từ khóa trong tên tài khoản
-        if ($request->has('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where('artists.ten_artist', 'like', '%' . $keyword . '%');
-        }
+    //     // Tìm kiếm theo từ khóa trong tên tài khoản
+    //     if ($request->has('keyword')) {
+    //         $keyword = $request->input('keyword');
+    //         $query->where('artists.ten_artist', 'like', '%' . $keyword . '%');
+    //     }
 
-        // Tìm kiếm theo từ khóa theo tên album
-        if ($request->has('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where('album.ten_album', 'like', '%' . $keyword . '%');
-        }
+    //     // Tìm kiếm theo từ khóa theo tên album
+    //     if ($request->has('keyword')) {
+    //         $keyword = $request->input('keyword');
+    //         $query->where('album.ten_album', 'like', '%' . $keyword . '%');
+    //     }
 
-        // Lọc theo trạng thái
-        if ($request->has('trang_thai')) {
-            $trang_thai = $request->input('trang_thai');
-            $query->where('albums.trang_thai', $trang_thai);
-        }
+    //     // Lọc theo trạng thái
+    //     if ($request->has('trang_thai')) {
+    //         $trang_thai = $request->input('trang_thai');
+    //         $query->where('albums.trang_thai', $trang_thai);
+    //     }
 
-        // Lọc theo ngày phát hành
-        if ($request->has('ngay_phat_hanh')) {
-            $ngay_phat_hanh = $request->input('ngay_phat_hanh');
-            $query->whereDate('albums.ngay_tao', $ngay_phat_hanh);
-        }
+    //     // Lọc theo ngày phát hành
+    //     if ($request->has('ngay_phat_hanh')) {
+    //         $ngay_phat_hanh = $request->input('ngay_phat_hanh');
+    //         $query->whereDate('albums.ngay_tao', $ngay_phat_hanh);
+    //     }
 
-        try {
-            $albums = $query->get();
+    //     try {
+    //         $albums = $query->get();
 
-            if ($albums->isEmpty()) {
-                return response()->json([
-                    'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'No albums found'
-                ], Response::HTTP_NOT_FOUND);
-            } else {
-                return response()->json([
-                    'albums' => $albums->map(function ($album) {
-                        return [
-                            'ma_album' => $album->ma_album,
-                            'ten_album' => $album->ten_album,
-                            'ngay_tao' => $album->ngay_tao,
-                            'hinh_anh' => $album->hinh_anh,
-                            'luot_yeu_thich' => $album->luot_yeu_thich,
-                            'trang_thai' => $album->trang_thai,
-                            'so_luong_bai_hat' => $album->so_luong_bai_hat,
-                            'nguoi_so_huu' => $album->ten_artist,
-                        ];
-                    }),
-                    'message' => 'Albums found successfully',
-                    'status' => Response::HTTP_OK,
-                ], Response::HTTP_OK);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Search failed'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         if ($albums->isEmpty()) {
+    //             return response()->json([
+    //                 'status' => Response::HTTP_NOT_FOUND,
+    //                 'message' => 'No albums found'
+    //             ], Response::HTTP_NOT_FOUND);
+    //         } else {
+    //             return response()->json([
+    //                 'albums' => $albums->map(function ($album) {
+    //                     return [
+    //                         'ma_album' => $album->ma_album,
+    //                         'ten_album' => $album->ten_album,
+    //                         'ngay_tao' => $album->ngay_tao,
+    //                         'hinh_anh' => $album->hinh_anh,
+    //                         'luot_yeu_thich' => $album->luot_yeu_thich,
+    //                         'trang_thai' => $album->trang_thai,
+    //                         'so_luong_bai_hat' => $album->so_luong_bai_hat,
+    //                         'nguoi_so_huu' => $album->ten_artist,
+    //                     ];
+    //                 }),
+    //                 'message' => 'Albums found successfully',
+    //                 'status' => Response::HTTP_OK,
+    //             ], Response::HTTP_OK);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+    //             'message' => 'Search failed'
+    //         ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
-    public function searchForArtist(Request $request, $ma_tk) // khỏi cũng dc nào phát sinh thì check
-    {
-        $query = DB::table('album')->select('albums.*');
+    // public function searchForArtist(Request $request, $ma_tk) // khỏi cũng dc nào phát sinh thì check
+    // {
+    //     $query = DB::table('album')->select('albums.*');
 
-        // Tìm kiếm theo từ khóa theo tên album
-        if ($request->has('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where('album.ten_album', 'like', '%' . $keyword . '%');
-        }
+    //     // Tìm kiếm theo từ khóa theo tên album
+    //     if ($request->has('keyword')) {
+    //         $keyword = $request->input('keyword');
+    //         $query->where('album.ten_album', 'like', '%' . $keyword . '%');
+    //     }
 
-        // Lọc theo trạng thái
-        if ($request->has('trang_thai')) {
-            $trang_thai = $request->input('trang_thai');
-            $query->where('albums.trang_thai', $trang_thai);
-        }
+    //     // Lọc theo trạng thái
+    //     if ($request->has('trang_thai')) {
+    //         $trang_thai = $request->input('trang_thai');
+    //         $query->where('albums.trang_thai', $trang_thai);
+    //     }
 
-        // Lọc theo ngày phát hành
-        if ($request->has('ngay_phat_hanh')) {
-            $ngay_phat_hanh = $request->input('ngay_phat_hanh');
-            $query->whereDate('albums.ngay_tao', $ngay_phat_hanh);
-        }
+    //     // Lọc theo ngày phát hành
+    //     if ($request->has('ngay_phat_hanh')) {
+    //         $ngay_phat_hanh = $request->input('ngay_phat_hanh');
+    //         $query->whereDate('albums.ngay_tao', $ngay_phat_hanh);
+    //     }
 
-        try {
-            $albums = $query->get();
-            if ($albums->isEmpty()) {
-                return response()->json([
-                    'status' => Response::HTTP_NOT_FOUND,
-                    'message' => 'No albums found'
-                ], Response::HTTP_NOT_FOUND);
-            } else {
-                return response()->json([
-                    'albums' => $albums->map(function ($album) {
-                        return [
-                            'ma_album' => $album->ma_album,
-                            'ten_album' => $album->ten_album,
-                            'ngay_tao' => $album->ngay_tao,
-                            'hinh_anh' => $album->hinh_anh,
-                            'luot_yeu_thich' => $album->luot_yeu_thich,
-                            'trang_thai' => $album->trang_thai,
-                            'so_luong_bai_hat' => $album->so_luong_bai_hat,
-                        ];
-                    }),
-                    'message' => 'Albums found successfully',
-                    'status' => Response::HTTP_OK,
-                ], Response::HTTP_OK);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Search failed'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //     try {
+    //         $albums = $query->get();
+    //         if ($albums->isEmpty()) {
+    //             return response()->json([
+    //                 'status' => Response::HTTP_NOT_FOUND,
+    //                 'message' => 'No albums found'
+    //             ], Response::HTTP_NOT_FOUND);
+    //         } else {
+    //             return response()->json([
+    //                 'albums' => $albums->map(function ($album) {
+    //                     return [
+    //                         'ma_album' => $album->ma_album,
+    //                         'ten_album' => $album->ten_album,
+    //                         'ngay_tao' => $album->ngay_tao,
+    //                         'hinh_anh' => $album->hinh_anh,
+    //                         'luot_yeu_thich' => $album->luot_yeu_thich,
+    //                         'trang_thai' => $album->trang_thai,
+    //                         'so_luong_bai_hat' => $album->so_luong_bai_hat,
+    //                     ];
+    //                 }),
+    //                 'message' => 'Albums found successfully',
+    //                 'status' => Response::HTTP_OK,
+    //             ], Response::HTTP_OK);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+    //             'message' => 'Search failed'
+    //         ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 }
