@@ -530,8 +530,9 @@ class AlbumController extends Controller
     {
         $albums = DB::table('luot_thich_album')
             ->join('album', 'luot_thich_album.ma_album', '=', 'album.ma_album')
-            ->join('user', 'luot_thich_album.ma_tk', '=', 'user.ma_tk')
-            ->select('album.*', 'user.ten_user as ten_artist')
+            ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
+            ->select('luot_thich_album.ma_tk', 'album.*', 'user.ten_user as ten_artist')
+            ->where('luot_thich_album.ma_tk', $ma_tk)
             ->where('album.trang_thai', 1)
             ->get();
 
