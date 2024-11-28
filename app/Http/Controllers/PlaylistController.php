@@ -184,7 +184,12 @@ class PlaylistController extends Controller
                 'ma_bai_hat' => $data['ma_bai_hat'],
             ]);
 
+            $newPlaylist = DB::table('playlist')
+                ->where('ma_playlist', $newPlaylistId)
+                ->first();
+
             return response()->json([
+                'data' => $newPlaylist,
                 'status' => Response::HTTP_CREATED,
                 'message' => 'Playlist created and song added successfully',
             ], Response::HTTP_CREATED);
