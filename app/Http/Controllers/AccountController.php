@@ -11,8 +11,11 @@ class AccountController extends Controller
 {
     public function index() {
         $accounts = Account::with('phan_quyen')->get();
-        // $accounts = Account::all();
-        // dd($accounts);
+        return response()->json($accounts);
+    }
+
+    public function getAccountUser() {
+        $accounts = Account::with('user')->get();
         return response()->json($accounts);
     }
 
