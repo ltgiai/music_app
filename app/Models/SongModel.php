@@ -75,6 +75,7 @@ class SongModel extends Model
             'album' => $this->belongsTo(AlbumModel::class, 'ma_album', 'ma_album'),
             'bai_hat_subartist' => $this->hasMany(SongSubArtistModel::class, 'ma_tk', 'ma_subartist'),
             'theloai_baihat' => $this->hasMany(GenreSongModel::class, 'ma_bai_hat', 'ma_bai_hat'),
+            'thong_ke' => $this->hasOne(StatisticModel::class, 'ma_bai_hat', 'ma_bai_hat')
         ];
     }
 

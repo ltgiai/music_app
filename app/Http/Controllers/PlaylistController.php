@@ -252,6 +252,7 @@ class PlaylistController extends Controller
                 'data' => [
                     'ma_playlist' => $newPlaylistId,
                     'ten_playlist' => $newPlaylistName,
+                    'data' => []
                 ],
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
