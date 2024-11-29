@@ -25,6 +25,16 @@ class AccountController extends Controller
         }
     }
 
+    public function showVoucher($ma_tk) {
+        $account = Account::with(['voucher'])->find($ma_tk);
+
+        if ($account) {
+            return response()->json($account);
+        } else {
+            return response()->json(['message' => 'Account not found'], 404);
+        }
+    }
+
     public function store(Request $request){
         $lastMaTk = DB::table('tai_khoan')->orderBy('ma_tk', 'desc')->first();
 

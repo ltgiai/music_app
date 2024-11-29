@@ -30,37 +30,4 @@ class VoucherModel extends Model
     public function tai_khoan(){
         return $this->belongsToMany(Account::class, 'dang_ky_premium', 'ma_goi', 'ma_tk');
     }
-
-    // Phương thức thêm voucher
-    // public function createVoucher($data)
-    // {
-    //     return self::create([
-    //         'ma_goi' => $data['ma_goi'],
-    //         'ten_goi' => $data['ten_goi'],
-    //         'thoi_han' => $data['thoi_han'],
-    //         'gia_goi' => $data['gia_goi'],
-    //         'doanh_thu' => $data['doanh_thu'],
-    //         'mo_ta' => $data['mo_ta'],
-    //         'trang_thai' => $data['trang_thai']
-    //     ]);
-    // }
-
-    // Phương thức cập nhật voucher
-    // public function updateVoucher($data)
-    // {
-    //     return $this->update([
-    //         'ten_goi' => $data['ten_goi'],
-    //         'thoi_han' => $data['thoi_han'],
-    //         'gia_goi' => $data['gia_goi'],
-    //         'doanh_thu' => $data['doanh_thu'],
-    //         'mo_ta' => $data['mo_ta'],
-    //         'trang_thai' => $data['trang_thai']
-    //     ]);
-    // }
-
-    // Phương thức xóa voucher
-    // public function deleteVoucher()
-    // {
-    //     return $this->delete();
-    // }
 }

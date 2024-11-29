@@ -13,7 +13,7 @@ class VoucherRegisterController extends Controller
         return response()->json($voucher_registers);
     }
 
-    public function show($ma_tk, $ma_goi)
+    public function show($ma_tk)
     {
         $voucher_register = VoucherRegisterModel::where('ma_tk', $ma_tk)
             ->where('ma_goi', $ma_goi)

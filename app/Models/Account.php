@@ -25,7 +25,8 @@ class Account extends Model
     }
 
     public function voucher(){
-        return $this->belongsToMany(VoucherModel::class, 'dang_ky_premium', 'ma_tk', 'ma_goi');
+        return $this->belongsToMany(VoucherModel::class, 'dang_ky_premium', 'ma_tk', 'ma_goi')
+                        ->withPivot('ngay_dang_ky', 'ngay_het_han');
     }
 
     public function thong_bao()
@@ -36,11 +37,6 @@ class Account extends Model
     public function phan_quyen()
     {
         return $this->belongsTo(Decentralization::class, 'ma_phan_quyen');
-    }
-
-    public function dang_ky_premium()
-    {
-        // return $this->hasMany(VoucherRegisterModel::class, 'ma_tk');
     }
 
     public function playlist()
