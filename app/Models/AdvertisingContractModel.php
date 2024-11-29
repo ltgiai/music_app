@@ -19,7 +19,8 @@ class AdvertisingContractModel extends Model
         'luot_phat',
         'doanh_thu',
         'ngay_hieu_luc',
-        'ngay_hoan_thanh'
+        'ngay_hoan_thanh',
+        'trang_thai'
     ];
 
     // Nếu bảng của bạn không có trường timestamps (created_at, updated_at)

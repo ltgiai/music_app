@@ -9,7 +9,7 @@ use App\Models\ArtistWithdrawalSlipModel;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
-class PhieuRutTienArtistController extends Controller
+class ArtistWithdrawalSlipController extends Controller
 {
     // Lấy danh sách phiếu rút tiền artist
     public function index()
@@ -33,6 +33,8 @@ class PhieuRutTienArtistController extends Controller
                     'ma_tk_artist' => $phieu->ma_tk_artist,
                     'ngay_rut_tien' => $phieu->ngay_rut_tien,
                     'tong_tien_rut_ra' => $phieu->tong_tien_rut_ra,
+                    'ma_bank' => $phieu->bank_id,
+                    'ten_bank' => $phieu->bank_name
                 ];
             }),
             'message' => 'Fetched artist withdrawal records successfully',
@@ -58,13 +60,19 @@ class PhieuRutTienArtistController extends Controller
         }
 
         try {
-            // Tạo mã phiếu không trùng lặp
-            do {
-                $date = now()->format('dmY');
-                $uniqueNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $ma_phieu = 'PHIEU' . $date . $uniqueNumber;
-            } while (ArtistWithdrawalSlipModel::where('ma_phieu', $ma_phieu)->exists());
+            // Lấy mã phiếu lớn nhất hiện tại
+            $lastRecord = ArtistWithdrawalSlipModel::latest('ma_phieu')->first();
 
+            // Xử lý số thứ tự từ mã phiếu lớn nhất
+            $lastNumber = 0; // Mặc định nếu không có bản ghi nào
+            if ($lastRecord) {
+                $lastNumber = (int) substr($lastRecord->ma_phieu, 3); // Cắt bỏ 'PRT'
+            }
+
+            $newNumber = $lastNumber + 1;
+            $ma_phieu = 'PRT' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+            // Tạo bản ghi mới
             ArtistWithdrawalSlipModel::create([
                 'ma_phieu' => $ma_phieu,
                 'ma_tk_artist' => $request->ma_tk_artist,
@@ -86,26 +94,27 @@ class PhieuRutTienArtistController extends Controller
     }
 
     // Hiển thị chi tiết một phiếu rút tiền artist
-    public function show($ma_phieu)
+    public function show($ma_tai_khoan)
     {
-        $phieuRutTien = ArtistWithdrawalSlipModel::where('ma_phieu', $ma_phieu)->first();
+        // Truy vấn để lấy chi tiết phiếu rút tiền của nghệ sĩ
+        $phieuRutTien = DB::table('phieu_rut_tien_artist')
+            ->where('ma_tk_artist', $ma_tai_khoan)
+            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra')
+            ->first(); // Lấy một bản ghi duy nhất
 
-        if ($phieuRutTien) {
-            return response()->json([
-                'status' => Response::HTTP_OK,
-                'data' => [
-                    'ma_phieu' => $phieuRutTien->ma_phieu,
-                    'ma_tk_artist' => $phieuRutTien->ma_tk_artist,
-                    'ngay_rut_tien' => $phieuRutTien->ngay_rut_tien,
-                    'tong_tien_rut_ra' => $phieuRutTien->tong_tien_rut_ra,
-                ],
-            ], Response::HTTP_OK);
-        } else {
+        // Kiểm tra nếu không tìm thấy
+        if (!$phieuRutTien) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Artist withdrawal record not found',
             ], Response::HTTP_NOT_FOUND);
         }
+
+        // Trả về dữ liệu nếu tìm thấy
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'data' => $phieuRutTien,
+        ], Response::HTTP_OK);
     }
 
     // Cập nhật phiếu rút tiền artist

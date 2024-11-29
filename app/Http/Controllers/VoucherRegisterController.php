@@ -16,8 +16,8 @@ class VoucherRegisterController extends Controller
     public function show($ma_tk)
     {
         $voucher_register = VoucherRegisterModel::where('ma_tk', $ma_tk)
-        ->where('ma_goi', $ma_goi)
-        ->first();
+            ->where('ma_goi', $ma_goi)
+            ->first();
 
         if (!$voucher_register) {
             return response()->json(['message' => 'VoucherRegister not found'], 404);
@@ -69,8 +69,8 @@ class VoucherRegisterController extends Controller
     public function update(Request $request, $ma_tk, $ma_goi)
     {
         $voucher_register = VoucherRegisterModel::where('ma_tk', $ma_tk)
-        ->where('ma_goi', $ma_goi)
-        ->first();
+            ->where('ma_goi', $ma_goi)
+            ->first();
 
         if (!$voucher_register) {
             return response()->json(['message' => 'VoucherRegister not found'], 404);
@@ -92,8 +92,8 @@ class VoucherRegisterController extends Controller
     public function destroy($ma_tk, $ma_goi)
     {
         $voucher_register = VoucherRegisterModel::where('ma_tk', $ma_tk)
-        ->where('ma_goi', $ma_goi)
-        ->first();
+            ->where('ma_goi', $ma_goi)
+            ->first();
 
         if (!$voucher_register) {
             return response()->json(['message' => 'VoucherRegister not found'], 404);
