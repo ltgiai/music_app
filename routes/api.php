@@ -89,7 +89,7 @@ Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
 Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
-Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
+Route::get('/voucher/registers/{ma_tk}', [VoucherRegisterController::class, 'show']);
 Route::post('/voucherRegisters', [VoucherRegisterController::class, 'store']);
 Route::get('/voucherRegisters', [VoucherRegisterController::class, 'index']);
 Route::put('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
@@ -116,7 +116,7 @@ Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
 Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
 Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
-
+Route::get('/accounts/{ma_tk}/voucher', [AccountController::class, 'showVoucher']);
 // Route UserController
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{ma_tk}', [UserController::class, 'show']);
