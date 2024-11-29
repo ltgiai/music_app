@@ -117,6 +117,7 @@ Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
 
 // Route Account
 Route::get('/accounts', [AccountController::class, 'index']);
+Route::get('/accountUser', [AccountController::class, 'getAccountUser']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
 Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
