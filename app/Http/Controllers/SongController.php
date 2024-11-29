@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SongModel;
+use App\Models\StatisticModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -626,34 +627,34 @@ class SongController extends Controller
 
     public function updateSongListens(Request $request, $ma_bai_hat)
     {
-        // Tìm bài hát theo mã bài hát
-        $song = SongModel::find($ma_bai_hat);
-        if (!$song) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Song not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
         try {
-            // Tăng lượt nghe trong bảng `song`
+            // Tìm bài hát theo mã bài hát
+            $song = SongModel::find($ma_bai_hat);
+            if (!$song) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Song not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Tăng lượt thích của bài hát
             $song->luot_nghe += 1;
             $song->save();
 
-            // Xử lý cập nhật bảng `thong_ke`
-            $ngay_thong_ke = now()->format('Y-m-d'); // Lấy ngày hiện tại
+            // Cập nhật lượt thích trong bảng `thong_ke`
+            $ngay_thong_ke = now()->format('Y-m-d'); // Ngày hiện tại
             $statistic = StatisticModel::firstOrCreate(
                 ['ngay_thong_ke' => $ngay_thong_ke, 'ma_bai_hat' => $ma_bai_hat],
                 ['doanh_thu' => 0, 'luot_nghe' => 0]
             );
 
-            // Tăng lượt nghe trong bảng `thong_ke`
+            // Tăng lượt thích trong bảng `thong_ke`
             $statistic->luot_nghe += 1;
             $statistic->save();
 
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Song listens incremented successfully',
+                'message' => 'Song likes incremented successfully',
                 'data' => [
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'luot_nghe' => $song->luot_nghe,
@@ -664,17 +665,16 @@ class SongController extends Controller
                 ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            // Ghi log lỗi và trả về thông báo lỗi
-            Log::error('Incrementing song listens failed: ' . $e->getMessage());
+            // Ghi log lỗi chi tiết nếu xảy ra vấn đề
+            Log::error('Error updating song likes: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Incrementing song listens failed',
+                'message' => 'Incrementing song likes failed',
+                'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
 
     // Cập nhật trạng thái bài hát về đã xóa
     public function destroy($ma_bai_hat)
