@@ -277,7 +277,7 @@ class SongController extends Controller
             return [
                 'ma_artist' => $ma_artist,
                 'ten_artist' => $artistInfo->ten_user,
-                'anh_dai_dien' =>$artistInfo->anh_dai_dien,
+                'anh_dai_dien' => $artistInfo->anh_dai_dien,
                 'bai_hat' => $songData->isEmpty() ? null : $songData, // Nếu không có bài hát thì trả null
             ];
         })->values();
@@ -568,11 +568,6 @@ class SongController extends Controller
         ], 201);
     }
 
-
-
-
-
-
     // Cập nhật thông tin bài hát
     public function update(Request $request, $ma_bai_hat)
     {
@@ -629,7 +624,6 @@ class SongController extends Controller
         }
     }
 
-    // Cập nhật lượt nghe bài hát
     public function updateSongListens(Request $request, $ma_bai_hat)
     {
         // Tìm bài hát theo mã bài hát
@@ -642,9 +636,20 @@ class SongController extends Controller
         }
 
         try {
-            // Tăng lượt nghe lên 1
+            // Tăng lượt nghe trong bảng `song`
             $song->luot_nghe += 1;
             $song->save();
+
+            // Xử lý cập nhật bảng `thong_ke`
+            $ngay_thong_ke = now()->format('Y-m-d'); // Lấy ngày hiện tại
+            $statistic = StatisticModel::firstOrCreate(
+                ['ngay_thong_ke' => $ngay_thong_ke, 'ma_bai_hat' => $ma_bai_hat],
+                ['doanh_thu' => 0, 'luot_nghe' => 0]
+            );
+
+            // Tăng lượt nghe trong bảng `thong_ke`
+            $statistic->luot_nghe += 1;
+            $statistic->save();
 
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -652,6 +657,10 @@ class SongController extends Controller
                 'data' => [
                     'ma_bai_hat' => $song->ma_bai_hat,
                     'luot_nghe' => $song->luot_nghe,
+                    'thong_ke' => [
+                        'ngay_thong_ke' => $statistic->ngay_thong_ke,
+                        'luot_nghe' => $statistic->luot_nghe,
+                    ],
                 ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
@@ -663,6 +672,7 @@ class SongController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
