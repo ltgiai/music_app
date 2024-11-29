@@ -11,13 +11,26 @@ class AccountController extends Controller
 {
     public function index() {
         $accounts = Account::with('phan_quyen')->get();
-        // $accounts = Account::all();
-        // dd($accounts);
+        return response()->json($accounts);
+    }
+
+    public function getAccountUser() {
+        $accounts = Account::with('user')->get();
         return response()->json($accounts);
     }
 
     public function show($ma_tk) {
         $account = Account::with(['phan_quyen','user'])->find($ma_tk);
+        if ($account) {
+            return response()->json($account);
+        } else {
+            return response()->json(['message' => 'Account not found'], 404);
+        }
+    }
+
+    public function showVoucher($ma_tk) {
+        $account = Account::with(['voucher'])->find($ma_tk);
+
         if ($account) {
             return response()->json($account);
         } else {

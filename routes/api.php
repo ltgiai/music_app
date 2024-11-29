@@ -51,8 +51,9 @@ Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistCo
 
 // Rote Album
 Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
+Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsLikedByThisUser']);
 Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
-Route::post('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
+Route::delete('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
 Route::get('/albums/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
 Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}');
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
@@ -93,7 +94,7 @@ Route::post('/vouchers', [VoucherController::class, 'store']);
 Route::put('/vouchers/{id}', [VoucherController::class, 'update']);
 Route::delete('vouchers/{id}', [VoucherController::class, 'destroy']);
 
-Route::get('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'show']);
+Route::get('/voucher/registers/{ma_tk}', [VoucherRegisterController::class, 'show']);
 Route::post('/voucherRegisters', [VoucherRegisterController::class, 'store']);
 Route::get('/voucherRegisters', [VoucherRegisterController::class, 'index']);
 Route::put('/voucher/registers/{ma_tk}/{ma_goi}', [VoucherRegisterController::class, 'update']);
@@ -116,11 +117,12 @@ Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
 
 // Route Account
 Route::get('/accounts', [AccountController::class, 'index']);
+Route::get('/accountUser', [AccountController::class, 'getAccountUser']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
 Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
 Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
-
+Route::get('/accounts/{ma_tk}/voucher', [AccountController::class, 'showVoucher']);
 // Route UserController
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{ma_tk}', [UserController::class, 'show']);

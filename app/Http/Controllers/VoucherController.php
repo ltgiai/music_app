@@ -15,6 +15,8 @@ class VoucherController extends Controller
         $voucher = VoucherModel::all();
         return response()->json($voucher);
     }
+
+    
     public function renderListOfVouchers()
     {
         $voucher = DB::table('goi_premium')
