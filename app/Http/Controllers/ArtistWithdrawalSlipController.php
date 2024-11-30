@@ -80,6 +80,8 @@ class ArtistWithdrawalSlipController extends Controller
                 'ma_tk_artist' => $request->ma_tk_artist,
                 'ngay_rut_tien' => now(),
                 'tong_tien_rut_ra' => $request->tong_tien_rut_ra,
+                'ngan_hang' => $request->bank_id,
+                'tk_ngan_hang' => $request->bank_account,
             ]);
 
             return response()->json([
