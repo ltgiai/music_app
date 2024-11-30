@@ -342,8 +342,6 @@ class AlbumController extends Controller
     {
         try {
             $album = DB::table('album')
-                // ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
-                // ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
                 ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
                 ->select('album.*', 'user.ten_user as ten_artist')
                 ->where('album.ma_album', $ma_album)
@@ -357,13 +355,16 @@ class AlbumController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            $songs = DB::table('album')
-                ->join('bai_hat', 'bai_hat.ma_album', '=', 'album.ma_album')
-                ->where('album.ma_album', $ma_album)
-                ->select('bai_hat.*')
-                ->where('bai_hat.trang_thai', 1)
+            $songs = DB::table('bai_hat')
+                ->join('album', 'album.ma_album', '=', 'bai_hat.ma_album')
+                ->join('theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
+                ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
+                ->where('bai_hat.ma_album', $ma_album)
+                ->select('bai_hat.*', 'the_loai.ten_the_loai')
+                // ->where('bai_hat.trang_thai', 1)
                 ->get();
 
+           
             return response()->json([
                 'album' => [
                     'ma_album' => $album->ma_album,
@@ -383,6 +384,7 @@ class AlbumController extends Controller
                             'luot_nghe' => $song->luot_nghe,
                             'hinh_anh' => $song->hinh_anh,
                             'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                            'the_loai' => $song->ten_the_loai,
                         ];
                     }),
                 ],
