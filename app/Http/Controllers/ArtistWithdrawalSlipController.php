@@ -103,7 +103,7 @@ class ArtistWithdrawalSlipController extends Controller
         // Truy vấn để lấy chi tiết phiếu rút tiền của nghệ sĩ
         $phieuRutTien = DB::table('phieu_rut_tien_artist')
             ->where('ma_tk_artist', $ma_tai_khoan)
-            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra')
+            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra', 'bank_id', 'bank_name')
             ->first(); // Lấy một bản ghi duy nhất
 
         // Kiểm tra nếu không tìm thấy
