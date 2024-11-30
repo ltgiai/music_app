@@ -31,11 +31,13 @@ use App\Http\Controllers\BankController;
 Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt kê danh sách bài hát trên trang chủ
 Route::get('/songs/likes', [SongController::class, 'renderListOfLikesForSong']); // Liệt kê danh sách bài hát có lượt yêu thích trên trang chủ
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
-Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+// Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
 Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo nghệ sĩ cụ thể
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/song/account-like/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsLikedByAccount']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì
+Route::get('/song/admin/artist/{ma_tai_khoan}', [SongController::class, 'adminListOfSongByArtist']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì (ADMIN)
+Route::get('/song/admin/statistic/{ma_tai_khoan}', [SongController::class, 'adminStatistic']); // Thống kê (ADMIN)
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::post('/song/listens/{ma_bai_hat}', [SongController::class, 'updateSongListens']); // Chỉnh sửa số lượt nghe của bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát
