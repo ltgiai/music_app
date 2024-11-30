@@ -118,9 +118,12 @@ Route::post('/upload-image', [ImageUploadController::class, 'uploadImage']);
 
 // Route Account
 Route::get('/accounts', [AccountController::class, 'index']);
-Route::get('/accountUser', [AccountController::class, 'getAccountUser']);
+Route::get('/accounts/all', [AccountController::class, 'getAllAccount']);
+Route::patch('/accounts/{ma_tk}', [AccountController::class, 'updateTrangThai']);
+Route::patch('/accounts/{ma_tk}/toartist', [AccountController::class, 'convertUserToArtist']);
 Route::get('/accounts/{ma_tk}', [AccountController::class, 'show']);
 Route::post('/accounts', [AccountController::class, 'store']);
+Route::post('/accounts/admin', [AccountController::class, 'storeAdmin']);
 Route::put('/accounts/{ma_tk}', [AccountController::class, 'update']);
 Route::delete('/accounts/{ma_tk}', [AccountController::class, 'destroy']);
 Route::get('/accounts/{ma_tk}/voucher', [AccountController::class, 'showVoucher']);
