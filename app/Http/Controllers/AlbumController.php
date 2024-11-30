@@ -33,7 +33,7 @@ class AlbumController extends Controller
             ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
             ->select('album.*', 'user.ten_user as ten_artist')
-            ->whereIn('album.trang_thai', [1, 2])
+            ->whereIn('album.trang_thai', [0, 1, 2])
             ->get();
 
         if ($albums->isEmpty()) {
