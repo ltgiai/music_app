@@ -48,6 +48,8 @@ class ArtistWithdrawalSlipController extends Controller
         $validator = Validator::make($request->all(), [
             'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk',
             'tong_tien_rut_ra' => 'required|numeric|min:0',
+            'ngan_hang' => 'required|string|max:255',
+            'tk_ngan_hang' => 'required|string|max:255'
         ]);
 
         if ($validator->fails()) {

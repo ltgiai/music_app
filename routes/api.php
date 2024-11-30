@@ -32,7 +32,7 @@ Route::get('/songs', [SongController::class, 'renderListOfSongs']); // Liệt k�
 Route::get('/songs/likes', [SongController::class, 'renderListOfLikesForSong']); // Liệt kê danh sách bài hát có lượt yêu thích trên trang chủ
 Route::get('/songs/artists', [SongController::class, 'renderListOfArtists']); // Liệt kê danh sách nghệ sĩ
 Route::get('/songs/artist', [SongController::class, 'renderListOfSongsByArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
-Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo từng nghệ sĩ
+Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsBySearchedArtist']); // Liệt kê danh sách bài hát theo nghệ sĩ cụ thể
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/song/account-like/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsLikedByAccount']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì
@@ -46,6 +46,7 @@ Route::get('/playlist/{ma_tk}', [PlaylistController::class, 'renderListOfPlaylis
 Route::get('/playlist/{ma_tk}/{ma_playlist}', [PlaylistController::class, 'renderPlaylistByAccount']); // Liệt kê playlist theo mã tk, mã playlist
 Route::post('/playlist', [PlaylistController::class, 'store']); // Thêm playlist
 Route::post('/playlist/{ma_tk}', [PlaylistController::class, 'storePlaylistWithoutSongs']); // Thêm playlist chưa có bài hát
+Route::put('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::class, 'updatePlaylistTitle']);
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::class, 'deletePlaylist']); // Xóa toàn bộ playlist
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistController::class, 'deleteSongFromPlaylist']); //Xóa một bài hát trong playlist của một tài khoản
 

@@ -224,7 +224,6 @@ class SongController extends Controller
     }
 
 
-
     public function renderListOfSongsBySearchedArtist($ma_artist)
     {
         // Lấy thông tin nghệ sĩ và bài hát của họ
