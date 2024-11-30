@@ -180,15 +180,11 @@ Route::post('/song-likes', [LikeSongController::class, 'store']);
 Route::delete('/song-likes', [LikeSongController::class, 'destroy']);
 Route::get('/like-count/{ma_bai_hat}', [LikeSongController::class, 'getLikeCount']);
 
-// phi luot nghe
-Route::get('/phi-luot-nghe', [PhiLuotNgheController::class, 'index']);
-Route::put('/phi-luot-nghe/{ma_phi}', [PhiLuotNgheController::class, 'updateGiaTien']);
-// bank
-Route::put('/banks/{bank_id}/withdraw', [BankController::class, 'withdraw']);
-
+//----------------------------------------------------------------------------- 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+//-------------------------------------------------------------------------------
 
 // Route ArtistWithdrawalSlip
 Route::get('/artist-slip', [ArtistWithdrawalSlipController::class, 'index']); // Liệt kê danh sách rút tiền của nghệ sĩ

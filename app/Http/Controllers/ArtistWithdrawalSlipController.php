@@ -104,7 +104,7 @@ class ArtistWithdrawalSlipController extends Controller
         $phieuRutTien = DB::table('phieu_rut_tien_artist')
             ->where('ma_tk_artist', $ma_tai_khoan)
             ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra', 'bank_id', 'bank_name')
-            ->first(); // Lấy một bản ghi duy nhất
+            ->get();
 
         // Kiểm tra nếu không tìm thấy
         if (!$phieuRutTien) {
