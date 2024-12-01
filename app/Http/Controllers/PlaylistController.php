@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\PlaylistModel;
 use Illuminate\Http\Request;
 use App\Models\SongModel;
@@ -279,17 +280,13 @@ class PlaylistController extends Controller
     }
 
     // Cập nhật thông tin một playlist
-    public function update(Request $request, $ma_playlist)
+    public function updatePlaylistTitle(Request $request, $ma_tai_khoan, $ma_playlist)
     {
         // Validate dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'ten_playlist' => 'nullable|string|max:255',
-            'so_luong_bai_hat' => 'nullable|numeric',
-            'hinh_anh' => 'nullable|string',
-            'ma_tk' => 'nullable|string|exists:tai_khoan,ma_tk',
         ]);
 
-        // Kiểm tra lỗi validate
         if ($validator->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -298,12 +295,20 @@ class PlaylistController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // Dữ liệu đã được validate
-        $validatedData = $validator->validated();
-
         try {
-            // Tìm playlist theo mã
-            $playlist = PlaylistModel::where('ma_playlist', $ma_playlist)->first();
+            // Kiểm tra tài khoản
+            $account = Account::where('ma_tk', $ma_tai_khoan)->first(); // Sử dụng đúng model
+            if (!$account) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Account not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Tìm playlist theo mã và kiểm tra tài khoản sở hữu
+            $playlist = PlaylistModel::where('ma_playlist', $ma_playlist)
+                ->where('ma_tk', $ma_tai_khoan)
+                ->first();
 
             if (!$playlist) {
                 return response()->json([
@@ -312,8 +317,8 @@ class PlaylistController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            // Cập nhật playlist
-            $playlist->update($validatedData);
+            // Cập nhật tên playlist
+            $playlist->update($validator->validated());
 
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -327,6 +332,7 @@ class PlaylistController extends Controller
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Failed to update playlist',
+                'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

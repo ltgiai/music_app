@@ -13,7 +13,8 @@ class PlaylistModel extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['ma_playlist', 'ten_playlist', 'ma_tk', 'so_luong_bai_hat', 'hinh_anh'];
+    protected $primaryKey = 'ma_playlist';
+    protected $fillable = ['ma_playlist', 'ma_tk', 'ten_playlist', 'so_luong_bai_hat', 'hinh_anh'];
     public $timestamps = false;
 
     private $ma_playlist;

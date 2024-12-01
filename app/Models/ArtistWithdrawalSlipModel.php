@@ -13,7 +13,7 @@ class ArtistWithdrawalSlipModel extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra'];
+    protected $fillable = ['ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra', 'bank_id', 'bank_name'];
     public $timestamps = false;
 
     private $ma_phieu;

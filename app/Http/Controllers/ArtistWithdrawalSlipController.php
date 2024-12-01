@@ -33,8 +33,8 @@ class ArtistWithdrawalSlipController extends Controller
                     'ma_tk_artist' => $phieu->ma_tk_artist,
                     'ngay_rut_tien' => $phieu->ngay_rut_tien,
                     'tong_tien_rut_ra' => $phieu->tong_tien_rut_ra,
-                    'ma_bank' => $phieu->bank_id,
-                    'ten_bank' => $phieu->bank_name
+                    'bank_id' => $phieu->bank_id,
+                    'bank_name' => $phieu->bank_name
                 ];
             }),
             'message' => 'Fetched artist withdrawal records successfully',
@@ -48,6 +48,8 @@ class ArtistWithdrawalSlipController extends Controller
         $validator = Validator::make($request->all(), [
             'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk',
             'tong_tien_rut_ra' => 'required|numeric|min:0',
+            'bank_id' => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -78,6 +80,8 @@ class ArtistWithdrawalSlipController extends Controller
                 'ma_tk_artist' => $request->ma_tk_artist,
                 'ngay_rut_tien' => now(),
                 'tong_tien_rut_ra' => $request->tong_tien_rut_ra,
+                'bank_id' => $request->bank_id,
+                'bank_name' => $request->bank_name,
             ]);
 
             return response()->json([
@@ -99,8 +103,8 @@ class ArtistWithdrawalSlipController extends Controller
         // Truy vấn để lấy chi tiết phiếu rút tiền của nghệ sĩ
         $phieuRutTien = DB::table('phieu_rut_tien_artist')
             ->where('ma_tk_artist', $ma_tai_khoan)
-            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra')
-            ->first(); // Lấy một bản ghi duy nhất
+            ->select('ma_phieu', 'ma_tk_artist', 'ngay_rut_tien', 'tong_tien_rut_ra', 'bank_id', 'bank_name')
+            ->get();
 
         // Kiểm tra nếu không tìm thấy
         if (!$phieuRutTien) {
