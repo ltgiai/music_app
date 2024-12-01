@@ -54,17 +54,17 @@ Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}', [PlaylistController::cla
 Route::delete('/playlist/{ma_tai_khoan}/{ma_playlist}/{ma_bai_hat}', [PlaylistController::class, 'deleteSongFromPlaylist']); //Xóa một bài hát trong playlist của một tài khoản
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Rote Album//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']);
-Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsLikedByThisUser']);
-Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']);
-Route::delete('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']);
+// Rote Album
+Route::get('/albums/list-albums', [App\Http\Controllers\AlbumController::class, 'index']); // ADMIN
+Route::get('/albums-likes/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsLikedByThisUser']); 
+Route::post('/albums/like', [App\Http\Controllers\AlbumController::class, 'likeAlbum']); 
+Route::delete('/albums/unlike', [App\Http\Controllers\AlbumController::class, 'unlikeAlbum']); 
 Route::get('/albums/{ma_album}/songs', [App\Http\Controllers\AlbumController::class, 'getSongsInAlbum']);
 Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}');
-Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']);
+Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); //ADMIN
 Route::post('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'store'])->where('ma_tk', 'ACC\d{4}');
 Route::put('/albums/{ma_album}/add', [App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
-Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']);
+Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']); //ADMIN (nếu muốn tách ra một route khác để duyệt thì báo)
 Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
