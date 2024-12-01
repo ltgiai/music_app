@@ -793,7 +793,7 @@ class SongController extends Controller
 
         try {
             // Chuyển trạng thái bài hát thành 0 (soft delete)
-            $song->trang_thai = 0;
+            $song->trang_thai = 4;
             $song->save();
 
             return response()->json([
