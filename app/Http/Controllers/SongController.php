@@ -602,7 +602,7 @@ class SongController extends Controller
             'ma_tk_artist' => 'required|exists:tai_khoan,ma_tk', // Kiểm tra tài khoản nghệ sĩ tồn tại
             'ma_album' => 'nullable|exists:album,ma_album', // Album có thể null
             'thoi_luong' => 'required|integer|min:1', // Thời lượng phải là số nguyên dương
-            'trang_thai' => 'required|in:0,1,2', // Chỉ chấp nhận giá trị 0 hoặc 1
+            'trang_thai' => 'required|in:0,1,2', // Chỉ chấp nhận giá trị 0,1,2
             'hinh_anh' => 'nullable|string', // Hình ảnh có thể là đường dẫn
             'ngay_phat_hanh' => 'required|date', // Ngày phát hành hợp lệ
             'doanh_thu' => 'nullable|numeric|min:0', // Doanh thu tối thiểu là 0
