@@ -33,7 +33,7 @@ class AlbumController extends Controller
             ->join('tai_khoan', 'album.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
             ->select('album.*', 'user.ten_user as ten_artist')
-            ->whereIn('album.trang_thai', [0, 1, 2])
+            // ->whereIn('album.trang_thai', [0, 1, 2])
             ->get();
 
         if ($albums->isEmpty()) {
@@ -198,6 +198,177 @@ class AlbumController extends Controller
         }
     }
 
+    public function removeSongFromAlbum(Request $request, $ma_album)
+    {
+
+        $album = AlbumModel::find($ma_album);
+        if (!$album) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Album not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'songs' => 'sometimes|array',
+            'songs.*.ma_bai_hat' => 'required|string',
+            'songs.*.ten_bai_hat' => 'required|string',
+            'songs.*.thoi_luong' => 'required|numeric',
+            'songs.*.ngay_phat_hanh' => 'required|date',
+            'songs.*.ma_album' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            if ($request->has('songs') && is_array($request->songs)) {
+                foreach ($request->songs as $song) {
+                    $songModel = SongModel::where('ma_bai_hat', $song['ma_bai_hat'])->first();
+                    if ($songModel && $songModel->ma_album === $ma_album) {
+                        $songModel->ma_album = null;
+                        $songModel->save();
+                    }
+                }
+            }
+
+            $album->so_luong_bai_hat -= count($request->songs);
+            $album->save();
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Song removed from album successfully ma_album = ' . $ma_album,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Failed to remove song from album: ' . $e->getMessage());
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Failed to remove song from album. Error: ' . $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // những thông tin không dính đến những bảng khác được update ở đây
+    // public function update(Request $request, $ma_album) 
+    // {
+    //     $album = AlbumModel::find($ma_album);
+    //     if (!$album) {
+    //         return response()->json([
+    //             'status' => Response::HTTP_NOT_FOUND,
+    //             'message' => 'album not found',
+    //         ], Response::HTTP_NOT_FOUND);
+    //     }
+    //     $validator = Validator::make($request->all(), [
+    //         'ten_album' => 'required',
+    //         'hinh_anh' => 'required',
+    //         'trang_thai' => 'required|integer|in:0,1,2',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => Response::HTTP_BAD_REQUEST,
+    //             'errors' => $validator->errors()
+    //         ], Response::HTTP_BAD_REQUEST);
+    //     }
+
+    //     try {
+    //         $album->update([
+    //             'ten_album' => $request->ten_album,
+    //             'hinh_anh' => $request->hinh_anh,
+    //             'trang_thai' => $request->trang_thai,
+    //         ]);
+
+    //         return response()->json([
+    //             'status' => Response::HTTP_OK,
+    //             'message' => 'Album updated successfully',
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Album update failed: ' . $e->getMessage());
+    //         return response()->json([
+    //             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+    //             'message' => 'Album update failed'
+    //         ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+    public function update(Request $request, $ma_album)
+    {
+        $album = AlbumModel::find($ma_album);
+        if (!$album) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Album not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Validate thông tin album
+        if ($request->has('songs')) {
+            $validator = Validator::make($request->all(), [
+                'ten_album' => 'required',
+                'hinh_anh' => 'required',
+                'trang_thai' => 'required|integer|in:0,1,2',
+                'songs' => 'sometimes|array',
+                'songs.*.ma_bai_hat' => 'required|string',
+                'songs.*.ten_bai_hat' => 'required|string',
+                'songs.*.thoi_luong' => 'required|numeric',
+                'songs.*.ngay_phat_hanh' => 'required|date',
+                'songs.*.ma_album' => 'nullable|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+        }
+        try {
+            $album->update([
+                'ten_album' => $request->ten_album,
+                'hinh_anh' => $request->hinh_anh,
+                'trang_thai' => $request->trang_thai,
+            ]);
+
+            if ($request->has('songs') && is_array($request->songs)) {
+                foreach ($request->songs as $song) {
+                    $songModel = SongModel::where('ma_bai_hat', $song['ma_bai_hat'])->first();
+                    if ($songModel) {
+                        if ($song['ma_album'] === null) {
+                            // Xóa bài hát khỏi album
+                            if ($songModel->ma_album === $ma_album) {
+                                $songModel->ma_album = null;
+                                $songModel->save();
+                            }
+                        } else if ($song['ma_album'] === $ma_album) {
+                            // Thêm bài hát vào album
+                            if ($songModel->ma_album === null) {
+                                $songModel->ma_album = $ma_album;
+                                $songModel->save();
+                            }
+                        }
+                    }
+                }
+                $album->so_luong_bai_hat = SongModel::where('ma_album', $ma_album)->count();
+                $album->save();
+            }
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Album and updated successfully',
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            Log::error('Album update failed: ' . $e->getMessage());
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Album update failed. Error: ' . $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     public function show($ma_album) //checked
     {
         $album = DB::table('album')
@@ -225,49 +396,6 @@ class AlbumController extends Controller
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Account not found',
             ], response::HTTP_NOT_FOUND);
-        }
-    }
-
-    // những thông tin không dính đến những bảng khác được update ở đây
-    public function update(Request $request, $ma_album) // checked
-    {
-        $album = AlbumModel::find($ma_album);
-        if (!$album) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'album not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
-        $validator = Validator::make($request->all(), [
-            'ten_album' => 'required',
-            'hinh_anh' => 'required',
-            'trang_thai' => 'required|integer|in:0,1,2',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => Response::HTTP_BAD_REQUEST,
-                'errors' => $validator->errors()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            $album->update([
-                'ten_album' => $request->ten_album,
-                'hinh_anh' => $request->hinh_anh,
-                'trang_thai' => $request->trang_thai,
-            ]);
-
-            return response()->json([
-                'status' => Response::HTTP_OK,
-                'message' => 'Album updated successfully',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Album update failed: ' . $e->getMessage());
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Album update failed'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -345,7 +473,7 @@ class AlbumController extends Controller
                 ->join('user', 'album.ma_tk', '=', 'user.ma_tk')
                 ->select('album.*', 'user.ten_user as ten_artist')
                 ->where('album.ma_album', $ma_album)
-                ->where('album.trang_thai', 1)
+                // ->where('album.trang_thai', 1)
                 ->first();
 
             if (!$album) {
@@ -364,7 +492,7 @@ class AlbumController extends Controller
                 // ->where('bai_hat.trang_thai', 1)
                 ->get();
 
-           
+
             return response()->json([
                 'album' => [
                     'ma_album' => $album->ma_album,
