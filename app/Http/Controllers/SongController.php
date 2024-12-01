@@ -689,7 +689,7 @@ class SongController extends Controller
             'ma_album' => 'required',
             'link_bai_hat' => 'required',
             'ngay_phat_hanh' => 'required|date',
-            'trang_thai' => 'required|integer|in:0,1,2,3',
+            'trang_thai' => 'required|integer|in:0,1,2,3,4',
             'luot_nghe' => 'required|integer',
             'doanh_thu' => 'required|integer',
         ]);
