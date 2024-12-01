@@ -212,6 +212,15 @@ Route::post('/artist-slip', [ArtistWithdrawalSlipController::class, 'store']); /
 Route::delete('/artist-slip', [ArtistWithdrawalSlipController::class, 'destroy']); // Liệt kê danh sách rút tiền của nghệ sĩ
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+// Route PhiLuotNghe//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Route::get('/phi-luot-nghe', [PhiLuotNgheController::class, 'index']);
+Route::get('/phi-luot-nghe/{ma_phi}', [PhiLuotNgheController::class, 'updateGiaTien']);
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Route Bank//
+Route::put('/banks/{bank_id}/withdraw', [BankController::class, 'withdraw']);
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
