@@ -36,9 +36,8 @@ Route::get('/songs/artist/{ma_tai_khoan}', [SongController::class, 'renderListOf
 Route::get('/song/{ma_bai_hat}', [SongController::class, 'renderSongDetails']); // Tìm kiếm bài hát theo mã bài hát
 Route::get('/song/collab/{ma_bai_hat}', [SongController::class, 'renderListOfSongsWithCollabArtist']); // Liệt kê danh sách bài hát có subartist
 Route::get('/song/account-like/{ma_tai_khoan}', [SongController::class, 'renderListOfSongsLikedByAccount']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì
-Route::get('/song/admin/artist/{ma_tai_khoan}', [SongController::class, 'adminListOfSongByArtist']); // Liệt kê danh sách bài hát được thích bởi tài khoản bất kì (ADMIN)
+Route::get('/song/admin/artist/{ma_tai_khoan}', [SongController::class, 'adminListOfSongByArtist']); // Liệt kê danh sách bài hát theo mã nghệ sĩ (ADMIN)
 Route::get('/song/admin/statistic/{ma_tai_khoan}', [SongController::class, 'adminStatistic']); // Thống kê (ADMIN)
-Route::get('/song/admin/statistic/{ma_tai_khoan}', [SongController::class, 'adminStatistic']); // Thống kê (ADMIN)  
 Route::post('/song', [SongController::class, 'store']); // Thêm một bài hát
 Route::post('/song/listens/{ma_bai_hat}', [SongController::class, 'updateSongListens']); // Chỉnh sửa số lượt nghe của bài hát
 Route::put('/song/{ma_bai_hat}', [SongController::class, 'update']); // Chỉnh sửa bài hát dựa vào mã bài hát

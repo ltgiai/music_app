@@ -304,10 +304,8 @@ class SongController extends Controller
                 'bai_hat.hinh_anh as song_image',
                 'bai_hat.trang_thai'
             )
-            ->where('tai_khoan.ma_phan_quyen', 'AUTH0002') // Chỉ lấy tài khoản có quyền nghệ sĩ
             ->where('tai_khoan.ma_tk', '=', $ma_artist)
-            ->get()
-            ->groupBy('ma_tk'); // Nhóm dữ liệu theo mã tài khoản (nghệ sĩ)
+            ->get();
 
         // Kiểm tra nếu không tìm thấy nghệ sĩ nào
         if ($artists->isEmpty()) {
