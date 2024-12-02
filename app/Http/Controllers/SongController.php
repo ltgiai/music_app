@@ -450,14 +450,20 @@ class SongController extends Controller
             )
             ->get();
 
+        // Lấy các link bài hát theo chất lượng
         $links = DB::table('chat_luong_bai_hat')
             ->join('bai_hat', 'chat_luong_bai_hat.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
             ->where('chat_luong_bai_hat.ma_bai_hat', $ma_bai_hat)
             ->select(
                 'chat_luong_bai_hat.chat_luong',
-                'chat_luong_bai_hat.link_bai_hat',
+                'chat_luong_bai_hat.link_bai_hat'
             )
             ->get();
+
+        // Đếm lượt thích của bài hát
+        $likeCount = DB::table('luot_thich_bai_hat')
+            ->where('luot_thich_bai_hat.ma_bai_hat', $ma_bai_hat)
+            ->count();
 
         // Trả về dữ liệu JSON
         return response()->json([
@@ -474,6 +480,7 @@ class SongController extends Controller
                 'doanh_thu' => $song->doanh_thu,
                 'hinh_anh' => $song->hinh_anh,
                 'ngay_phat_hanh' => $song->ngay_phat_hanh,
+                'luot_thich' => $likeCount,
                 'link_bai_hat' => $links->map(function ($link) {
                     return [
                         'chat_luong' => $link->chat_luong,
@@ -550,7 +557,8 @@ class SongController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function adminStatistic($ma_artist) {
+    public function adminStatistic($ma_artist)
+    {
         $statistic = DB::table('thong_ke')
             ->join('bai_hat', 'thong_ke.ma_bai_hat', '=', 'bai_hat.ma_bai_hat')
             ->join('tai_khoan', 'tai_khoan.ma_tk', '=', 'bai_hat.ma_tk_artist')
