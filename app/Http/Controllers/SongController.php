@@ -296,7 +296,7 @@ class SongController extends Controller
         $artists = DB::table('tai_khoan')
             ->join('user', 'user.ma_tk', '=', 'tai_khoan.ma_tk')
             ->join('phan_quyen', 'tai_khoan.ma_phan_quyen', '=', 'phan_quyen.ma_phan_quyen')
-            ->leftJoin('bai_hat', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
+            ->join('bai_hat', 'bai_hat.ma_tk_artist', '=', 'tai_khoan.ma_tk')
             ->select(
                 'tai_khoan.*',
                 'user.*',
@@ -408,9 +408,9 @@ class SongController extends Controller
     {
         // Tìm bài hát dựa vào mã bài hát
         $song = DB::table('bai_hat')
-            ->leftJoin('album', 'bai_hat.ma_album', '=', 'album.ma_album')
-            ->leftJoin('tai_khoan as tk_artist', 'bai_hat.ma_tk_artist', '=', 'tk_artist.ma_tk')
-            ->leftJoin('user as user_artist', 'tk_artist.ma_tk', '=', 'user_artist.ma_tk')
+            ->join('album', 'bai_hat.ma_album', '=', 'album.ma_album')
+            ->join('tai_khoan as tk_artist', 'bai_hat.ma_tk_artist', '=', 'tk_artist.ma_tk')
+            ->join('user as user_artist', 'tk_artist.ma_tk', '=', 'user_artist.ma_tk')
             ->select(
                 'bai_hat.*',
                 'album.ten_album',
@@ -463,12 +463,14 @@ class SongController extends Controller
             'data' => [
                 'ma_bai_hat' => $song->ma_bai_hat,
                 'ten_bai_hat' => $song->ten_bai_hat,
-                'album' => $song->ten_album,
+                'ma_album' => $song->ma_album,
+                'ten_album' => $song->ten_album,
                 'ma_artist' => $song->ma_tk,
-                'artist' => $song->ten_artist,
+                'ten_artist' => $song->ten_artist,
                 'thoi_luong' => $song->thoi_luong,
                 'trang_thai' => $song->trang_thai,
                 'luot_nghe' => $song->luot_nghe,
+                'doanh_thu' => $song->doanh_thu,
                 'hinh_anh' => $song->hinh_anh,
                 'ngay_phat_hanh' => $song->ngay_phat_hanh,
                 'link_bai_hat' => $links->map(function ($link) {
