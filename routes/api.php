@@ -63,7 +63,6 @@ Route::get('/albums/{ma_album}/songs', [App\Http\Controllers\AlbumController::cl
 Route::get('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'show'])->where('ma_album', 'AL\d{4}');
 Route::get('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'getAlbumsByArtistAccount']); //ADMIN
 Route::post('/albums/artist/{ma_tk}', [App\Http\Controllers\AlbumController::class, 'store'])->where('ma_tk', 'ACC\d{4}');
-Route::put('/albums/{ma_album}/add', [App\Http\Controllers\AlbumController::class, 'addSongsToAlbum']);
 Route::put('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'update']); //ADMIN (nếu muốn tách ra một route khác để duyệt thì báo)
 Route::delete('/albums/{ma_album}', [App\Http\Controllers\AlbumController::class, 'destroy']);
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
