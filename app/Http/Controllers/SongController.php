@@ -42,7 +42,8 @@ class SongController extends Controller
             return [
                 'ma_bai_hat' => $item->ma_bai_hat,
                 'ten_bai_hat' => $item->ten_bai_hat,
-                'album' => $item->album_name, // Alias từ bảng album
+                'ma_album' => $item->ma_album,
+                'ten_album' => $item->album_name, // Alias từ bảng album
                 'artist' => $item->artist_name, // Alias từ bảng user
                 'thoi_luong' => $item->thoi_luong,
                 'luot_nghe' => $item->luot_nghe,
