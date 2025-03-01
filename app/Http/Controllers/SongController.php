@@ -20,13 +20,13 @@ class SongController extends Controller
             ->join('user', 'tai_khoan.ma_tk', '=', 'user.ma_tk')
             ->join('theloai_baihat', 'bai_hat.ma_bai_hat', '=', 'theloai_baihat.ma_bai_hat')
             ->join('the_loai', 'the_loai.ma_the_loai', '=', 'theloai_baihat.ma_the_loai')
-            ->join('chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
+            // ->join('chat_luong_bai_hat', 'bai_hat.ma_bai_hat', '=', 'chat_luong_bai_hat.ma_bai_hat')
             ->select(
                 'bai_hat.*',
                 'bai_hat.hinh_anh as bai_hat_hinh_anh', // Alias cho hinh_anh của bảng bai_hat
                 'song_album.ten_album as album_name',
                 'user.ten_user as artist_name',
-                'chat_luong_bai_hat.*',
+                // 'chat_luong_bai_hat.*',
                 'the_loai.*',
             )
             ->get();
@@ -49,8 +49,8 @@ class SongController extends Controller
                 'luot_nghe' => $item->luot_nghe,
                 'hinh_anh' => $item->bai_hat_hinh_anh, // Sử dụng alias của hinh_anh từ bảng bai_hat
                 'ngay_phat_hanh' => $item->ngay_phat_hanh,
-                'chat_luong' => $item->chat_luong,
-                'link_bai_hat' => $item->link_bai_hat,
+                // 'chat_luong' => $item->chat_luong,
+                // 'link_bai_hat' => $item->link_bai_hat,
                 'ma_the_loai' => $item->ma_the_loai,
                 'ten_the_loai' => $item->ten_the_loai,
                 'trang_thai' => $item->trang_thai
